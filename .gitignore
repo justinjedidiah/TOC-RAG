@@ -16,3 +16,7 @@ data/
 
 # Editor settings
 .vscode/
+
+# Demo video (login cookies and renders)
+demo/.auth/
+demo/out/
