@@ -15,7 +15,7 @@ Then     store.save_index                write index.json + library.json
 
 Everything the visitor pays for is in stage 2, and stage 1 produces the numbers for the "this will cost about N calls, continue?" screen. That is the whole reason for the split.
 
-The one worked example used below: the sample **Meridian Station Operations Handbook**.
+The one worked example used below: **Meridian Station Operations Handbook**, a former sample (the samples are now the Fernhill annual report and employee handbook; the steps are the same).
 
 ---
 

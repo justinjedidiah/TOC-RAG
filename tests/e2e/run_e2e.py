@@ -199,14 +199,14 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
 
         def loads() -> None:
             expect(page.get_by_text("TOC RAG").first).to_be_visible(timeout=30000)
-            expect(page.get_by_text("sample", exact=True)).to_have_count(3, timeout=15000)
+            expect(page.get_by_text("sample", exact=True)).to_have_count(2, timeout=15000)
             expect(page.get_by_placeholder("Add your API key to chat")).to_be_disabled()
             expect(page.get_by_text("Uploads are kept for 2 hours")).to_be_visible()  # no session yet
 
-        step("page loads with 3 sample documents and chat locked", loads, "01-loaded.png")
+        step("page loads with 2 sample documents and chat locked", loads, "01-loaded.png")
 
         def sample_question_without_key() -> None:
-            page.get_by_role("button", name="Who is the commander").click()
+            page.get_by_role("button", name="Which business segment").click()
             expect(page.get_by_text("Add your API key first, then try a sample question.")).to_be_visible(timeout=10000)
 
         step("a sample question without a key says what is missing", sample_question_without_key)
@@ -221,12 +221,12 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
         step("the tab icon is linked and served", tab_icon)
 
         def browse_sample() -> None:
-            page.get_by_role("button", name="Browse").nth(1).click()  # samples are sorted by title: the second is Meridian
+            page.get_by_role("button", name="Browse").nth(1).click()  # samples are sorted by title: the second is the handbook
             outline = page.locator("#source-panel")
             expect(outline.get_by_text("Outline", exact=True)).to_be_visible(timeout=10000)
-            # Roster and Shift schedule are tiny, so indexing merged them into "Crew and Roles".
-            outline.get_by_role("button").filter(has=page.get_by_text("Crew and Roles", exact=True)).click()
-            expect(page.get_by_text("Ada Okonkwo").first).to_be_visible(timeout=10000)
+            # Its leave subsections are short, so indexing merged them into one "Time Off" section.
+            outline.get_by_role("button").filter(has=page.get_by_text("Time Off", exact=True)).click()
+            expect(page.get_by_text("16 weeks of parental").first).to_be_visible(timeout=10000)
 
         step("browse a sample outline and read a section without a key", browse_sample, "02-browse.png")
         step("dialogs close", dismiss_dialog)
@@ -248,22 +248,22 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
 
         step("the Free preset indexes a heading-less docx without a key", free_without_key, "02b-free.png")
 
-        # Library order: the 3 samples by title (home solar, meridian, nimbus), then the visitor's own documents.
+        # Library order: the 2 samples by title (annual report, employee handbook), then the visitor's own documents.
         switches = page.get_by_role("switch")
 
         def samples_off_after_first_index() -> None:
-            expect(switches).to_have_count(4, timeout=10000)
-            for i in range(3):
+            expect(switches).to_have_count(3, timeout=10000)
+            for i in range(2):
                 expect(switches.nth(i)).to_have_attribute("aria-checked", "false", timeout=10000)
-            expect(switches.nth(3)).to_have_attribute("aria-checked", "true")  # Heron Notes, just indexed
+            expect(switches.nth(2)).to_have_attribute("aria-checked", "true")  # Heron Notes, just indexed
             expect(page.get_by_text("sample documents are turned off").first).to_be_visible(timeout=10000)
             # With every sample off, the sample questions have nothing to be answered from: not offered.
-            expect(page.get_by_role("button", name="Who is the commander")).to_have_count(0)
-            switches.nth(1).click()  # Meridian Station back on
-            expect(switches.nth(1)).to_have_attribute("aria-checked", "true", timeout=5000)
-            expect(page.get_by_role("button", name="Who is the commander")).to_be_visible(timeout=5000)
+            expect(page.get_by_role("button", name="Which business segment")).to_have_count(0)
+            switches.nth(0).click()  # the annual report back on
+            expect(switches.nth(0)).to_have_attribute("aria-checked", "true", timeout=5000)
+            expect(page.get_by_role("button", name="Which business segment")).to_be_visible(timeout=5000)
             # Only that sample's questions come back.
-            expect(page.get_by_role("button", name="What was Nimbus Robotics")).to_have_count(0)
+            expect(page.get_by_role("button", name="How many weeks of parental leave")).to_have_count(0)
             # Each switch also looks the way it is: it is styled from data-state, which a wrapper (a tooltip, say)
             # can overwrite while aria-checked stays right.
             looks = page.evaluate("() => [...document.querySelectorAll('[role=switch]')].map(s => [s.getAttribute('aria-checked'), s.getAttribute('data-state')])")
@@ -337,11 +337,10 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
         step("the PDF's section closes", dismiss_dialog)
 
         def samples_stay_as_chosen() -> None:
-            expect(switches).to_have_count(5, timeout=10000)
-            expect(switches.nth(1)).to_have_attribute("aria-checked", "true")  # turned back on: a later upload leaves it on
-            expect(switches.nth(0)).to_have_attribute("aria-checked", "false")
-            expect(switches.nth(2)).to_have_attribute("aria-checked", "false")
-            expect(switches.nth(4)).to_have_attribute("aria-checked", "true")  # Solar Brochure, the new upload
+            expect(switches).to_have_count(4, timeout=10000)
+            expect(switches.nth(0)).to_have_attribute("aria-checked", "true")  # turned back on: a later upload leaves it on
+            expect(switches.nth(1)).to_have_attribute("aria-checked", "false")
+            expect(switches.nth(3)).to_have_attribute("aria-checked", "true")  # Solar Brochure, the new upload
 
         step("a later upload leaves the samples as the visitor set them", samples_stay_as_chosen)
 
@@ -407,7 +406,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
         step("the key never appears in the page", key_not_in_page)
 
         def ask_text() -> None:
-            page.get_by_role("button", name="Who is the commander").click()
+            page.get_by_role("button", name="Which business segment").click()
             expect(page.get_by_text("Next: open document.")).to_be_visible(timeout=60000)  # the model's note before its first step
             expect(page.get_by_text("Answered by the offline test model")).to_be_visible(timeout=60000)
 
@@ -415,7 +414,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
 
         def path_and_citation() -> None:
             body = page.inner_text("body")
-            assert 'Opened "Meridian' in body or "Opened" in body, "no 'Opened' step shown"
+            assert "Opened" in body, "no 'Opened' step shown"
             assert "Read " in body, "no 'Read' step shown"
             assert "Next: " in body, "the model's note before a step is not shown beside it"
         step("navigation steps are shown", path_and_citation)
@@ -432,7 +431,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
 
         def ask_image() -> None:
             box = page.get_by_placeholder("Ask a question about the documents")
-            box.fill("Show me the oxygen reserve chart")
+            box.fill("Show me the revenue by segment and quarter chart")
             box.press("Enter")
             image = page.locator("img[alt*='bar chart']").first
             expect(image).to_be_visible(timeout=60000)
@@ -468,7 +467,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             viewport = "document.getElementById('chat-end').closest('[data-radix-scroll-area-viewport]')"
             answers_before = page.locator("text=Answered by the offline test model").count()
             box = page.get_by_placeholder("Ask a question about the documents")
-            box.fill("How often should I clean my solar panels?")
+            box.fill("What is the outlook for 2027?")
             box.press("Enter")
             expect(page.get_by_text("Working...")).to_be_visible(timeout=15000)
             page.evaluate(f"{viewport}.scrollTop = 0")  # the visitor scrolls up to re-read while it streams
@@ -633,7 +632,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
         step("an edited file with the same name replaces the old version", edited_version_replaces)
 
         def sample_file_is_refused() -> None:
-            page.set_input_files("input[type=file]", str(ROOT / "samples" / "source" / "home-solar-installation-guide.docx"))
+            page.set_input_files("input[type=file]", str(ROOT / "samples" / "source" / "Fernhill Employee Handbook.docx"))
             expect(page.get_by_text("one of the sample documents")).to_be_visible(timeout=20000)
 
         step("uploading a sample document is refused", sample_file_is_refused)
@@ -655,7 +654,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             for remaining in (1, 0):
                 delete.first.click()
                 expect(delete).to_have_count(remaining, timeout=15000)
-            expect(page.get_by_text("sample", exact=True)).to_have_count(3)
+            expect(page.get_by_text("sample", exact=True)).to_have_count(2)
 
         step("deleting your documents removes them", delete_mine)
 
@@ -695,8 +694,8 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             expect(page.get_by_text("Long Report")).to_have_count(0)
             expect(page.get_by_text("Indexing failed")).to_have_count(0)
             # A fresh start: only the samples are left, all of them on again.
-            expect(switches).to_have_count(3, timeout=10000)
-            for i in range(3):
+            expect(switches).to_have_count(2, timeout=10000)
+            for i in range(2):
                 expect(switches.nth(i)).to_have_attribute("aria-checked", "true")
 
         step("ending the session mid-indexing stops it and deletes everything", end_session_while_indexing, "10-ended.png")

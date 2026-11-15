@@ -109,19 +109,21 @@ def demo_answer() -> rx.Component:
             ),
             rx.vstack(
                 _demo_step("Listed documents"),
-                _demo_step('Opened "Meridian Station operations handbook"'),
-                _demo_step('Read "Crew and Roles"'),
+                _demo_step('Opened "Fernhill Annual Report 2026"'),
+                _demo_step('Looked inside "Financial Review"'),
+                _demo_step('Read "Revenue by segment"'),
                 spacing="1",
                 align="start",
             ),
             rx.text(
-                "The commander is Ada Okonkwo, who works the day shift: 06:00 to 14:00 station time.",
+                "Equipment grew fastest: revenue rose 15.0 percent, from 98.3 to 113.0 million dollars, "
+                "driven by the new tent range.",
                 size="2",
             ),
             rx.badge(
                 rx.icon("file-text", size=12),
-                "Crew and Roles",
-                rx.text("Roster, Shift schedule", color_scheme="gray"),
+                "Revenue by segment",
+                rx.text("Financial Review", color_scheme="gray"),
                 variant="outline",
                 color_scheme="gray",
                 radius="full",
@@ -497,7 +499,7 @@ def features() -> rx.Component:
         ("calculator", "Cost before you spend", "Free, Budget and Full indexing presets, each with an estimate. The free one makes no model calls at all."),
         ("radio", "Live answers", "The agent's path streams as it works, then the answer, with clickable citations and images shown inline."),
         ("image", "Charts and tables", "Charts and pictures become images a vision model describes; ruled tables are kept as tables."),
-        ("library", "Sample library", "Three documents to try without uploading anything."),
+        ("library", "Sample library", "Two documents to try without uploading anything: an annual report and an employee handbook."),
     ]
     return _section(
         _heading("Features", "What you get"),

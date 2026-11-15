@@ -13,10 +13,10 @@ from .viewmodels import ChatMessage, CitationView, DocView, ImageView, OutlineRo
 # Each sample question, with the sample it is about (its doc id without the content hash). A question is only
 # offered while that sample is turned on.
 EXAMPLES = [
-    ("Who is the commander of Meridian Station, and what shift do they work?", "meridian-station-operations-handbook"),
-    ("What was Nimbus Robotics' total revenue in Q3 2026?", "nimbus-robotics-q3-2026-report"),
-    ("Show me the oxygen reserve chart from the station handbook.", "meridian-station-operations-handbook"),
-    ("How often should I clean my solar panels?", "home-solar-installation-guide"),
+    ("Which business segment grew fastest in 2026, and by how much?", "fernhill-annual-report-2026"),
+    ("How many weeks of parental leave do employees get?", "fernhill-employee-handbook"),
+    ("Show me the revenue by segment chart from the annual report.", "fernhill-annual-report-2026"),
+    ("Can I work from another country for a few weeks?", "fernhill-employee-handbook"),
 ]
 ACCEPTED = {
     "application/pdf": [".pdf"],

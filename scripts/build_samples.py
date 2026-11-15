@@ -9,8 +9,6 @@ Re-generating a file changes its content hash, and so its doc id. Only use --for
 import argparse
 import dataclasses
 import io
-import struct
-import zlib
 from pathlib import Path
 
 from docx import Document
@@ -21,192 +19,278 @@ SOURCE_DIR = ROOT / "samples" / "source"
 INDEX_DIR = ROOT / "samples" / "index"
 
 
-def bar_chart_png(values: list[int], width: int = 480, height: int = 240) -> bytes:
-    """A plain bar chart (no text), drawn pixel by pixel so no imaging library is needed."""
-    colors = [(46, 125, 200), (230, 126, 34), (39, 174, 96), (155, 89, 182)]
-    margin, gap = 30, 20
-    pixels = [[(255, 255, 255)] * width for _ in range(height)]
-    for y in range(margin, height - margin + 1):
-        pixels[y][margin] = (60, 60, 60)
-    for x in range(margin, width - margin + 1):
-        pixels[height - margin][x] = (60, 60, 60)
-    bar_width = (width - 2 * margin - gap * (len(values) + 1)) // len(values)
-    plot_height = height - 2 * margin - 10
-    for i, value in enumerate(values):
-        x0 = margin + gap + i * (bar_width + gap)
-        bar_height = plot_height * value // max(values)
-        for y in range(height - margin - bar_height, height - margin):
-            for x in range(x0, x0 + bar_width):
-                pixels[y][x] = colors[i % len(colors)]
+def grouped_bar_chart_png(title: str, unit: str, groups: list[str], series: dict[str, list[float]]) -> bytes:
+    """A grouped bar chart like one in a real report: title, y axis with gridlines, a value on every bar,
+    group labels and a legend. Drawn with Pillow and its built-in font, so it looks the same everywhere."""
+    from PIL import Image, ImageDraw, ImageFont
 
-    def chunk(kind: bytes, data: bytes) -> bytes:
-        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+    scale = 2  # drawn at twice the size, then shrunk, for smooth edges and text
+    width, height = 1100 * scale, 620 * scale
+    image = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(image)
 
-    rows = b"".join(b"\x00" + bytes(channel for pixel in row for channel in pixel) for row in pixels)
-    header = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
-    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header) + chunk(b"IDAT", zlib.compress(rows)) + chunk(b"IEND", b"")
+    def font(size: int) -> ImageFont.FreeTypeFont:
+        return ImageFont.load_default(size=size * scale)
+
+    ink, muted, grid = (33, 37, 41), (108, 117, 125), (226, 230, 234)
+    colors = [(31, 95, 139), (226, 125, 46), (76, 154, 107), (142, 103, 170)]
+    left, right, top, bottom = 110 * scale, 40 * scale, 130 * scale, 80 * scale
+    plot_w, plot_h = width - left - right, height - top - bottom
+
+    draw.text((left, 30 * scale), title, font=font(30), fill=ink)
+    draw.text((left, 72 * scale), unit, font=font(19), fill=muted)
+    # Legend, top right
+    x = width - right
+    for name, color in reversed(list(zip(series, colors))):
+        label_w = draw.textlength(name, font=font(19))
+        x -= label_w
+        draw.text((x, 74 * scale), name, font=font(19), fill=ink)
+        x -= 26 * scale
+        draw.rectangle((x, 77 * scale, x + 18 * scale, 95 * scale), fill=color)
+        x -= 30 * scale
+
+    top_value = max(v for values in series.values() for v in values)
+    step = 20
+    y_max = step * (int(top_value // step) + 1)
+    for tick in range(0, y_max + 1, step):
+        y = top + plot_h - plot_h * tick / y_max
+        draw.line((left, y, width - right, y), fill=grid if tick else ink, width=2 * scale if tick == 0 else scale)
+        label = f"{tick}"
+        draw.text((left - 16 * scale - draw.textlength(label, font=font(18)), y - 11 * scale), label, font=font(18), fill=muted)
+
+    group_w = plot_w / len(groups)
+    bar_w = group_w * 0.72 / len(series)
+    for g, group in enumerate(groups):
+        x0 = left + g * group_w + group_w * 0.14
+        for s, (name, values) in enumerate(series.items()):
+            value = values[g]
+            bx = x0 + s * bar_w
+            by = top + plot_h - plot_h * value / y_max
+            draw.rectangle((bx + 3 * scale, by, bx + bar_w - 3 * scale, top + plot_h), fill=colors[s % len(colors)])
+            label = f"{value:.1f}"
+            lw = draw.textlength(label, font=font(15))
+            draw.text((bx + (bar_w - lw) / 2, by - 22 * scale), label, font=font(15), fill=ink)
+        gw = draw.textlength(group, font=font(19))
+        draw.text((left + g * group_w + (group_w - gw) / 2, top + plot_h + 18 * scale), group, font=font(19), fill=ink)
+
+    image = image.resize((width // scale, height // scale), Image.LANCZOS)
+    out = io.BytesIO()
+    image.save(out, format="PNG", optimize=True)
+    return out.getvalue()
 
 
-STATION = (
-    "Meridian Station Operations Handbook",
-    [
-        ("h1", "Overview"),
-        ("h2", "Mission"),
-        ("p", "Meridian Station is a fictional low-orbit research outpost. Its mission is to run long-duration "
-              "experiments in materials science and human health, and to serve as a staging point for short "
-              "visits by cargo craft. This handbook describes how the station is run day to day."),
-        ("h2", "Station layout"),
-        ("p", "The station has four pressurized modules connected by a central node. Each module has its own "
-              "life-support loop, so a problem in one module can be sealed off from the others."),
-        ("table", ["Module", "Purpose", "Crew capacity"], [
-            ["Habitat 1", "Sleeping quarters and galley", "4"],
-            ["Habitat 2", "Exercise and medical bay", "2"],
-            ["Laboratory", "Experiments and workstations", "3"],
-            ["Cargo", "Supplies and spare parts", "1"],
-        ]),
-        ("h1", "Crew and Roles"),
-        ("h2", "Roster"),
-        ("p", "The current four-person crew rotates every six months."),
-        ("table", ["Name", "Role", "Shift"], [
-            ["Ada Okonkwo", "Commander", "Day"],
-            ["Luis Vargas", "Flight Engineer", "Night"],
-            ["Priya Nair", "Medical Officer", "Day"],
-            ["Tomasz Wrona", "Systems Specialist", "Night"],
-        ]),
-        ("h2", "Shift schedule"),
-        ("p", "Day shift runs 06:00 to 14:00 station time and night shift runs 14:00 to 22:00. The hours from "
-              "22:00 to 06:00 are a shared rest period, and only the duty alarm may wake the crew."),
-        ("h1", "Life Support"),
-        ("h2", "Oxygen supply"),
-        ("p", "Oxygen is produced by electrolysis of recycled water and stored in tanks in each module. Reserves "
-              "are checked every shift. A module must never drop below 50 percent of tank capacity without the "
-              "commander being told."),
-        ("chart", [92, 81, 67, 54],
-         "Figure 1. Oxygen reserve by module, as a percent of capacity: Habitat 1 at 92, Habitat 2 at 81, "
-         "Laboratory at 67, Cargo at 54."),
-        ("h2", "Water recycling"),
-        ("p", "About 93 percent of water, including humidity from the air and treated wastewater, is recovered "
-              "and reused. The remaining loss is made up from tanks delivered by cargo craft."),
-        ("h2", "Temperature and pressure"),
-        ("p", "Cabin temperature is held at 21 degrees Celsius and pressure at 101 kilopascals. An alarm sounds "
-              "if pressure falls by more than 3 kilopascals within ten minutes."),
-        ("h1", "Emergency Procedures"),
-        ("h2", "Fire"),
-        ("p", "Sound the alarm, shut the module's ventilation, and use the nearest extinguisher. Never open a "
-              "hatch to a module that is on fire. Report to the commander from the central node."),
-        ("h2", "Hull breach"),
-        ("p", "When the pressure alarm sounds, move to the nearest hatch and seal the affected module. Count the "
-              "crew at the central node. The Systems Specialist then locates the leak using the pressure map "
-              "and patches it with the repair kit stored in the Cargo module."),
-        ("h2", "Evacuation"),
-        ("p", "If the station cannot be made safe, the crew boards the escape capsule docked at the central node. "
-              "The commander decides when to evacuate. The capsule seats four and carries three days of supplies."),
-    ],
+REVENUE_CHART = dict(
+    title="Revenue by segment and quarter, 2026",
+    unit="USD millions",
+    groups=["Q1", "Q2", "Q3", "Q4"],
+    series={
+        "Apparel": [48.2, 52.6, 61.3, 74.9],
+        "Footwear": [31.5, 34.0, 36.8, 41.2],
+        "Equipment": [22.4, 29.7, 33.1, 27.8],
+    },
 )
 
-REPORT = (
-    "Nimbus Robotics Q3 2026 Report",
+ANNUAL_REPORT = (
+    "Fernhill Outdoor Annual Report 2026",
     [
-        ("h1", "Executive Summary"),
-        ("p", "Nimbus Robotics is a fictional maker of warehouse robots and delivery drones. In the third quarter "
-              "of 2026, revenue grew 12 percent on the same quarter last year to 41.4 million dollars, and the "
-              "company returned to operating profit."),
-        ("h1", "Financial Results"),
-        ("h2", "Revenue by region"),
-        ("p", "North America remains the largest market, followed by Europe. Asia-Pacific grew fastest."),
-        ("table", ["Region", "Revenue (USD millions)"], [
-            ["North America", "18.4"],
-            ["Europe", "11.2"],
-            ["Asia-Pacific", "9.7"],
-            ["Other", "2.1"],
-            ["Total", "41.4"],
+        ("p", "Fernhill Outdoor Co. is a fictional company that designs and sells clothing, footwear and camping "
+              "equipment for hiking and outdoor sports. This report covers the financial year from 1 January to "
+              "31 December 2026. All amounts are in US dollars."),
+        ("h1", "Letter from the Chief Executive"),
+        ("p", "2026 was our strongest year yet. Revenue passed 490 million dollars for the first time, growing "
+              "10.6 percent, and operating income rose by almost a third as more customers bought directly from "
+              "us. Equipment was the standout: our new lightweight tent range sold out twice in the summer. "
+              "We also kept our promise to use more recycled materials, which now make up 58 percent of the "
+              "fabric we buy. Next year we will open six new stores and invest in a second distribution centre "
+              "so that orders reach customers faster. Thank you to our 2,140 colleagues and to every customer "
+              "who chose Fernhill. Maya Lindqvist, Chief Executive."),
+        ("h1", "2026 at a Glance"),
+        ("table", ["Measure", "2026", "2025", "Change"], [
+            ["Revenue (millions)", "493.5", "446.2", "+10.6%"],
+            ["Gross margin", "47.8%", "46.1%", "+1.7 pts"],
+            ["Operating income (millions)", "58.3", "44.9", "+29.8%"],
+            ["Net income (millions)", "41.0", "31.6", "+29.7%"],
+            ["Free cash flow (millions)", "37.2", "28.4", "+31.0%"],
+            ["Stores at year end", "64", "58", "+6"],
+            ["Employees at year end", "2,140", "1,960", "+180"],
         ]),
-        ("h2", "Operating costs"),
-        ("table", ["Category", "Cost (USD millions)"], [
-            ["Manufacturing", "17.3"],
-            ["Research and development", "9.8"],
-            ["Sales and marketing", "6.4"],
-            ["General and administrative", "3.9"],
-            ["Total", "37.4"],
+        ("h1", "Financial Review"),
+        ("h2", "Revenue by segment"),
+        ("p", "Fernhill reports three segments. Apparel is the largest and peaks in the fourth quarter with "
+              "winter jackets. Equipment grew fastest, by 15.0 percent, driven by the new tent range in the "
+              "second and third quarters. Footwear grew more slowly as trail-running shoes faced strong "
+              "competition and heavy discounting across the market."),
+        ("table", ["Segment", "2026 (millions)", "2025 (millions)", "Growth"], [
+            ["Apparel", "237.0", "214.0", "+10.7%"],
+            ["Footwear", "143.5", "133.9", "+7.2%"],
+            ["Equipment", "113.0", "98.3", "+15.0%"],
+            ["Total", "493.5", "446.2", "+10.6%"],
         ]),
-        ("p", "Operating income for the quarter was 4.0 million dollars, compared with a loss of 1.2 million "
-              "dollars a year ago."),
-        ("h2", "Cash position"),
-        ("p", "Cash and equivalents ended the quarter at 52.6 million dollars, up from 47.9 million at the end "
-              "of the previous quarter. The company has no outstanding debt."),
-        ("h1", "Product Updates"),
-        ("h2", "Warehouse robot WR-4"),
-        ("p", "The WR-4 began shipping in July. It carries loads of up to 60 kilograms and runs for ten hours "
-              "per charge. Orders for the quarter reached 310 units, mostly from existing customers."),
-        ("h2", "Delivery drone D-2"),
-        ("p", "The D-2 completed regulatory testing in two European countries. Commercial deliveries are planned "
-              "to begin in the first quarter of next year, starting with pharmacy partners."),
-        ("h1", "Risks and Outlook"),
+        ("chart", REVENUE_CHART,
+         "Figure 1. Revenue by segment and quarter, 2026, in millions of dollars. Apparel: Q1 48.2, Q2 52.6, "
+         "Q3 61.3, Q4 74.9. Footwear: Q1 31.5, Q2 34.0, Q3 36.8, Q4 41.2. Equipment: Q1 22.4, Q2 29.7, "
+         "Q3 33.1, Q4 27.8."),
+        ("h2", "Revenue by channel"),
+        ("p", "Online sales through our own website and app made up 41 percent of revenue, up from 37 percent. "
+              "Our own stores made up 23 percent and wholesale to independent outdoor retailers 36 percent. "
+              "Direct sales carry a higher margin, so the shift towards them lifted profitability."),
+        ("h2", "Margins and costs"),
+        ("p", "Gross margin rose to 47.8 percent from 46.1 percent, helped by the shift to direct sales and "
+              "lower ocean freight rates. Operating expenses grew 7.9 percent, slower than revenue, mainly from "
+              "new store openings and marketing for the tent launch. Operating margin reached 11.8 percent, "
+              "up from 10.1 percent."),
+        ("h2", "Cash flow and balance sheet"),
+        ("p", "Free cash flow was 37.2 million dollars after capital spending of 18.6 million, mostly on stores "
+              "and warehouse automation. Inventory at year end was 96.4 million dollars, down 4 percent despite "
+              "higher sales. Cash at year end was 64.8 million dollars, with no borrowings. The board proposes "
+              "a dividend of 0.42 dollars per share."),
+        ("h1", "Segment Performance"),
+        ("h2", "Apparel"),
+        ("p", "Apparel revenue grew 10.7 percent to 237.0 million dollars. The Ridgeline insulated jacket was "
+              "again our best-selling product, and the new merino base-layer range added 9 million dollars in "
+              "its first year. Returns fell to 8.1 percent of sales after we added fit guides to the website."),
+        ("h2", "Footwear"),
+        ("p", "Footwear revenue grew 7.2 percent to 143.5 million dollars. Hiking boots grew strongly, but "
+              "trail-running shoes were flat. We reduced the number of trail-running models from 14 to 9 to "
+              "focus on the best sellers."),
+        ("h2", "Equipment"),
+        ("p", "Equipment revenue grew 15.0 percent to 113.0 million dollars. The Aspen ultralight tent range, "
+              "launched in April, sold 41,000 units. Fourth-quarter equipment sales were lower than the third "
+              "quarter, as is usual after the camping season."),
+        ("h1", "Sustainability"),
+        ("h2", "Materials"),
+        ("p", "Recycled and responsibly sourced materials made up 58 percent of the fabric we bought, up from "
+              "49 percent. Our goal is 75 percent by 2028. All down used in our jackets is certified to the "
+              "Responsible Down Standard."),
+        ("h2", "Emissions"),
+        ("p", "Emissions from our own operations and the electricity we buy fell 18 percent, as 41 of our 64 "
+              "stores now run on renewable electricity. Emissions from our suppliers' factories and from "
+              "shipping, which make up most of our footprint, fell 6 percent."),
+        ("h2", "Repair and resale"),
+        ("p", "Our repair service fixed 23,500 items in 2026, and the Fernhill Second Life resale programme sold "
+              "11,200 used items. Both services are now offered in every store."),
+        ("h1", "Risks"),
         ("h2", "Supply chain"),
-        ("p", "Battery cells remain the main supply risk. Nimbus buys from two suppliers and is qualifying a "
-              "third to lower the chance of a shortage."),
-        ("h2", "Regulation"),
-        ("p", "Drone rules differ by country, and a change to flight-altitude limits could delay the D-2 launch "
-              "in some markets."),
-        ("h2", "Guidance for Q4"),
-        ("p", "The company expects Q4 revenue between 44 and 47 million dollars and expects to stay profitable "
-              "at the operating level."),
+        ("p", "About 70 percent of our products are made by suppliers in Vietnam, Bangladesh and Portugal. A "
+              "disruption at a major supplier or port could delay deliveries. We now buy key products from at "
+              "least two suppliers."),
+        ("h2", "Weather and seasonality"),
+        ("p", "A warm winter lowers demand for jackets, our most profitable products. Almost a third of annual "
+              "revenue is earned in the fourth quarter."),
+        ("h2", "Currency"),
+        ("p", "Most costs are in US dollars, while 38 percent of revenue is earned in euros and pounds. We "
+              "hedge about 70 percent of expected currency needs for the next twelve months."),
+        ("h1", "Outlook for 2027"),
+        ("p", "We expect revenue of 530 to 550 million dollars and an operating margin of about 12 percent. We "
+              "plan to open six new stores, start building a second distribution centre in the Netherlands, and "
+              "launch a footwear repair service. Capital spending is expected to be about 30 million dollars."),
     ],
 )
 
-SOLAR = (
-    "Home Solar Installation Guide",
+HANDBOOK = (
+    "Fernhill Employee Handbook",
     [
-        ("h1", "Before You Start"),
-        ("h2", "Is your roof suitable?"),
-        ("p", "A south-facing roof (in the northern hemisphere) with little shade gives the best output. The "
-              "roof should be in good condition, because panels last 25 years or more and removing them to "
-              "repair the roof is costly. Aim for at least 20 square meters of usable area for a typical home."),
-        ("h2", "Permits and codes"),
-        ("p", "Most areas require a building permit and an electrical permit. Your utility may also need to "
-              "approve a grid connection before you switch the system on. Check local rules before you buy "
-              "any equipment."),
-        ("h1", "Choosing Equipment"),
-        ("h2", "Panels"),
-        ("p", "Three panel types are common. Efficiency is the share of sunlight turned into electricity."),
-        ("table", ["Type", "Typical efficiency", "Notes"], [
-            ["Monocrystalline", "20 to 22 percent", "Best output per area, highest price"],
-            ["Polycrystalline", "15 to 17 percent", "Lower price, needs more roof space"],
-            ["Thin-film", "10 to 13 percent", "Light and flexible, shortest lifespan"],
+        ("p", "This handbook explains how we work at Fernhill Outdoor Co., a fictional company, and what you can "
+              "expect from us. It applies to all employees in offices, distribution centres and stores, unless "
+              "a section says otherwise. Your contract and local law take priority if they differ. Last "
+              "updated January 2026."),
+        ("h1", "Working Hours and Location"),
+        ("h2", "Core hours"),
+        ("p", "Office teams work flexible hours, but everyone is available for meetings between 10:00 and 15:00 "
+              "local time. A full-time week is 37.5 hours. Store and distribution centre teams work to a rota "
+              "published at least two weeks in advance."),
+        ("h2", "Hybrid work"),
+        ("p", "Office roles are hybrid: you work from the office at least three days a week, including your "
+              "team's anchor day, and from home on the other days. Your manager can agree a different "
+              "pattern for a fixed period, for example after parental leave."),
+        ("h2", "Working from abroad"),
+        ("p", "You can work from another country for up to 20 working days a year, for example to extend a "
+              "visit to family. Ask your manager and the People team at least four weeks before you go, so we "
+              "can check tax and visa rules. Some countries are not allowed for security reasons."),
+        ("h1", "Time Off"),
+        ("h2", "Annual leave"),
+        ("p", "Full-time employees get 25 days of paid annual leave a year plus public holidays, rising to 28 "
+              "days after five years. Leave runs from January to December. You can carry up to 5 unused days "
+              "into the next year; they must be used by the end of March. Book leave in the HR portal at least "
+              "two weeks ahead for anything longer than three days."),
+        ("h2", "Sick leave"),
+        ("p", "Tell your manager before your shift or start time if you are ill. You can self-certify for up to "
+              "3 days; after that we need a note from a doctor. You get full pay for up to 10 sick days a "
+              "year, and half pay for a further 20 days."),
+        ("h2", "Parental leave"),
+        ("p", "Every parent, whatever their gender and however they became a parent, gets 16 weeks of parental "
+              "leave at full pay, to be taken within the first year after the birth or adoption. Birth parents "
+              "can take a further 10 weeks at statutory pay. Tell the People team at least 15 weeks before the "
+              "due date or placement. When you return, you can work 80 percent of your hours for full pay for "
+              "the first 4 weeks."),
+        ("h2", "Other leave"),
+        ("table", ["Type", "Paid days", "Notes"], [
+            ["Bereavement", "Up to 10", "For a partner, child, parent or sibling; 3 days for other relatives"],
+            ["Volunteering", "2 per year", "For registered charities and community projects"],
+            ["Moving home", "1 per year", ""],
+            ["Jury duty", "As needed", "Full pay; tell your manager when you are summoned"],
         ]),
-        ("h2", "Inverters"),
-        ("p", "The inverter converts the direct current from the panels into alternating current for your home. "
-              "A single string inverter is cheapest. Microinverters sit under each panel and keep the rest "
-              "producing when one panel is shaded."),
-        ("h2", "Batteries"),
-        ("p", "A battery stores extra daytime power for use at night or during an outage. It adds cost, and is "
-              "most useful where the grid is unreliable or where electricity is cheaper at night."),
-        ("h1", "Installation Steps"),
-        ("h2", "Mounting"),
-        ("p", "Fix the roof anchors into the rafters, seal each hole against water, then attach the rails. "
-              "Leave a gap of about ten centimeters under the panels so air can cool them."),
-        ("h2", "Wiring"),
-        ("p", "Connect the panels in series strings, run the cable to the inverter, and fit a DC isolator "
-              "switch. Always cover the panels or work in low light, because they produce voltage whenever "
-              "light falls on them."),
-        ("h2", "Inspection"),
-        ("p", "Have the local inspector approve the work before it is connected to the grid. Keep the permit "
-              "papers and the equipment datasheets for your records."),
-        ("h1", "Maintenance and Troubleshooting"),
-        ("h2", "Cleaning"),
-        ("p", "Rain keeps most panels clean enough. In dusty areas, rinse them with water once or twice a year "
-              "in the early morning. Do not use abrasive pads or a pressure washer."),
-        ("h2", "Common faults"),
-        ("p", "If output falls suddenly, check the inverter display for an error code first. A drop on one "
-              "string often means a loose connector or a shaded panel. If the inverter shows a ground fault, "
-              "turn the system off and call a qualified electrician."),
+        ("h1", "Pay and Benefits"),
+        ("h2", "Pay"),
+        ("p", "You are paid monthly, on the last working day of the month. Pay is reviewed every April based on "
+              "your performance and market rates. Payslips are in the HR portal."),
+        ("h2", "Pension"),
+        ("p", "We match your pension contributions up to 6 percent of your salary. You are enrolled "
+              "automatically after your first month and can change your contribution at any time."),
+        ("h2", "Health and wellbeing"),
+        ("p", "Private health insurance covers you from your first day, and you can add your partner and "
+              "children at a reduced rate. The employee assistance line offers free, confidential counselling "
+              "24 hours a day."),
+        ("h2", "Gear allowance and discount"),
+        ("p", "You get 40 percent off Fernhill products, for yourself and up to two friends or family members. "
+              "Each year you also get a 500 dollar gear allowance to spend on Fernhill products, because we "
+              "think people who make outdoor gear should use it."),
+        ("h1", "Expenses and Travel"),
+        ("h2", "Before you spend"),
+        ("p", "Get your manager's approval before you book travel or spend more than 250 dollars. Use the "
+              "company card where you have one; otherwise pay yourself and claim the money back."),
+        ("h2", "Travel"),
+        ("p", "Book travel through the travel portal. Take the train for journeys under four hours. Flights "
+              "are economy class, or premium economy for flights over eight hours. Hotels should cost no more "
+              "than the city limit shown in the portal."),
+        ("h2", "Meals and daily allowance"),
+        ("table", ["Trip", "Daily meal allowance", "Notes"], [
+            ["Same country, overnight", "60 dollars", "Breakfast included in the hotel is not claimed"],
+            ["Abroad", "85 dollars", "Converted at the rate on the day of travel"],
+            ["Day trip over 10 hours", "25 dollars", "No overnight stay"],
+        ]),
+        ("h2", "Claiming expenses"),
+        ("p", "Submit claims in the expenses app within 30 days, with a photo of each receipt. Claims approved "
+              "by the 20th of the month are paid with that month's salary. Alcohol is not reimbursed, except "
+              "at events approved in advance by a director."),
+        ("h1", "Equipment and Security"),
+        ("h2", "Laptops and phones"),
+        ("p", "Office employees receive a laptop, and a phone if their role needs one. Do not install software "
+              "that is not in the company app store. Return all equipment on your last day."),
+        ("h2", "Passwords and sign-in"),
+        ("p", "Use the company password manager and turn on two-step sign-in for every work account. Never "
+              "share your password, even with IT: the IT team will never ask for it."),
+        ("h2", "Reporting a security incident"),
+        ("p", "If you lose a device, click a suspicious link or think customer data may have been exposed, "
+              "report it to the IT service desk within one hour, at any time of day. You will not be blamed "
+              "for reporting a mistake quickly."),
+        ("h1", "Conduct"),
+        ("h2", "Code of conduct"),
+        ("p", "Treat colleagues, customers and suppliers with respect. Harassment, discrimination and bullying "
+              "are not tolerated. Gifts from suppliers worth more than 50 dollars must be declared to your "
+              "manager."),
+        ("h2", "Raising a concern"),
+        ("p", "If you see something wrong, talk to your manager or the People team. You can also use the "
+              "confidential speak-up line, run by an independent company, anonymously if you prefer. Nobody "
+              "will be treated badly for raising a concern in good faith."),
     ],
 )
 
+# File name (shown as the document's title in the library) -> content. The doc id is the name as a slug
+# plus a content hash: "fernhill-annual-report-2026-<hash>".
 SAMPLES = {
-    "meridian-station-operations-handbook": STATION,
-    "nimbus-robotics-q3-2026-report": REPORT,
-    "home-solar-installation-guide": SOLAR,
+    "Fernhill Annual Report 2026": ANNUAL_REPORT,
+    "Fernhill Employee Handbook": HANDBOOK,
 }
 
 
@@ -227,8 +311,8 @@ def build_docx(path: Path, title: str, items: list) -> None:
                 for cell, text in zip(table.add_row().cells, row):
                     cell.text = text
         elif kind == "chart":
-            values, caption = args
-            doc.add_picture(io.BytesIO(bar_chart_png(values)), width=Inches(4.5))
+            chart, caption = args
+            doc.add_picture(io.BytesIO(grouped_bar_chart_png(**chart)), width=Inches(6))
             doc.add_paragraph(caption)
     path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(path)

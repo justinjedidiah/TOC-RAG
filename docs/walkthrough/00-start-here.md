@@ -62,7 +62,7 @@ TOC-RAG/
 │   ├─ runtime.py               shared settings + session manager                         (05)
 │   └─ toc_app.py               the app, its two pages, the 5-minute cleanup loop         (05)
 ├─ rxconfig.py, assets/app.css  Reflex configuration, theme, stylesheet                   (05)
-├─ samples/source, samples/index   the 3 sample documents and their indexes               (06)
+├─ samples/source, samples/index   the 2 sample documents and their indexes               (06)
 ├─ scripts/build_samples.py     makes the sample documents and indexes them               (06)
 ├─ tests/                       62 unit tests, the fake model, the browser test           (06)
 ├─ data/                        runtime files (ignored by git): visitor sessions          

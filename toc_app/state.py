@@ -314,7 +314,7 @@ class State(rx.State):
 
     @rx.var
     def enabled_sample_names(self) -> list[str]:
-        """The samples turned on, by doc id without its content hash ("meridian-station-operations-handbook"),
+        """The samples turned on, by doc id without its content hash ("fernhill-employee-handbook"),
         so each sample question is offered only while its document is on."""
         return [doc.doc_id.rsplit("-", 1)[0] for doc in self.docs if doc.sample and doc.enabled]
 

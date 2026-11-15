@@ -1,5 +1,7 @@
 # 01. The data model and storage
 
+> The examples below use Meridian Station Operations Handbook, a former sample. The samples are now the Fernhill annual report and employee handbook; the code paths are the same.
+
 Files covered: `src/toc_rag/models.py`, `src/toc_rag/indexing/blocks.py`, `src/toc_rag/storage.py`.
 
 Start here. Every other part of the project either **builds** these shapes (indexing), **reads** them (the agent, the UI) or **saves** them (storage). If you understand these three files, the rest is just "who fills in which field, and when".

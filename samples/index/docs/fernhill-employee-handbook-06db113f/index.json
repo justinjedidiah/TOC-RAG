@@ -1,0 +1,329 @@
+{
+  "doc_id": "fernhill-employee-handbook-06db113f",
+  "title": "Fernhill Employee Handbook",
+  "source_path": "Fernhill Employee Handbook.docx",
+  "kind": "docx",
+  "summary": "This handbook outlines Fernhill’s working arrangements and employee policies across offices, stores, and distribution centres, noting that contracts and local law take precedence. It covers working hours and location, time off, pay and benefits, expenses and travel, equipment and security, and conduct—including approval processes, eligibility rules, reporting deadlines, and ways to raise concerns. Tables summarize additional leave types and travel meal allowances; the handbook was last updated in January 2026.",
+  "source_toc": [
+    {
+      "title": "Working Hours and Location",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Core hours",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Hybrid work",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Working from abroad",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Time Off",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Annual leave",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Sick leave",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Parental leave",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Other leave",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Pay and Benefits",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Pay",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Pension",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Health and wellbeing",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Gear allowance and discount",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Expenses and Travel",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Before you spend",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Travel",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Meals and daily allowance",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Claiming expenses",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Equipment and Security",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Laptops and phones",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Passwords and sign-in",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Reporting a security incident",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Conduct",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Code of conduct",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Raising a concern",
+      "level": 2,
+      "page": null
+    }
+  ],
+  "root": {
+    "id": "root",
+    "title": "Fernhill Employee Handbook",
+    "level": 0,
+    "origin": "original",
+    "summary": "This handbook outlines Fernhill’s working arrangements and employee policies across offices, stores, and distribution centres, noting that contracts and local law take precedence. It covers working hours and location, time off, pay and benefits, expenses and travel, equipment and security, and conduct—including approval processes, eligibility rules, reporting deadlines, and ways to raise concerns. Tables summarize additional leave types and travel meal allowances; the handbook was last updated in January 2026.",
+    "summary_source": "llm",
+    "text": "Fernhill Employee Handbook\n\nThis handbook explains how we work at Fernhill Outdoor Co., a fictional company, and what you can expect from us. It applies to all employees in offices, distribution centres and stores, unless a section says otherwise. Your contract and local law take priority if they differ. Last updated January 2026.",
+    "location": {
+      "kind": "docx",
+      "heading_path": [],
+      "pdf_page_start": null,
+      "pdf_page_end": null,
+      "printed_page_start": null,
+      "printed_page_end": null,
+      "covers": []
+    },
+    "children": [
+      {
+        "id": "1",
+        "title": "Working Hours and Location",
+        "level": 1,
+        "origin": "original",
+        "summary": "Office teams work flexible hours, with availability expected from 10:00 to 15:00 local time; full-time hours are 37.5 per week, while store and distribution centre shifts follow rotas published at least two weeks ahead. Office roles require at least three office days weekly, including the team’s anchor day, though managers may approve a temporary alternative pattern. Employees may work abroad for up to 20 working days per year with advance approval from their manager and the People team, subject to tax, visa, and security checks.",
+        "summary_source": "llm",
+        "text": "Core hours\nOffice teams work flexible hours, but everyone is available for meetings between 10:00 and 15:00 local time. A full-time week is 37.5 hours. Store and distribution centre teams work to a rota published at least two weeks in advance.\n\nHybrid work\nOffice roles are hybrid: you work from the office at least three days a week, including your team's anchor day, and from home on the other days. Your manager can agree a different pattern for a fixed period, for example after parental leave.\n\nWorking from abroad\nYou can work from another country for up to 20 working days a year, for example to extend a visit to family. Ask your manager and the People team at least four weeks before you go, so we can check tax and visa rules. Some countries are not allowed for security reasons.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Working Hours and Location"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Core hours",
+            "Hybrid work",
+            "Working from abroad"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "2",
+        "title": "Time Off",
+        "level": 1,
+        "origin": "original",
+        "summary": "Explains annual leave entitlement, carry-over limits and booking notice; sick-leave reporting, certification and pay; and parental leave eligibility, timing and return-to-work arrangements. A table lists paid bereavement, volunteering, moving-home and jury-duty leave, with eligibility notes where applicable.",
+        "summary_source": "llm",
+        "text": "Annual leave\nFull-time employees get 25 days of paid annual leave a year plus public holidays, rising to 28 days after five years. Leave runs from January to December. You can carry up to 5 unused days into the next year; they must be used by the end of March. Book leave in the HR portal at least two weeks ahead for anything longer than three days.\n\nSick leave\nTell your manager before your shift or start time if you are ill. You can self-certify for up to 3 days; after that we need a note from a doctor. You get full pay for up to 10 sick days a year, and half pay for a further 20 days.\n\nParental leave\nEvery parent, whatever their gender and however they became a parent, gets 16 weeks of parental leave at full pay, to be taken within the first year after the birth or adoption. Birth parents can take a further 10 weeks at statutory pay. Tell the People team at least 15 weeks before the due date or placement. When you return, you can work 80 percent of your hours for full pay for the first 4 weeks.\n\nOther leave\n| Type | Paid days | Notes |\n| --- | --- | --- |\n| Bereavement | Up to 10 | For a partner, child, parent or sibling; 3 days for other relatives |\n| Volunteering | 2 per year | For registered charities and community projects |\n| Moving home | 1 per year |  |\n| Jury duty | As needed | Full pay; tell your manager when you are summoned |",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Time Off"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Annual leave",
+            "Sick leave",
+            "Parental leave",
+            "Other leave"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "3",
+        "title": "Pay and Benefits",
+        "level": 1,
+        "origin": "original",
+        "summary": "Explains monthly pay timing, annual April reviews, and where to find payslips. Covers pension matching of up to 6% and automatic enrollment after the first month, health insurance and confidential counselling, plus a 40% product discount and a $500 annual gear allowance.",
+        "summary_source": "llm",
+        "text": "Pay\nYou are paid monthly, on the last working day of the month. Pay is reviewed every April based on your performance and market rates. Payslips are in the HR portal.\n\nPension\nWe match your pension contributions up to 6 percent of your salary. You are enrolled automatically after your first month and can change your contribution at any time.\n\nHealth and wellbeing\nPrivate health insurance covers you from your first day, and you can add your partner and children at a reduced rate. The employee assistance line offers free, confidential counselling 24 hours a day.\n\nGear allowance and discount\nYou get 40 percent off Fernhill products, for yourself and up to two friends or family members. Each year you also get a 500 dollar gear allowance to spend on Fernhill products, because we think people who make outdoor gear should use it.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Pay and Benefits"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Pay",
+            "Pension",
+            "Health and wellbeing",
+            "Gear allowance and discount"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "4",
+        "title": "Expenses and Travel",
+        "level": 1,
+        "origin": "original",
+        "summary": "Explains when manager approval is required, how to book travel, and the rules for transport, flights, hotels, and company-card use. A table lists daily meal allowances for overnight trips in the same country, trips abroad, and day trips over 10 hours. It also covers the 30-day claim deadline, receipt requirements, payment timing, and restrictions on reimbursing alcohol.",
+        "summary_source": "llm",
+        "text": "Before you spend\nGet your manager's approval before you book travel or spend more than 250 dollars. Use the company card where you have one; otherwise pay yourself and claim the money back.\n\nTravel\nBook travel through the travel portal. Take the train for journeys under four hours. Flights are economy class, or premium economy for flights over eight hours. Hotels should cost no more than the city limit shown in the portal.\n\nMeals and daily allowance\n| Trip | Daily meal allowance | Notes |\n| --- | --- | --- |\n| Same country, overnight | 60 dollars | Breakfast included in the hotel is not claimed |\n| Abroad | 85 dollars | Converted at the rate on the day of travel |\n| Day trip over 10 hours | 25 dollars | No overnight stay |\n\nClaiming expenses\nSubmit claims in the expenses app within 30 days, with a photo of each receipt. Claims approved by the 20th of the month are paid with that month's salary. Alcohol is not reimbursed, except at events approved in advance by a director.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Expenses and Travel"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Before you spend",
+            "Travel",
+            "Meals and daily allowance",
+            "Claiming expenses"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "5",
+        "title": "Equipment and Security",
+        "level": 1,
+        "origin": "original",
+        "summary": "Covers employee laptops and role-dependent phones, approved software, and returning equipment on the last day. Explains password-manager and two-step sign-in requirements, and how to report a lost device, suspicious link, or possible customer-data exposure to the IT service desk within one hour.",
+        "summary_source": "llm",
+        "text": "Laptops and phones\nOffice employees receive a laptop, and a phone if their role needs one. Do not install software that is not in the company app store. Return all equipment on your last day.\n\nPasswords and sign-in\nUse the company password manager and turn on two-step sign-in for every work account. Never share your password, even with IT: the IT team will never ask for it.\n\nReporting a security incident\nIf you lose a device, click a suspicious link or think customer data may have been exposed, report it to the IT service desk within one hour, at any time of day. You will not be blamed for reporting a mistake quickly.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Equipment and Security"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Laptops and phones",
+            "Passwords and sign-in",
+            "Reporting a security incident"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "6",
+        "title": "Conduct",
+        "level": 1,
+        "origin": "original",
+        "summary": "Sets expectations to treat colleagues, customers, and suppliers respectfully; harassment, discrimination, and bullying are not tolerated, and supplier gifts worth over $50 must be declared to a manager. Explains how to raise concerns with a manager or the People team, or anonymously through the confidential independent speak-up line, and states that good-faith reporting will not lead to mistreatment.",
+        "summary_source": "llm",
+        "text": "Code of conduct\nTreat colleagues, customers and suppliers with respect. Harassment, discrimination and bullying are not tolerated. Gifts from suppliers worth more than 50 dollars must be declared to your manager.\n\nRaising a concern\nIf you see something wrong, talk to your manager or the People team. You can also use the confidential speak-up line, run by an independent company, anonymously if you prefer. Nobody will be treated badly for raising a concern in good faith.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Conduct"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Code of conduct",
+            "Raising a concern"
+          ]
+        },
+        "children": []
+      }
+    ]
+  },
+  "images": [],
+  "options": {
+    "split_large": true,
+    "max_leaf_tokens": 2000,
+    "small_sections": "merge",
+    "min_leaf_tokens": 150,
+    "summaries": "llm",
+    "summary_length": "detailed",
+    "preview_sentences": 3,
+    "describe_images": true
+  },
+  "indexed_with": {
+    "provider": "openai",
+    "index_model": "gpt-6-luna",
+    "vision_model": "gpt-6-luna"
+  },
+  "page_labels": null,
+  "structure_source": "headings"
+}

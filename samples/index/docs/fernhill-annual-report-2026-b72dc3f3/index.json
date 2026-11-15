@@ -1,0 +1,383 @@
+{
+  "doc_id": "fernhill-annual-report-2026-b72dc3f3",
+  "title": "Fernhill Annual Report 2026",
+  "source_path": "Fernhill Annual Report 2026.docx",
+  "kind": "docx",
+  "summary": "This report covers Fernhill Outdoor Co.’s financial and operating performance for 2026, including financial results, segment performance, sustainability progress, key risks, and plans for 2027. It can answer questions about year-over-year revenue, margins, income and cash flow; sales by product segment and channel; recycled materials, emissions, and repair and resale; supply-chain, weather, and currency risks; and the company’s 2027 outlook, investments, and expansion plans. The report includes comparison and segment-revenue tables, plus a chart of quarterly revenue by segment.",
+  "source_toc": [
+    {
+      "title": "Letter from the Chief Executive",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "2026 at a Glance",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Financial Review",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Revenue by segment",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Revenue by channel",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Margins and costs",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Cash flow and balance sheet",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Segment Performance",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Apparel",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Footwear",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Equipment",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Sustainability",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Materials",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Emissions",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Repair and resale",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Risks",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Supply chain",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Weather and seasonality",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Currency",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Outlook for 2027",
+      "level": 1,
+      "page": null
+    }
+  ],
+  "root": {
+    "id": "root",
+    "title": "Fernhill Annual Report 2026",
+    "level": 0,
+    "origin": "original",
+    "summary": "This report covers Fernhill Outdoor Co.’s financial and operating performance for 2026, including financial results, segment performance, sustainability progress, key risks, and plans for 2027. It can answer questions about year-over-year revenue, margins, income and cash flow; sales by product segment and channel; recycled materials, emissions, and repair and resale; supply-chain, weather, and currency risks; and the company’s 2027 outlook, investments, and expansion plans. The report includes comparison and segment-revenue tables, plus a chart of quarterly revenue by segment.",
+    "summary_source": "llm",
+    "text": "Fernhill Outdoor Annual Report 2026\n\nFernhill Outdoor Co. is a fictional company that designs and sells clothing, footwear and camping equipment for hiking and outdoor sports. This report covers the financial year from 1 January to 31 December 2026. All amounts are in US dollars.",
+    "location": {
+      "kind": "docx",
+      "heading_path": [],
+      "pdf_page_start": null,
+      "pdf_page_end": null,
+      "printed_page_start": null,
+      "printed_page_end": null,
+      "covers": []
+    },
+    "children": [
+      {
+        "id": "1",
+        "title": "Letter from the Chief Executive",
+        "level": 1,
+        "origin": "original",
+        "summary": "Maya Lindqvist reports Fernhill’s strongest year yet: revenue exceeded $490 million, up 10.6%, and operating income rose by nearly a third, with equipment sales boosted by a lightweight tent range that sold out twice. Recycled materials now make up 58% of fabric purchases; next year, Fernhill plans to open six stores and invest in a second distribution centre. The letter also thanks the company’s 2,140 colleagues and its customers.",
+        "summary_source": "llm",
+        "text": "2026 was our strongest year yet. Revenue passed 490 million dollars for the first time, growing 10.6 percent, and operating income rose by almost a third as more customers bought directly from us. Equipment was the standout: our new lightweight tent range sold out twice in the summer. We also kept our promise to use more recycled materials, which now make up 58 percent of the fabric we buy. Next year we will open six new stores and invest in a second distribution centre so that orders reach customers faster. Thank you to our 2,140 colleagues and to every customer who chose Fernhill. Maya Lindqvist, Chief Executive.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Letter from the Chief Executive"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": []
+      },
+      {
+        "id": "2",
+        "title": "2026 at a Glance",
+        "level": 1,
+        "origin": "original",
+        "summary": "A table compares key 2026 financial and operating measures with 2025, including revenue, margins, income, free cash flow, store count, and employee count. It answers questions about year-over-year performance: revenue rose 10.6%, gross margin increased 1.7 points, and operating income, net income, and free cash flow each grew by about 30%. The table also shows six additional stores and 180 more employees at year end.",
+        "summary_source": "llm",
+        "text": "| Measure | 2026 | 2025 | Change |\n| --- | --- | --- | --- |\n| Revenue (millions) | 493.5 | 446.2 | +10.6% |\n| Gross margin | 47.8% | 46.1% | +1.7 pts |\n| Operating income (millions) | 58.3 | 44.9 | +29.8% |\n| Net income (millions) | 41.0 | 31.6 | +29.7% |\n| Free cash flow (millions) | 37.2 | 28.4 | +31.0% |\n| Stores at year end | 64 | 58 | +6 |\n| Employees at year end | 2,140 | 1,960 | +180 |",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "2026 at a Glance"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": []
+      },
+      {
+        "id": "3",
+        "title": "Financial Review",
+        "level": 1,
+        "origin": "original",
+        "summary": "The section reviews Fernhill’s 2026 financial performance, including revenue growth by segment and quarterly trends, sales mix by online, store, and wholesale channels, and improving gross and operating margins. It also covers free cash flow, inventory, cash and borrowings, and the proposed dividend. A table compares annual segment revenue and growth, and a chart shows quarterly revenue by segment.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Financial Review"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "3.1",
+            "title": "Revenue by segment",
+            "level": 2,
+            "origin": "original",
+            "summary": "Fernhill’s 2026 revenue totaled $493.5 million, up 10.6% from 2025. Apparel was the largest segment at $237.0 million and led every quarter, peaking at $74.9 million in Q4; Equipment grew fastest at 15.0%, while Footwear grew 7.2% amid competition and discounting. The table compares annual revenue and growth by segment, and the chart shows quarterly revenue for all three segments.",
+            "summary_source": "llm",
+            "text": "Fernhill reports three segments. Apparel is the largest and peaks in the fourth quarter with winter jackets. Equipment grew fastest, by 15.0 percent, driven by the new tent range in the second and third quarters. Footwear grew more slowly as trail-running shoes faced strong competition and heavy discounting across the market.\n\n| Segment | 2026 (millions) | 2025 (millions) | Growth |\n| --- | --- | --- | --- |\n| Apparel | 237.0 | 214.0 | +10.7% |\n| Footwear | 143.5 | 133.9 | +7.2% |\n| Equipment | 113.0 | 98.3 | +15.0% |\n| Total | 493.5 | 446.2 | +10.6% |\n\n[image:img-1]\n\nFigure 1. Revenue by segment and quarter, 2026, in millions of dollars. Apparel: Q1 48.2, Q2 52.6, Q3 61.3, Q4 74.9. Footwear: Q1 31.5, Q2 34.0, Q3 36.8, Q4 41.2. Equipment: Q1 22.4, Q2 29.7, Q3 33.1, Q4 27.8.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Financial Review",
+                "Revenue by segment"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "3.2",
+            "title": "Revenue by channel · Margins and costs · Cash flow and balance sheet",
+            "level": 2,
+            "origin": "generated",
+            "summary": "Online sales through the company’s website and app rose to 41% of revenue, while stores accounted for 23% and wholesale 36%; the shift toward higher-margin direct sales supported profitability. Gross margin increased to 47.8% and operating margin to 11.8%, with operating expenses growing more slowly than revenue. The section also reports $37.2 million in free cash flow, lower year-end inventory, $64.8 million in cash with no borrowings, and a proposed $0.42-per-share dividend.",
+            "summary_source": "llm",
+            "text": "Revenue by channel\nOnline sales through our own website and app made up 41 percent of revenue, up from 37 percent. Our own stores made up 23 percent and wholesale to independent outdoor retailers 36 percent. Direct sales carry a higher margin, so the shift towards them lifted profitability.\n\nMargins and costs\nGross margin rose to 47.8 percent from 46.1 percent, helped by the shift to direct sales and lower ocean freight rates. Operating expenses grew 7.9 percent, slower than revenue, mainly from new store openings and marketing for the tent launch. Operating margin reached 11.8 percent, up from 10.1 percent.\n\nCash flow and balance sheet\nFree cash flow was 37.2 million dollars after capital spending of 18.6 million, mostly on stores and warehouse automation. Inventory at year end was 96.4 million dollars, down 4 percent despite higher sales. Cash at year end was 64.8 million dollars, with no borrowings. The board proposes a dividend of 0.42 dollars per share.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Financial Review"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": [
+                "Revenue by channel",
+                "Margins and costs",
+                "Cash flow and balance sheet"
+              ]
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "title": "Segment Performance",
+        "level": 1,
+        "origin": "original",
+        "summary": "Reports revenue and product trends across apparel, footwear, and equipment. Apparel grew 10.7% to $237.0 million, helped by the merino base-layer launch, while returns declined; footwear grew 7.2% to $143.5 million, with hiking boots strong and trail-running models reduced. Equipment grew 15.0% to $113.0 million, including 41,000 Aspen ultralight tents sold, with fourth-quarter sales seasonally lower than the third quarter.",
+        "summary_source": "llm",
+        "text": "Apparel\nApparel revenue grew 10.7 percent to 237.0 million dollars. The Ridgeline insulated jacket was again our best-selling product, and the new merino base-layer range added 9 million dollars in its first year. Returns fell to 8.1 percent of sales after we added fit guides to the website.\n\nFootwear\nFootwear revenue grew 7.2 percent to 143.5 million dollars. Hiking boots grew strongly, but trail-running shoes were flat. We reduced the number of trail-running models from 14 to 9 to focus on the best sellers.\n\nEquipment\nEquipment revenue grew 15.0 percent to 113.0 million dollars. The Aspen ultralight tent range, launched in April, sold 41,000 units. Fourth-quarter equipment sales were lower than the third quarter, as is usual after the camping season.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Segment Performance"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Apparel",
+            "Footwear",
+            "Equipment"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "5",
+        "title": "Sustainability",
+        "level": 1,
+        "origin": "original",
+        "summary": "Reports progress on sustainable materials, emissions reductions, and repair and resale programs. It answers questions about the share of recycled and responsibly sourced fabric, the Responsible Down Standard, emissions changes and renewable electricity use, and the number of items repaired or resold in 2026.",
+        "summary_source": "llm",
+        "text": "Materials\nRecycled and responsibly sourced materials made up 58 percent of the fabric we bought, up from 49 percent. Our goal is 75 percent by 2028. All down used in our jackets is certified to the Responsible Down Standard.\n\nEmissions\nEmissions from our own operations and the electricity we buy fell 18 percent, as 41 of our 64 stores now run on renewable electricity. Emissions from our suppliers' factories and from shipping, which make up most of our footprint, fell 6 percent.\n\nRepair and resale\nOur repair service fixed 23,500 items in 2026, and the Fernhill Second Life resale programme sold 11,200 used items. Both services are now offered in every store.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Sustainability"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Materials",
+            "Emissions",
+            "Repair and resale"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "6",
+        "title": "Risks",
+        "level": 1,
+        "origin": "original",
+        "summary": "Covers supply-chain, weather and seasonality, and currency risks. About 70% of products come from suppliers in Vietnam, Bangladesh, and Portugal, though key products now have at least two suppliers; warm winters can reduce demand for high-margin jackets, and nearly one-third of revenue comes in Q4. Most costs are in US dollars, while 38% of revenue is in euros and pounds; the company hedges about 70% of expected currency needs for the next 12 months.",
+        "summary_source": "llm",
+        "text": "Supply chain\nAbout 70 percent of our products are made by suppliers in Vietnam, Bangladesh and Portugal. A disruption at a major supplier or port could delay deliveries. We now buy key products from at least two suppliers.\n\nWeather and seasonality\nA warm winter lowers demand for jackets, our most profitable products. Almost a third of annual revenue is earned in the fourth quarter.\n\nCurrency\nMost costs are in US dollars, while 38 percent of revenue is earned in euros and pounds. We hedge about 70 percent of expected currency needs for the next twelve months.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Risks"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": [
+            "Supply chain",
+            "Weather and seasonality",
+            "Currency"
+          ]
+        },
+        "children": []
+      },
+      {
+        "id": "7",
+        "title": "Outlook for 2027",
+        "level": 1,
+        "origin": "original",
+        "summary": "This section gives the company’s 2027 outlook, including expected revenue of $530–550 million, an operating margin of about 12%, and capital spending of about $30 million. It also outlines planned expansion and initiatives: six new stores, construction of a second distribution centre in the Netherlands, and a footwear repair service. It can answer questions about the company’s 2027 financial expectations, investments, and operational plans.",
+        "summary_source": "llm",
+        "text": "We expect revenue of 530 to 550 million dollars and an operating margin of about 12 percent. We plan to open six new stores, start building a second distribution centre in the Netherlands, and launch a footwear repair service. Capital spending is expected to be about 30 million dollars.",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Outlook for 2027"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": []
+      }
+    ]
+  },
+  "images": [
+    {
+      "id": "img-1",
+      "file": "images/img-1.png",
+      "mime": "image/png",
+      "node_id": "3.1",
+      "location": {
+        "kind": "docx",
+        "heading_path": [
+          "Financial Review",
+          "Revenue by segment"
+        ],
+        "pdf_page_start": null,
+        "pdf_page_end": null,
+        "printed_page_start": null,
+        "printed_page_end": null,
+        "covers": []
+      },
+      "description": "Bar chart titled “Revenue by segment and quarter, 2026,” showing quarterly revenue in USD millions for Apparel, Footwear, and Equipment. Apparel leads every quarter, rising from 48.2 in Q1 to 74.9 in Q4; Footwear grows from 31.5 to 41.2, while Equipment peaks at 33.1 in Q3 before falling to 27.8 in Q4.",
+      "tags": [
+        "2026 revenue chart",
+        "quarterly revenue",
+        "Apparel",
+        "Footwear",
+        "Equipment",
+        "USD millions",
+        "Q1 Q2 Q3 Q4"
+      ]
+    }
+  ],
+  "options": {
+    "split_large": true,
+    "max_leaf_tokens": 2000,
+    "small_sections": "merge",
+    "min_leaf_tokens": 150,
+    "summaries": "llm",
+    "summary_length": "detailed",
+    "preview_sentences": 3,
+    "describe_images": true
+  },
+  "indexed_with": {
+    "provider": "openai",
+    "index_model": "gpt-6-luna",
+    "vision_model": "gpt-6-luna"
+  },
+  "page_labels": null,
+  "structure_source": "headings"
+}

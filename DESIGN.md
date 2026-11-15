@@ -14,7 +14,7 @@ A public portfolio web app. Visitors bring their own API key (BYOK) for Anthropi
 ## Data location and safety
 - Libraries live on the server, in a per-session folder of JSON files (no database). Nothing is saved in the browser. The folder is deleted when the session ends (best effort; check whether Reflex exposes a disconnect hook) and a sweep deletes any session older than 2 hours (this is the guaranteed path).
 - Uploads: strictly `.pdf` and `.docx`. Check content, not just the name: a PDF must start with `%PDF-`; a docx must be a zip containing `word/document.xml`, with a cap on uncompressed size as a zip-bomb guard. `.zip`, `.doc`, Markdown and everything else are rejected in the UI (Markdown stays for the dev CLI and tests).
-- Sample library: 3 pre-indexed documents in `samples/index`, read-only, shared by all sessions, never touched by the sweep. Sources are in `samples/source`, built by `scripts/build_samples.py`.
+- Sample library: 2 pre-indexed documents in `samples/index` (a fictional company's annual report, with a chart, and its employee handbook), read-only, shared by all sessions, never touched by the sweep. Sources are in `samples/source`, built by `scripts/build_samples.py`.
 - The visitor's key lives only in session memory; never written to disk, logs or saved indexes. Show a cost estimate before indexing.
 - Public-app limits: per-session isolation, file size and page caps, upload type checks, zip-bomb guard, rate limiting, sanitized rendering of document text.
 

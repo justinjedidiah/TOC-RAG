@@ -1,5 +1,7 @@
 # 03. The agent: how a question gets answered
 
+> The examples below use Meridian Station Operations Handbook, a former sample. The samples are now the Fernhill annual report and employee handbook; the code paths are the same.
+
 Files covered: `src/toc_rag/agent/navigator.py` and `src/toc_rag/agent/graph.py` (plus the tiny `agent/__init__.py`, which only re-exports names).
 
 This is the heart of the project: the part that replaces vector search. The idea in one sentence: **give Claude a few tools to walk the document tree, and let it decide where to look.**

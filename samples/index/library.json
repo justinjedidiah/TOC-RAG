@@ -1,20 +1,14 @@
 [
   {
-    "doc_id": "home-solar-installation-guide-1368a8b6",
-    "title": "home-solar-installation-guide",
+    "doc_id": "fernhill-annual-report-2026-b72dc3f3",
+    "title": "Fernhill Annual Report 2026",
     "kind": "docx",
-    "summary": "A guide to planning, installing, and maintaining a home solar panel system. It covers pre-purchase checks (roof suitability such as orientation, shade, and at least 20 square meters of usable area, plus building, electrical, and utility permits), equipment comparisons (monocrystalline, polycrystalline, and thin-film panels in a table of efficiency, price, and lifespan; string inverters vs. microinverters; when batteries are worth it), installation steps (mounting, wiring, and inspection), and maintenance (cleaning methods and troubleshooting power loss or ground faults). Use it for questions on roof requirements, panel types and efficiency, inverter and battery choices, installation or permitting steps, cleaning, and fault response."
+    "summary": "This report covers Fernhill Outdoor Co.’s financial and operating performance for 2026, including financial results, segment performance, sustainability progress, key risks, and plans for 2027. It can answer questions about year-over-year revenue, margins, income and cash flow; sales by product segment and channel; recycled materials, emissions, and repair and resale; supply-chain, weather, and currency risks; and the company’s 2027 outlook, investments, and expansion plans. The report includes comparison and segment-revenue tables, plus a chart of quarterly revenue by segment."
   },
   {
-    "doc_id": "meridian-station-operations-handbook-e3546aaf",
-    "title": "meridian-station-operations-handbook",
+    "doc_id": "fernhill-employee-handbook-06db113f",
+    "title": "Fernhill Employee Handbook",
     "kind": "docx",
-    "summary": "Operations handbook for Meridian Station, a fictional low-orbit research outpost for materials science, human health, and cargo craft staging. Covers the four-module layout with a table of module purposes and crew capacities, the four-person crew roster with roles and shifts (day 06:00–14:00, night 14:00–22:00, shared quiet hours 22:00–06:00), and life-support systems including oxygen reserves by module (Figure 1 bar chart: Habitat 1 92%, Habitat 2 81%, Laboratory 67%, Cargo 54%), water recovery (~93%), and cabin targets (21 °C, 101 kPa). Also gives required responses for fire, hull breach, and evacuation, including who decides evacuation, where the repair kit is kept, and escape capsule capacity (four seats, three days of supplies)."
-  },
-  {
-    "doc_id": "nimbus-robotics-q3-2026-report-4a35d330",
-    "title": "nimbus-robotics-q3-2026-report",
-    "kind": "docx",
-    "summary": "Top-level report for fictional warehouse robot and delivery drone maker Nimbus Robotics, covering Q3 2026. It spans four subsections: the executive summary (revenue up 12% year over year to $41.4M and a return to operating profit), financial results (regional revenue, operating cost breakdown, $4.0M operating income vs. a $1.2M loss a year earlier, $52.6M cash with no debt), product updates (WR-4 warehouse robot shipping since July with 310 quarterly orders, 60 kg payload, ten-hour runtime; D-2 drone passing European regulatory tests with commercial deliveries planned for Q1 next year), and risks and outlook (battery cell supply from two suppliers with a third being qualified, country-specific drone rules, and Q4 revenue guidance of $44-47M). Use it for questions about Q3 2026 financials, cost and regional breakdowns, product milestones, or risks and Q4 guidance. It contains two tables (regional revenue and operating costs) and no images."
+    "summary": "This handbook outlines Fernhill’s working arrangements and employee policies across offices, stores, and distribution centres, noting that contracts and local law take precedence. It covers working hours and location, time off, pay and benefits, expenses and travel, equipment and security, and conduct—including approval processes, eligibility rules, reporting deadlines, and ways to raise concerns. Tables summarize additional leave types and travel meal allowances; the handbook was last updated in January 2026."
   }
 ]
