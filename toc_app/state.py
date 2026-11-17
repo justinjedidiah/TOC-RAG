@@ -296,6 +296,7 @@ class State(rx.State):
     browse_rows: list[OutlineRowView] = []
 
     listing_depth: str = str(settings.agent_listing_depth)  # tree levels one agent listing shows
+    agent_search: bool = settings.agent_search  # the agent's keyword search tool
 
     # ---- derived ----
 
@@ -1021,6 +1022,10 @@ class State(rx.State):
         if value in ("1", "2", "3"):
             self.listing_depth = value
 
+    @rx.event
+    def set_agent_search(self, value: bool):
+        self.agent_search = bool(value)
+
     # ---- chat ----
 
     @rx.event
@@ -1041,7 +1046,9 @@ class State(rx.State):
                 return
             llm, token = self._llm(), self._token()
             turned_off = set(self.disabled_docs)
-            chat_settings = dataclasses.replace(settings, agent_listing_depth=int(self.listing_depth))
+            chat_settings = dataclasses.replace(
+                settings, agent_listing_depth=int(self.listing_depth), agent_search=self.agent_search
+            )
             history = [
                 ChatTurn(role=m.role, content=m.text)
                 for m in self.messages

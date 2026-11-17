@@ -37,7 +37,7 @@ How to work:
 Tools take the ids shown in square brackets in listings. Indented lines in a listing are deeper subsections (titles \
 only): you can read_node or list_children any id you have seen, without stepping through each level.
 - A summary marked (preview) is just the first sentences of the section, not a summary of all of it.
-- Use read_node to read a section's text. Sections with subsections usually have little text of their own.
+{search}- Use read_node to read a section's text. Sections with subsections usually have little text of their own.
 - After reading, decide whether the text answers the question. If it does not, use go_up and try another branch, \
 or open another document. Avoid sections marked visited unless you have a reason to return.
 - When you can answer, reply in plain text without calling a tool. After each claim, put its source in square \
@@ -47,6 +47,9 @@ read with read_node. If the user asked for a picture, add the matching image id 
 - Earlier messages are conversation context. For a new factual question, navigate and read; do not answer from \
 memory of earlier turns.
 Answer only from what you read. You have at most {max_steps} steps."""
+
+SEARCH_HINT = """- search finds sections containing exact words, across all documents. Use it when the outline does not clearly point to the answer, or for names, numbers and specific terms. It shows excerpts: read_node a hit before citing it. If a search finds nothing, try other words once, then browse the outline.
+"""
 
 START_SINGLE = 'The document is already open. Start with list_children("root").'
 START_MANY = (
@@ -97,8 +100,8 @@ class AgentState(TypedDict):
     result: AnswerResult | None
 
 
-def make_tools(navigator: LibraryNavigator) -> list[BaseTool]:
-    """The navigation tools the model can call. Each one runs on the navigator."""
+def make_tools(navigator: LibraryNavigator, search: bool = False) -> list[BaseTool]:
+    """The navigation tools the model can call. Each one runs on the navigator. `search` adds the keyword search."""
 
     @tool
     def list_documents() -> str:
@@ -125,17 +128,27 @@ def make_tools(navigator: LibraryNavigator) -> list[BaseTool]:
         """List the siblings of a node (the subsections of its parent), to try another branch."""
         return navigator.go_up(node_id)
 
-    return [list_documents, open_document, list_children, read_node, go_up]
+    @tool("search")
+    def search_tool(query: str) -> str:
+        """Find sections in any document that contain these exact words (any case), best matches first.
+
+        Use a few distinctive words, like "parental leave" or "ASEAN". Returns ids with excerpts.
+        """
+        return navigator.search(query)
+
+    tools = [list_documents, open_document, list_children, read_node, go_up]
+    return [*tools, search_tool] if search else tools
 
 
-def build_graph(navigator: LibraryNavigator, llm: BaseChatModel, max_steps: int):
-    tools = make_tools(navigator)
+def build_graph(navigator: LibraryNavigator, llm: BaseChatModel, max_steps: int, search: bool = False):
+    tools = make_tools(navigator, search)
     by_name = {t.name: t for t in tools}
     model = llm.bind_tools(tools)
     system = SystemMessage(
         SYSTEM_PROMPT.format(
             documents=navigator.documents_listing(),
             start=START_SINGLE if navigator.current else START_MANY,
+            search=SEARCH_HINT if search else "",
             max_steps=max_steps,
         )
     )
@@ -217,12 +230,13 @@ def stream_agent(
     question: str,
     max_steps: int,
     history: list[ChatTurn] | None = None,
+    search: bool = False,
 ) -> Iterator[Step | Draft | AnswerResult]:
     """Yield each navigation Step as it happens, Drafts of the reply as it is written, then the final AnswerResult.
 
     A Draft that is followed by a Step was only the model thinking aloud before a tool call; callers should discard it.
     """
-    graph = build_graph(navigator, llm, max_steps)
+    graph = build_graph(navigator, llm, max_steps, search)
     messages = [*_history_messages(history or []), HumanMessage(question)]
     updates = graph.stream(
         {"messages": messages, "steps": 0, "result": None},
@@ -257,8 +271,9 @@ def run_agent(
     question: str,
     max_steps: int,
     history: list[ChatTurn] | None = None,
+    search: bool = False,
 ) -> AnswerResult:
-    *_, result = stream_agent(navigator, llm, question, max_steps, history)
+    *_, result = stream_agent(navigator, llm, question, max_steps, history, search)
     return result
 
 
@@ -278,7 +293,7 @@ def stream_ask(
     config = llm_config or config_from_settings(settings, api_key)
     llm = chat_model(config.agent_model, config.api_key, provider=config.provider)
     navigator = LibraryNavigator(indexes, listing_depth=settings.agent_listing_depth)
-    return stream_agent(navigator, llm, question, settings.agent_max_steps, history)
+    return stream_agent(navigator, llm, question, settings.agent_max_steps, history, settings.agent_search)
 
 
 def ask(

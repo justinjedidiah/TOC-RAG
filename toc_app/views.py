@@ -519,6 +519,23 @@ def agent_settings_card() -> rx.Component:
                         "More levels means fewer steps to reach a section, but longer listings.",
                         **MUTED,
                     ),
+                    rx.hstack(
+                        rx.text("Keyword search", size="2"),
+                        rx.switch(
+                            checked=State.agent_search,
+                            on_change=State.set_agent_search,
+                            size="1",
+                            id="agent-search",
+                        ),
+                        align="center",
+                        justify="between",
+                        width="100%",
+                    ),
+                    rx.text(
+                        "Lets the agent also look for exact words across your documents, then read the sections "
+                        "it finds. Helps with names, numbers and terms the outline does not show. Still no vectors.",
+                        **MUTED,
+                    ),
                     spacing="2",
                     width="100%",
                 ),

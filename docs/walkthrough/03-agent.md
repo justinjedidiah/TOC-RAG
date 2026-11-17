@@ -137,7 +137,7 @@ def go_up(self, node_id):
 
 ```python
 class Step(BaseModel):
-    tool: Literal["list_documents", "open_document", "list_children", "read_node", "go_up"]
+    tool: Literal["list_documents", "open_document", "list_children", "read_node", "go_up", "search"]
     doc_id: str | None = None
     node_id: str | None = None
     label: str
@@ -178,6 +178,8 @@ def read_node(self, node_id):
 
 `open_document` sets `self.current`, adds a step `Opened "<title>"`, and returns the document's top-level listing immediately (so the model doesn't waste a step asking for it). `go_up` at the top returns a hint to use `list_documents`/`open_document` to switch documents.
 
+**Keyword search (optional).** `LibraryNavigator.search(query)` looks through every document, not just the open one, for sections whose title, text or image descriptions contain the query's words. Matching is exact whole words in any case (`` regexes, so "engine" does not match "engines"), and common words like "the" are ignored unless they sit inside a phrase. `Navigator.search` returns `SearchHit`s ranked by: the whole query as a phrase first, then sections holding all the words, then the most words, ties in document order. The library version merges them, shows the best 8 with qualified ids, location and an excerpt of about 220 characters around the first match (the match in `**bold**`), and adds a step `Searched for "<query>" (N sections found)`. A search marks nothing read or visited: to cite a hit the agent still has to `read_node` it, and the qualified id it saw opens that document on the way (`_target`). Still vectorless: no embeddings, just words.
+
 **Resolving citations**
 
 ```python
@@ -203,12 +205,13 @@ def make_tools(navigator):
         """Read the text of a node in the open document, plus descriptions of any images in it."""
         return navigator.read_node(node_id)
     ...
-    return [list_documents, open_document, list_children, read_node, go_up]
+    tools = [list_documents, open_document, list_children, read_node, go_up]
+    return [*tools, search_tool] if search else tools
 ```
 
 **What `@tool` does.** `@tool` (from LangChain) takes a Python function and turns it into a *tool* for the model: the **name** comes from the function name, the **description** from the docstring, and the **parameters and their types** from the type hints. `llm.bind_tools(tools)` sends all of that to Claude with every request. When Claude asks for a tool, the API just returns "call `read_node` with `{node_id: "2.1"}`"; our loop (`run_tools`, below) then calls the function, which forwards to the `LibraryNavigator` method of the same name.
 
-There are five tools, all for moving around the tree. They are defined inside `make_tools` so each one closes over the `navigator` of the current question. There is no tool for finishing: the model ends the run by replying in plain text.
+There are five tools, all for moving around the tree, plus `search` when the caller turns it on (`make_tools(navigator, search=True)`, from `Settings.agent_search`; off by default). With search on, the system prompt gets one more line (`SEARCH_HINT`) saying when to use it and that hits must be read before they are cited; with it off, the prompt does not mention search at all. They are defined inside `make_tools` so each one closes over the `navigator` of the current question. There is no tool for finishing: the model ends the run by replying in plain text.
 
 (Earlier versions had two more tools, `answer` and `not_found`, plus empty stub functions that raised `NotImplementedError` and were only used to describe the tools. Those are gone. `NotImplementedError` now appears once in the project, in `indexing/pipeline.py` for PDF files, where it honestly means "PDF reading is not written yet".)
 

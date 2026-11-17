@@ -1,7 +1,8 @@
 """Tree navigation, with a record of what the agent has visited."""
 
+import re
 from collections import defaultdict
-from typing import Literal
+from typing import Literal, NamedTuple
 
 from pydantic import BaseModel
 
@@ -10,12 +11,20 @@ from ..models import DocumentIndex, ImageRecord, Node
 AT_TOP = "Already at the top of the document."
 MAX_DEEPER_LINES = 60  # cap on title-only lines below the first level of a listing
 NO_DOCUMENT = "No document is open. Use open_document first (list_documents shows the ids)."
+MAX_SEARCH_HITS = 8
+SNIPPET_CHARS = 220
+_WORD = re.compile(r"\w+")
+# Words too common to find anything on their own. They still count inside a phrase match.
+_STOPWORDS = frozenset(
+    "a an and are as at be by for from has have how in is it its of on or that the this to was were what when "
+    "where which who why will with".split()
+)
 
 
 class Step(BaseModel):
     """One navigation action, in a form the UI can show as part of the path taken."""
 
-    tool: Literal["list_documents", "open_document", "list_children", "read_node", "go_up"]
+    tool: Literal["list_documents", "open_document", "list_children", "read_node", "go_up", "search"]
     doc_id: str | None = None
     node_id: str | None = None
     label: str
@@ -85,6 +94,46 @@ class Navigator:
         if parent_id is None:
             return AT_TOP
         return self.list_children(parent_id)
+
+    def search(self, query: str) -> list["SearchHit"]:
+        """Sections whose title, text or image descriptions contain the query's words (exact words, any case).
+
+        Ranked: the whole query as a phrase first, then sections holding all the words, then the most words.
+        Nothing is marked read: a hit is a pointer, and the agent still has to read the section to cite it.
+        """
+        words = [w for w in dict.fromkeys(_WORD.findall(query.lower())) if w not in _STOPWORDS]
+        if not words:
+            return []
+        phrase = re.compile(r"\b" + r"\W+".join(map(re.escape, _WORD.findall(query.lower()))) + r"\b", re.IGNORECASE)
+        patterns = [re.compile(rf"\b{re.escape(w)}\b", re.IGNORECASE) for w in words]
+        hits = []
+        for order, node in enumerate(self.index.root.walk()):
+            descriptions = " ".join(r.description for r in self.images_by_node.get(node.id, []))
+            haystack = f"{node.title}\n{node.text}\n{descriptions}"
+            found = [p for p in patterns if p.search(haystack)]
+            if not found:
+                continue
+            in_phrase = phrase.search(haystack)
+            first = in_phrase or min((p.search(haystack) for p in found), key=lambda m: m.start())
+            rank = (not in_phrase, -len(found), order)
+            hits.append(SearchHit(self.index.doc_id, node, _snippet(haystack, first.start(), first.end()), rank))
+        return sorted(hits, key=lambda hit: hit.rank)
+
+
+class SearchHit(NamedTuple):
+    doc_id: str
+    node: Node
+    snippet: str  # the text around the first match
+    rank: tuple  # sort key: lower is better
+
+
+def _snippet(text: str, start: int, end: int) -> str:
+    """About SNIPPET_CHARS of `text` around a match, on one line, with the match in **bold**."""
+    pad = max(0, (SNIPPET_CHARS - (end - start)) // 2)
+    left, right = max(0, start - pad), min(len(text), end + pad)
+    out = f"{text[left:start]}**{text[start:end]}**{text[end:right]}"
+    out = re.sub(r"\s+", " ", out).strip()
+    return f"{'...' if left else ''}{out}{'...' if right < len(text) else ''}"
 
 
 def _shape(node: Node) -> str:
@@ -165,6 +214,26 @@ class LibraryNavigator:
             return f"{AT_TOP} Use list_documents and open_document to switch documents."
         self._record("go_up", nav, node_id, "Went back up from")
         return result
+
+    def search(self, query: str) -> str:
+        """Find sections across the whole library that contain the query's exact words."""
+        query = " ".join(query.split())[:200]
+        hits = sorted((hit for nav in self.docs.values() for hit in nav.search(query)), key=lambda hit: hit.rank)
+        count = f"{len(hits)} section{'s' if len(hits) != 1 else ''}"
+        self.trace.append(Step(tool="search", label=f'Searched for "{query}" ({count} found)'))
+        if not hits:
+            return (
+                f'No section contains the words "{query}". Try other words (a synonym, a single key term), '
+                "or browse the outline."
+            )
+        lines = [f'Sections containing "{query}" (best first, {count}):']
+        for hit in hits[:MAX_SEARCH_HITS]:
+            title = self.indexes[hit.doc_id].title
+            lines.append(f"- [{hit.doc_id}:{hit.node.id}] {hit.node.title} ({title}, {hit.node.location.label()}): {hit.snippet}")
+        if len(hits) > MAX_SEARCH_HITS:
+            lines.append(f"(+{len(hits) - MAX_SEARCH_HITS} more; add words to narrow the search)")
+        lines.append("These are excerpts. Use read_node with an id above to read the section before citing it.")
+        return "\n".join(lines)
 
     def find_node(self, ref: str) -> tuple[DocumentIndex, Node] | None:
         """Resolve a qualified `doc_id:node_id` (or a bare node id in the open document)."""

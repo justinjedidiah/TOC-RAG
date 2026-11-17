@@ -34,6 +34,7 @@ def main(argv: list[str] | None = None) -> None:
     ask_cmd.add_argument("question")
     ask_cmd.add_argument("--doc", help="limit to one document id")
     ask_cmd.add_argument("--listing-depth", type=int, choices=[1, 2, 3], help="tree levels one listing shows")
+    ask_cmd.add_argument("--search", action="store_true", help="give the agent a keyword search tool")
 
     args = parser.parse_args(argv)
     settings = get_settings()
@@ -72,6 +73,8 @@ def main(argv: list[str] | None = None) -> None:
             parser.error("set TOC_RAG_AGENT_MODEL in .env to a model of your provider (one that supports tool calling)")
         if args.listing_depth:
             settings = replace(settings, agent_listing_depth=args.listing_depth)
+        if args.search:
+            settings = replace(settings, agent_search=True)
         for event in stream_ask([store.load_index(doc_id) for doc_id in doc_ids], args.question, settings):
             if isinstance(event, Step):
                 print(f"  > {event.label}")

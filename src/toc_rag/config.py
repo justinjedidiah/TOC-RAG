@@ -22,6 +22,7 @@ class Settings:
     min_leaf_tokens: int = 150
     provider: str = "anthropic"  # for the CLI and dev; the web app uses each visitor's own choice
     agent_listing_depth: int = 2  # tree levels one listing shows (1-3); deeper levels show titles only
+    agent_search: bool = False  # give the agent a keyword search tool (exact words, still vectorless)
     # Web app
     session_ttl_seconds: int = 2 * 60 * 60
     max_upload_bytes: int = 15 * 1024 * 1024
@@ -83,6 +84,7 @@ def get_settings() -> Settings:
         agent_max_steps=int(os.getenv("TOC_RAG_AGENT_MAX_STEPS", "15")),
         min_leaf_tokens=int(os.getenv("TOC_RAG_MIN_LEAF_TOKENS", "150")),
         agent_listing_depth=min(3, max(1, int(os.getenv("TOC_RAG_LISTING_DEPTH", "2")))),
+        agent_search=os.getenv("TOC_RAG_AGENT_SEARCH", "").strip().lower() in ("1", "true", "yes", "on"),
         session_ttl_seconds=int(os.getenv("TOC_RAG_SESSION_TTL_SECONDS", str(2 * 60 * 60))),
         max_upload_bytes=int(os.getenv("TOC_RAG_MAX_UPLOAD_MB", "15")) * 1024 * 1024,
         max_session_docs=int(os.getenv("TOC_RAG_MAX_SESSION_DOCS", "5")),

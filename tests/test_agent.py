@@ -358,3 +358,77 @@ def test_deep_listings_are_capped_and_previews_are_marked():
 def test_library_navigator_passes_the_listing_depth_on():
     nav = LibraryNavigator([make_ships(), make_cars()], listing_depth=2)
     assert "  - [1.1] Engines (leaf)" in nav.open_document("cars")
+
+
+# ---- keyword search ----
+
+
+def test_search_finds_exact_words_with_excerpts_and_marks_nothing_read():
+    nav = Navigator(make_ships())
+    hits = nav.search("Fusion engines")
+    assert [hit.node.id for hit in hits] == ["1.2"]
+    assert "**fusion engines**" in hits[0].snippet.lower()
+    assert nav.read == set() and nav.visited == set()
+    assert nav.search("engine") == []  # exact words: "engine" is not "engines"
+    assert nav.search("the of") == []  # only common words: nothing to look for
+
+
+def test_search_ranks_phrase_then_all_words_then_some():
+    blocks = [
+        Heading(1, "Leave"),
+        Heading(2, "Sick"),
+        Paragraph("Leave for illness. Parents may also ask."),
+        Heading(2, "Parental"),
+        Paragraph("Parental leave is 16 weeks."),
+        Heading(2, "Other"),
+        Paragraph("Parental rights are listed elsewhere."),
+    ]
+    root, _ = build_tree(blocks, "HR", "markdown")
+    index = DocumentIndex(doc_id="hr", title="HR", source_path="hr.md", kind="markdown", root=root)
+    ids = [hit.node.id for hit in Navigator(index).search("parental leave")]
+    assert ids[0] == "1.2"  # the phrase
+    assert ids.index("1.1") < ids.index("1.3") or "1.1" not in ids
+
+
+def test_search_finds_image_descriptions():
+    hits = Navigator(make_ships()).search("crew photo")
+    assert hits[0].node.id == "1.1"
+
+
+def test_library_search_spans_documents_and_is_in_the_path():
+    nav = LibraryNavigator([make_ships(), make_cars()])
+    result = nav.search("engine")
+    assert "[cars:1.1] Engines (Cars" in result and "V8 **engine**" in result
+    assert "ships:" not in result  # "engines" is a different word
+    assert nav.trace[-1].tool == "search" and nav.trace[-1].label == 'Searched for "engine" (1 section found)'
+    assert nav.search("submarine").startswith("No section contains")
+
+
+def test_search_tool_is_offered_only_when_switched_on():
+    from toc_rag.agent.graph import make_tools
+
+    nav = LibraryNavigator([make_ships()])
+    assert "search" not in [t.name for t in make_tools(nav)]
+    assert "search" in [t.name for t in make_tools(nav, search=True)]
+
+
+def test_agent_searches_then_reads_and_cites():
+    model = ScriptedModel(
+        replies=[
+            call("search", query="fusion"),
+            call("read_node", node_id="ships:1.2"),
+            AIMessage("Two fusion engines [ships:1.2]."),
+        ]
+    )
+    events = list(stream_agent(LibraryNavigator([make_ships(), make_cars()]), model, "Engines?", 10, search=True))
+    steps = [e for e in events if isinstance(e, Step)]
+    assert [s.tool for s in steps] == ["search", "open_document", "read_node"]
+    result = events[-1]
+    assert result.found and result.citations[0].node_id == "1.2"
+    assert "search finds sections" in model.seen[0][0].content
+
+
+def test_search_hint_is_left_out_when_off():
+    model = ScriptedModel(replies=[AIMessage("Not found.")])
+    run_agent(LibraryNavigator([make_ships()]), model, "?", max_steps=3)
+    assert "search" not in model.seen[0][0].content

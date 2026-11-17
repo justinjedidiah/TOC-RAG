@@ -18,7 +18,7 @@ Code-level walkthrough of every module (read `docs/walkthrough/00-start-here.md`
 ## Commands
 - Setup: `python -m venv .venv`, then `.venv/Scripts/pip install -c constraints.txt -e ".[dev,app]"` (`constraints.txt` pins the tested versions; the Docker image installs with it too); copy `.env.example` to `.env` and set the key for `TOC_RAG_PROVIDER` (default `anthropic`: `ANTHROPIC_API_KEY`; or `OPENAI_API_KEY`, `GOOGLE_API_KEY`)
 - Tests (no API key needed): `.venv/Scripts/python -m pytest`
-- Dev-only CLI: `tocrag index <file> [--preset free|budget|full] [--small-sections off|merge|fold] [--no-split] [--max-leaf N] [--min-leaf N] [--summaries llm|preview] [--summary-length short|detailed] [--no-images] [--no-llm]`, `tocrag list`, `tocrag tree <doc_id>`, `tocrag ask "<question>" [--doc <doc_id>] [--listing-depth 1-3]`
+- Dev-only CLI: `tocrag index <file> [--preset free|budget|full] [--small-sections off|merge|fold] [--no-split] [--max-leaf N] [--min-leaf N] [--summaries llm|preview] [--summary-length short|detailed] [--no-images] [--no-llm]`, `tocrag list`, `tocrag tree <doc_id>`, `tocrag ask "<question>" [--doc <doc_id>] [--listing-depth 1-3] [--search]`
 - UI: `reflex run` (needs Node 22.22 or newer: Reflex 0.10's frontend refuses older Node)
 - Sample library: `python scripts/build_samples.py --index` (needs a real key and `TOC_RAG_INDEX_MODEL`; writes `samples/index`)
 - End-to-end UI check in real Chrome with the offline fake model, no key needed: `.venv/Scripts/python tests/e2e/run_e2e.py [output_dir]`
