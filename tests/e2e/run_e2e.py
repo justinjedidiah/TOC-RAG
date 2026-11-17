@@ -249,7 +249,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
         step("the Free preset indexes a heading-less docx without a key", free_without_key, "02b-free.png")
 
         # Library order: the 2 samples by title (annual report, employee handbook), then the visitor's own documents.
-        switches = page.get_by_role("switch")
+        switches = page.locator(".doc-switch")  # the documents' on/off switches, not the settings ones
 
         def samples_off_after_first_index() -> None:
             expect(switches).to_have_count(3, timeout=10000)
@@ -477,6 +477,15 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             assert top < 50, f"the chat was scrolled back down to {top}px while the visitor was reading above"
 
         step("scrolling up while an answer streams is not undone", scrolled_up_stays_up)
+
+        def clear_chat() -> None:
+            page.locator("#clear-chat").click()
+            expect(page.locator("text=Answered by the offline test model")).to_have_count(0, timeout=10000)
+            expect(page.locator("#clear-chat")).to_have_count(0)  # only shown while there is something to clear
+            expect(page.get_by_text("Fernhill Employee Handbook").first).to_be_visible()  # the library is untouched
+            expect(page.get_by_placeholder("Ask a question about the documents")).to_be_enabled()  # key and models kept
+
+        step("clear chat empties the conversation and keeps the library and key", clear_chat)
 
         def bad_content() -> None:
             fake = work / "fake.docx"

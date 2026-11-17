@@ -752,6 +752,24 @@ def chat_panel() -> rx.Component:
             min_height="0",
         ),
         rx.box(
+            rx.cond(
+                (State.messages.length() > 0) | State.thinking,
+                rx.hstack(
+                    rx.button(
+                        rx.icon("eraser", size=14),
+                        "Clear chat",
+                        variant="ghost",
+                        color_scheme="gray",
+                        size="1",
+                        on_click=State.clear_chat,
+                        title="Start a new conversation. Your documents and settings stay.",
+                        id="clear-chat",
+                    ),
+                    justify="end",
+                    width="100%",
+                    padding_bottom="0.4em",
+                ),
+            ),
             composer(),
             padding="0.5em 1.25em 1.25em",
             width="100%",

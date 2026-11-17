@@ -581,11 +581,7 @@ class State(rx.State):
         self.key_error = ""
         self.disabled_docs = []  # a fresh start: every sample on, and turned off again by the next first upload
         self._samples_turned_off = False
-        self.messages = []
-        self.thinking = False
-        self.live_steps = []
-        self.live_text = ""
-        self._chat_generation += 1
+        self._reset_chat()
         self.upload_error = ""
         self.indexing = False
         self.index_done = self.index_total = 0
@@ -1114,6 +1110,19 @@ class State(rx.State):
                 if self._chat_generation == generation and self.thinking:
                     self._finish_answer(generation, None)  # the agent produced nothing; just stop "thinking"
         yield scroll_chat()
+
+    @rx.event
+    def clear_chat(self):
+        """Start a new conversation. Documents, key and settings stay; earlier turns are no longer sent as history."""
+        self._reset_chat()
+
+    def _reset_chat(self) -> None:
+        """Empty the chat. An answer still being written is dropped when it next reports (`_chat_generation`)."""
+        self.messages = []
+        self.thinking = False
+        self.live_steps = []
+        self.live_text = ""
+        self._chat_generation += 1
 
     def _finish_answer(self, generation: int, message: ChatMessage | None) -> None:
         """Add the finished answer to the chat and clear the live one, in a single update so nothing flickers.

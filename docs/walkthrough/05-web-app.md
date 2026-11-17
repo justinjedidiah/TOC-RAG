@@ -196,11 +196,13 @@ Reflex turns every public method of a state class into an event handler; a leadi
 - `_library()`: the visitor's `Library` (samples + their live session documents).
 - `_refresh()`: re-reads the library into `self.docs` and rewrites the `session_note` text ("Your uploads are deleted automatically in 1 hour 52 minutes" if a session exists, else "...2 hours after you add the first one").
 - `_clear_pending(delete_files)`: forgets the pending document; with `delete_files=True` it also deletes its images, upload and `pending.json` (used on cancel and on failure).
-- `_finish_answer(generation, message)`: adds a finished answer to `messages` and clears the live answer and `thinking`, all in one update so the live bubble and the finished one never show together. It does nothing if the chat was cleared (End session bumps `_chat_generation`) while the answer was being written. Like every list change here, it **assigns** a new list (`self.messages = [*self.messages, message]`): Reflex notices changes when a field is assigned; changing something inside a list in place may not be noticed.
+- `_finish_answer(generation, message)`: adds a finished answer to `messages` and clears the live answer and `thinking`, all in one update so the live bubble and the finished one never show together. It does nothing if the chat was cleared (Clear chat or End session, both through `_reset_chat`, bump `_chat_generation`) while the answer was being written. Like every list change here, it **assigns** a new list (`self.messages = [*self.messages, message]`): Reflex notices changes when a field is assigned; changing something inside a list in place may not be noticed.
 
 ### The handlers, one by one
 
 **`on_load`**: runs when the page opens. Calls `_refresh()`.
+
+**`clear_chat`**: the "Clear chat" button above the composer, shown only while there are messages or an answer is being written. Empties the chat through `_reset_chat` and nothing else: documents, the key, the models and the agent settings stay, and since history is built from `messages`, the next question starts a fresh conversation.
 
 **`end_session`**: the "End session and delete my data" button. Deletes the visitor's whole session folder (`sessions.delete`), clears the key and chat and any pending upload, refreshes, and returns a confirmation toast. Everything the visitor added is gone, immediately.
 
