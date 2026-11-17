@@ -2,7 +2,8 @@
 
     TOC_RAG_LLM_FACTORY=tests.fake_llm:make_model
 
-It writes summaries from the section text and navigates by keyword overlap with the question.
+It writes summaries from the section text and navigates by keyword overlap with the question. Given the
+search tool, it searches for the question's words first and reads the best hit.
 It is deliberately simple: the point is to exercise the app, not to answer well.
 """
 
@@ -73,13 +74,20 @@ def next_message(messages: list) -> AIMessage:
     last_human = max(i for i, m in enumerate(messages) if isinstance(m, HumanMessage))
     results = [m.content for m in messages[last_human + 1 :] if isinstance(m, ToolMessage)]
 
-    if not results:
+    searching = "search finds sections" in system  # the agent was given the keyword search tool
+    if not results and searching:
+        asked = words(question)
+        terms = dict.fromkeys(w for w in re.findall(r"[a-z0-9]+", question.lower()) if w in asked)
+        return tool_call("search", query=" ".join(terms))
+    last = results[-1] if results else ""
+    if last.startswith("Sections containing"):  # read the best search hit
+        return tool_call("read_node", node_id=re.search(r"^- \[([^\]]+)\]", last, re.MULTILINE).group(1))
+    if not results or last.startswith("No section contains"):  # browse from the top
         if "No document is open yet" in system:
             docs = re.findall(r"^- \[([^\]]+)\] (.*)$", system, re.MULTILINE)
             return tool_call("open_document", doc_id=best(question, docs))
         return tool_call("list_children", node_id="root")
 
-    last = results[-1]
     read = re.match(r"^\[([^\]]+)\] (.+?) \(.*?\)\n\n(.*)", last, re.DOTALL)
     if read and "Subsections of" not in last:
         ref, _, body = read.groups()

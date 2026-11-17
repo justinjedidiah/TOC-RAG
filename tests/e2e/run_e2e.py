@@ -224,8 +224,9 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             page.get_by_role("button", name="Browse").nth(1).click()  # samples are sorted by title: the second is the handbook
             outline = page.locator("#source-panel")
             expect(outline.get_by_text("Outline", exact=True)).to_be_visible(timeout=10000)
-            # Its leave subsections are short, so indexing merged them into one "Time Off" section.
-            outline.get_by_role("button").filter(has=page.get_by_text("Time Off", exact=True)).click()
+            # Time Off > Family leave > Parental leave: the handbook keeps three levels of headings.
+            expect(outline.get_by_text("Family leave", exact=True)).to_be_visible(timeout=10000)
+            outline.get_by_role("button").filter(has=page.get_by_text("Parental leave", exact=True)).click()
             expect(page.get_by_text("16 weeks of parental").first).to_be_visible(timeout=10000)
 
         step("browse a sample outline and read a section without a key", browse_sample, "02-browse.png")
@@ -582,6 +583,26 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             expect(page.get_by_text("one kilogram of fish").first).to_be_visible(timeout=60000)
 
         step("the uploaded document can be searched", ask_mine, "09-mine.png")
+
+        def keyword_search() -> None:
+            # Agent settings is still open from earlier. With the switch on, the agent searches first.
+            switch = page.locator("#agent-search")
+            expect(switch).to_have_attribute("aria-checked", "false")
+            switch.click()
+            expect(switch).to_have_attribute("aria-checked", "true", timeout=5000)
+            try:
+                answers = page.get_by_text("one kilogram of fish")
+                before = answers.count()
+                box = page.get_by_placeholder("Ask a question about the documents")
+                box.fill("How much fish does a pelican eat every day?")
+                box.press("Enter")
+                expect(answers).to_have_count(before + 1, timeout=60000)
+                expect(page.get_by_text(re.compile(r'Searched for "much fish pelican eat every day" \(\d+ sections? found\)'))).to_be_visible()
+            finally:
+                switch.click()  # off again, so the later questions browse the outline
+                expect(switch).to_have_attribute("aria-checked", "false", timeout=5000)
+
+        step("with keyword search on, the agent searches, then reads and cites the hit", keyword_search, "09a-search.png")
 
         pelican = work / "Pelican Care Guide.docx"  # the same file as before, so the same document
 

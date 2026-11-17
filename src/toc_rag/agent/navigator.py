@@ -98,7 +98,9 @@ class Navigator:
     def search(self, query: str) -> list["SearchHit"]:
         """Sections whose title, text or image descriptions contain the query's words (exact words, any case).
 
-        Ranked: the whole query as a phrase first, then sections holding all the words, then the most words.
+        Ranked: the whole query as a phrase first, then by how many of the words it holds, then by query words in
+        its title, then by how often the words appear. The root's title is the document's, so it is not searched:
+        it would make the document's start a hit for every query that names the document.
         Nothing is marked read: a hit is a pointer, and the agent still has to read the section to cite it.
         """
         words = [w for w in dict.fromkeys(_WORD.findall(query.lower())) if w not in _STOPWORDS]
@@ -109,13 +111,17 @@ class Navigator:
         hits = []
         for order, node in enumerate(self.index.root.walk()):
             descriptions = " ".join(r.description for r in self.images_by_node.get(node.id, []))
-            haystack = f"{node.title}\n{node.text}\n{descriptions}"
+            title = "" if node is self.index.root else node.title
+            haystack = f"{title}\n{node.text}\n{descriptions}"
             found = [p for p in patterns if p.search(haystack)]
             if not found:
                 continue
             in_phrase = phrase.search(haystack)
             first = in_phrase or min((p.search(haystack) for p in found), key=lambda m: m.start())
-            rank = (not in_phrase, -len(found), order)
+            # A section about the words (in its title, or using them often) beats one that mentions them in passing.
+            in_title = sum(1 for p in patterns if p.search(title))
+            mentions = sum(len(p.findall(haystack)) for p in found)
+            rank = (not in_phrase, -len(found), -in_title, -mentions, order)
             hits.append(SearchHit(self.index.doc_id, node, _snippet(haystack, first.start(), first.end()), rank))
         return sorted(hits, key=lambda hit: hit.rank)
 

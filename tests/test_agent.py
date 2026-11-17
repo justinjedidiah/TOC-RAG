@@ -432,3 +432,10 @@ def test_search_hint_is_left_out_when_off():
     model = ScriptedModel(replies=[AIMessage("Not found.")])
     run_agent(LibraryNavigator([make_ships()]), model, "?", max_steps=3)
     assert "search" not in model.seen[0][0].content
+
+
+def test_search_prefers_more_words_over_a_title_and_ignores_the_document_title():
+    nav = Navigator(make_ships())
+    assert nav.search("ships") == []  # only the document's own title says "Ships"
+    # "Ship" matches one word, in a title; "Crew" holds two of the words ("crew" in its title, "captain" in its text).
+    assert [hit.node.id for hit in nav.search("ship crew captain")][0] == "1.1"

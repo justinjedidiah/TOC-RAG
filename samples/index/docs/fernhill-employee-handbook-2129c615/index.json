@@ -1,0 +1,1280 @@
+{
+  "doc_id": "fernhill-employee-handbook-2129c615",
+  "title": "Fernhill Employee Handbook",
+  "source_path": "Fernhill Employee Handbook.docx",
+  "kind": "docx",
+  "summary": "This handbook explains workplace policies and employee support at fictional Fernhill Outdoor Co. for staff in offices, distribution centres, and stores; contracts and local law take priority if they differ. Its sections cover joining and development, working hours and locations, leave, pay and benefits, expenses and travel, equipment and security, conduct and reporting concerns, and leaving Fernhill. It can help employees find guidance on eligibility, approvals, procedures, deadlines, and responsibilities across these topics; no tables or images are mentioned.",
+  "source_toc": [
+    {
+      "title": "Joining Fernhill",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Your first week",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Probation period",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Learning and development",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Working Hours and Location",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Working hours",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Core hours",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Rotas and overtime",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Where you work",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Hybrid work",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Working from abroad",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Time Off",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Holidays",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Annual leave",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Public holidays",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Sick leave",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Family leave",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Parental leave",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Caring for a dependant",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Other leave",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Pay and Benefits",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Pay",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Pay day and payslips",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Pay reviews",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Pension",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Health and wellbeing",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Gear allowance and discount",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Expenses and Travel",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Before you spend",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Travel",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Trains and flights",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Hotels",
+      "level": 3,
+      "page": null
+    },
+    {
+      "title": "Meals and daily allowance",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Claiming expenses",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Equipment and Security",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Laptops and phones",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Passwords and sign-in",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Reporting a security incident",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Conduct",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Code of conduct",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Gifts and conflicts of interest",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Raising a concern",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Leaving Fernhill",
+      "level": 1,
+      "page": null
+    },
+    {
+      "title": "Notice periods",
+      "level": 2,
+      "page": null
+    },
+    {
+      "title": "Your last day",
+      "level": 2,
+      "page": null
+    }
+  ],
+  "root": {
+    "id": "root",
+    "title": "Fernhill Employee Handbook",
+    "level": 0,
+    "origin": "original",
+    "summary": "This handbook explains workplace policies and employee support at fictional Fernhill Outdoor Co. for staff in offices, distribution centres, and stores; contracts and local law take priority if they differ. Its sections cover joining and development, working hours and locations, leave, pay and benefits, expenses and travel, equipment and security, conduct and reporting concerns, and leaving Fernhill. It can help employees find guidance on eligibility, approvals, procedures, deadlines, and responsibilities across these topics; no tables or images are mentioned.",
+    "summary_source": "llm",
+    "text": "Fernhill Employee Handbook\n\nThis handbook explains how we work at Fernhill Outdoor Co., a fictional company, and what you can expect from us. It applies to all employees in offices, distribution centres and stores, unless a section says otherwise. Your contract and local law take priority if they differ. If something is unclear, ask your manager or the People team. Last updated January 2026.",
+    "location": {
+      "kind": "docx",
+      "heading_path": [],
+      "pdf_page_start": null,
+      "pdf_page_end": null,
+      "printed_page_start": null,
+      "printed_page_end": null,
+      "covers": []
+    },
+    "children": [
+      {
+        "id": "1",
+        "title": "Joining Fernhill",
+        "level": 1,
+        "origin": "original",
+        "summary": "This section brings together guidance on starting work at Fernhill, completing probation, and developing your skills. It explains what to expect in your first week, including onboarding, manager support, and how to request workplace adjustments; probation periods, check-ins, extensions, and notice; and learning allowances, development planning, and internal job opportunities.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Joining Fernhill"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "1.1",
+            "title": "Your first week",
+            "level": 2,
+            "origin": "original",
+            "summary": "Before your first day, you’ll receive arrival details; on day one, your manager will provide your laptop or store login and introduce your team buddy. Your first week includes online training, a People team welcome session for questions about pay, benefits, or the handbook, and a 30-minute check-in with your manager. Contact the People team before starting if you need workplace adjustments, such as a particular desk or screen reader.",
+            "summary_source": "llm",
+            "text": "Before your first day you will receive an email with your start time, where to go and who to ask for. On day one your manager will meet you, give you your laptop or store login, and introduce you to a buddy from your team who can answer everyday questions. During the first week you will complete online training on health and safety, data protection and our code of conduct, and you will have a welcome session with someone from the People team, where you can ask anything about pay, benefits or this handbook. Your manager will also set up a 30-minute meeting at the end of your first week to see how things are going. If you need any adjustments to start work, such as a particular desk or screen reader, tell the People team before you start.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Joining Fernhill",
+                "Your first week"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "1.2",
+            "title": "Probation period",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains probation duration: six months for most roles and three months for store and distribution centre roles, with monthly manager check-ins. Covers written confirmation or a single extension of up to three months, one week’s notice during probation, and the notice rules that apply afterward. Also confirms employees can raise concerns during check-ins and that annual leave and benefits apply from the first day.",
+            "summary_source": "llm",
+            "text": "The first six months are a probation period, or three months for store and distribution centre roles. Your manager will meet you at least once a month to talk about how things are going and agree what you should focus on. At the end, they will confirm your job in writing, or, if more time is needed, extend the probation once by up to three months and explain why. During probation either side can end the employment with one week's notice; after it, the notice periods in Leaving Fernhill apply. You can raise concerns of your own at these meetings too: probation is a chance for both sides to check the job is right. Your annual leave and benefits apply in full from your first day, including during probation.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Joining Fernhill",
+                "Probation period"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "1.3",
+            "title": "Learning and development",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains the annual learning allowance: each employee can spend up to $1,000 and use up to five working days for work-related courses, books, conferences, or certifications, agreed with their manager; unused funds do not carry over. It also covers spring development planning, internal training pathways for store employees, and a one-week internal posting period before jobs are advertised externally.",
+            "summary_source": "llm",
+            "text": "Every employee has a learning budget of 1,000 dollars a year for courses, books, conferences or certifications related to their work, and up to five working days a year to use it. Agree how you will use it with your manager. We also run an internal programme where store employees can train as product specialists or assistant managers, and we advertise every open job internally for a week before it goes outside the company. Each spring you and your manager agree development goals for the year ahead. Unused budget does not carry over to the next year. Popular choices include first aid and mountain leader courses, language classes and professional qualifications in finance and design.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Joining Fernhill",
+                "Learning and development"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "title": "Working Hours and Location",
+        "level": 1,
+        "origin": "original",
+        "summary": "This section covers standard working hours, flexible schedules, breaks, calendar expectations, core-hour meeting guidance, rota changes and swaps, overtime, and minimum rest periods. It also explains hybrid and home-working arrangements, equipment and team scheduling, plus the rules for temporary work abroad—including annual limits, approvals, tax and visa checks, security, and working hours—and the separate process for permanent relocation.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Working Hours and Location"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "2.1",
+            "title": "Working hours",
+            "level": 2,
+            "origin": "original",
+            "summary": "Covers office core hours and flexible schedules, including the usual 37.5-hour week, break requirements, calendar expectations, and avoiding meetings outside core hours. It also explains rota notice and short-notice shift changes, approved shift swaps, overtime pay or time off, and minimum rest periods.",
+            "summary_source": "llm",
+            "text": "",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Working Hours and Location",
+                "Working hours"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": [
+              {
+                "id": "2.1.1",
+                "title": "Core hours",
+                "level": 3,
+                "origin": "original",
+                "summary": "Office teams have flexible start and finish times, with everyone expected to be available for meetings from 10:00 to 15:00 local time. A full-time week is usually 37.5 hours over Monday to Friday; part-time or compressed schedules can be agreed with a manager, and anyone working more than six hours must take at least a 30-minute break. Keep calendars current, and avoid meetings outside core hours except when necessary, particularly across time zones.",
+                "summary_source": "llm",
+                "text": "Office teams work flexible hours, but everyone is available for meetings between 10:00 and 15:00 local time. A full-time week is 37.5 hours, usually Monday to Friday. You can start and finish when it suits you outside the core hours, as long as your team knows when you are working and you take a break of at least 30 minutes if you work more than six hours. Part-time and compressed weeks, such as four longer days, can be agreed with your manager, and we try to say yes. Please keep your calendar up to date so colleagues can see when you are available. Meetings outside core hours should be the exception, especially for colleagues in other time zones.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Working Hours and Location",
+                    "Working hours",
+                    "Core hours"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              },
+              {
+                "id": "2.1.2",
+                "title": "Rotas and overtime",
+                "level": 3,
+                "origin": "original",
+                "summary": "Store and distribution centre rotas are published at least two weeks ahead; if a shift changes with less than 48 hours’ notice, you’re paid for both the original and new shifts. Overtime requires advance manager approval and is paid at 1.5 times the hourly rate, or twice the rate on public holidays; salaried office employees can take equivalent time off within a month instead. The section also explains manager-approved shift swaps through the rota app and minimum rest periods of 11 hours between shifts and two days off in every seven.",
+                "summary_source": "llm",
+                "text": "Store and distribution centre teams work to a rota published at least two weeks in advance, so you can plan your life around it. If we change your shifts with less than 48 hours' notice, you are paid for the original shift as well as the new one. Overtime must be agreed with your manager in advance and is paid at one and a half times your hourly rate, or twice your rate on public holidays. Salaried office employees do not receive overtime pay but can take the time back within a month. You can swap shifts with a colleague in the rota app, as long as your manager approves the swap. You should have at least 11 hours off between shifts and two days off in every seven.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Working Hours and Location",
+                    "Working hours",
+                    "Rotas and overtime"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "2.2",
+            "title": "Where you work",
+            "level": 2,
+            "origin": "original",
+            "summary": "This section explains the company’s hybrid-work expectations and when office-based employees may work from home, including equipment support and team scheduling. It also covers temporary work from abroad: the annual limit, advance approvals, checks on tax and visas, security and working-hour requirements, and the separate process for permanent relocation.",
+            "summary_source": "llm",
+            "text": "",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Working Hours and Location",
+                "Where you work"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": [
+              {
+                "id": "2.2.1",
+                "title": "Hybrid work",
+                "level": 3,
+                "origin": "original",
+                "summary": "Office roles require at least three office days each week, including the team’s anchor day, with the remaining days worked from home; managers may approve a different pattern for a fixed period. Home workers need a quiet workspace and reliable internet, and receive a one-time $300 allowance for basic equipment, while health-related equipment is covered in full through the People team. Teams schedule meetings and workshops for days when most people are in the office.",
+                "summary_source": "llm",
+                "text": "Office roles are hybrid: you work from the office at least three days a week, including your team's anchor day, and from home on the other days. Your manager can agree a different pattern for a fixed period, for example after parental leave or while you care for someone. When you work from home you need a quiet place and a reliable internet connection. We give every hybrid employee a one-off 300 dollar allowance to buy a desk, chair or screen for their home office. If you need special equipment at home for health reasons, such as an ergonomic chair, ask the People team; we pay for it in full. Office days are for working together, so teams plan meetings and workshops for the days when most people are in.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Working Hours and Location",
+                    "Where you work",
+                    "Hybrid work"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              },
+              {
+                "id": "2.2.2",
+                "title": "Working from abroad",
+                "level": 3,
+                "origin": "original",
+                "summary": "Employees may work from another country for up to 20 working days per year, in separate or consecutive periods, with approval requested from their manager and the People team at least four weeks in advance. The summary covers checks on tax, visas and restricted countries; requirements to work during adjusted team core hours, use the company VPN, keep the laptop with you and protect your screen from public view. Permanent relocation follows a separate process.",
+                "summary_source": "llm",
+                "text": "You can work from another country for up to 20 working days a year, for example to extend a visit to family. Ask your manager and the People team at least four weeks before you go, so we can check tax and visa rules. Some countries are not allowed for security reasons, and the People team keeps the current list. You must still be available during your team's core hours, adjusted for the time difference, and use the company VPN for all work. Moving abroad permanently is a different process. The 20 days do not need to be taken at once. Your laptop must stay with you, and you should not work from public places where others can see your screen.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Working Hours and Location",
+                    "Where you work",
+                    "Working from abroad"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "title": "Time Off",
+        "level": 1,
+        "origin": "original",
+        "summary": "This section groups information on holidays, sick leave, family leave, and other types of leave. It can help employees find details on allowances, eligibility, notice and booking requirements, pay, and recording leave in the HR portal. It also covers public holidays, caring responsibilities, bereavement, jury duty, and options for additional paid or unpaid leave.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Time Off"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "3.1",
+            "title": "Holidays",
+            "level": 2,
+            "origin": "original",
+            "summary": "Covers annual leave and public holidays, including leave allowances for full-time and part-time employees, increases after five years, the leave year, carryover, booking rules, sick-leave conversion, and the option to buy extra days. Explains country-specific public holidays, office closures, compensation and time off in lieu for store employees who work those days, proportional time off for eligible part-time employees, and requesting leave for other religious or cultural holidays.",
+            "summary_source": "llm",
+            "text": "",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Time Off",
+                "Holidays"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": [
+              {
+                "id": "3.1.1",
+                "title": "Annual leave",
+                "level": 3,
+                "origin": "original",
+                "summary": "Explains annual leave allowances for full-time and part-time employees, including the increase after five years, the January–December leave year, and rules for carrying over unused days. It also covers booking deadlines, December approval requirements for store employees, converting leave to sick leave with a doctor’s note, and buying up to five extra days through the HR portal.",
+                "summary_source": "llm",
+                "text": "Full-time employees get 25 days of paid annual leave a year plus public holidays, rising to 28 days after five years. Part-time employees get the same in proportion to their hours. Leave runs from January to December. You can carry up to 5 unused days into the next year; they must be used by the end of March. Book leave in the HR portal at least two weeks ahead for anything longer than three days. In stores, leave in December needs approval by the end of September. If you are ill during your annual leave and have a doctor's note, those days count as sick leave instead, and you can take the leave later. You can also buy up to 5 extra days of leave a year through the HR portal, paid for from your salary over the year.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Time Off",
+                    "Holidays",
+                    "Annual leave"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              },
+              {
+                "id": "3.1.2",
+                "title": "Public holidays",
+                "level": 3,
+                "origin": "original",
+                "summary": "Employees receive the public holidays observed in their work country in addition to annual leave, and offices close on those days. Store employees may be rostered to work; if so, they receive double hourly pay and a day off in lieu within two months, while part-time employees who would not normally work that day receive proportional time off. The section also explains that non-public religious or cultural holidays may be requested as annual leave and that the People team publishes each country’s holiday list every December.",
+                "summary_source": "llm",
+                "text": "You get the public holidays of the country you work in, on top of your annual leave. Offices close on public holidays. Stores often open on public holidays, so store employees may be rostered to work them; if you are, you are paid twice your hourly rate and get a day off in lieu within the next two months. If you work part-time and a public holiday falls on a day you would not work, you get a proportional amount of time off instead. Religious or cultural holidays that are not public holidays can be taken as annual leave, and managers will do their best to approve them. The People team publishes the list of public holidays for each country every December.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Time Off",
+                    "Holidays",
+                    "Public holidays"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "3.2",
+            "title": "Sick leave",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains how and when to report illness, self-certification and doctor’s note requirements, and annual sick pay limits. Also covers return-to-work planning for absences over two weeks, medical appointments, and recording sick leave in the HR portal.",
+            "summary_source": "llm",
+            "text": "Tell your manager before your shift or start time if you are ill, by phone or message, and say when you expect to return. You can self-certify for up to 3 days; after that we need a note from a doctor. You get full pay for up to 10 sick days a year, and half pay for a further 20 days. If you are off for more than two weeks, your manager and the People team will keep in touch and agree a plan for your return, which can include shorter hours for a while. Medical appointments do not count as sick leave if you make up the time. Sick leave is recorded in the HR portal, either by you or by your manager.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Time Off",
+                "Sick leave"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "3.3",
+            "title": "Family leave",
+            "level": 2,
+            "origin": "original",
+            "summary": "Covers parental leave and support for employees caring for dependants. It answers questions about paid leave after birth or adoption, notice and leave arrangements, phased return and ongoing benefits, as well as paid carer’s leave, longer-term unpaid leave, flexible working requests, and support finding care services.",
+            "summary_source": "llm",
+            "text": "",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Time Off",
+                "Family leave"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": [
+              {
+                "id": "3.3.1",
+                "title": "Parental leave",
+                "level": 3,
+                "origin": "original",
+                "summary": "Explains parental leave for all parents: 16 weeks at full pay within the first year after birth or adoption, with birth parents eligible for 10 additional weeks at statutory pay. Covers notice requirements, taking leave in up to three blocks, a phased return at 80% of hours for full pay, continued annual leave accrual and pension contributions, and the option of more home working around leave where the role allows.",
+                "summary_source": "llm",
+                "text": "Every parent, whatever their gender and however they became a parent, gets 16 weeks of parental leave at full pay, to be taken within the first year after the birth or adoption. Birth parents can take a further 10 weeks at statutory pay. Tell the People team at least 15 weeks before the due date or placement. You can take the leave in up to three blocks. When you return, you can work 80 percent of your hours for full pay for the first 4 weeks. Parental leave does not reduce your annual leave: you keep earning annual leave while you are away, and your pension contributions continue. Before and after your leave, you can work from home more often, if your role allows it, to help you adjust.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Time Off",
+                    "Family leave",
+                    "Parental leave"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              },
+              {
+                "id": "3.3.2",
+                "title": "Caring for a dependant",
+                "level": 3,
+                "origin": "original",
+                "summary": "Explains leave and support available when a child, partner, parent, or other dependant is ill or needs care. Employees can take up to 5 paid days of carer’s leave per year, in half-day or full-day increments, without providing proof, and should notify their manager as soon as possible. For longer-term caring, employees can request up to 12 weeks of unpaid leave with their job kept open, or a temporary change to their hours or working pattern; the employee assistance line can help find care services and advice.",
+                "summary_source": "llm",
+                "text": "If a child, partner, parent or someone else who depends on you is ill or has an emergency, you can take up to 5 days of paid carer's leave a year to look after them or arrange care. Tell your manager as soon as you can; you do not need to give proof. For longer-term caring, such as a parent with a serious illness, you can ask for up to 12 weeks of unpaid leave or for a temporary change to your hours or working pattern. We keep your job open during unpaid carer's leave. The employee assistance line can also help you find care services and advice. Carer's leave can be taken in half days as well as whole days.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Time Off",
+                    "Family leave",
+                    "Caring for a dependant"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "3.4",
+            "title": "Other leave",
+            "level": 2,
+            "origin": "original",
+            "summary": "Summarizes paid leave for bereavement, volunteering, moving home, and jury duty, including eligibility and notice requirements. For most leave types, employees should ask their manager at least two weeks ahead and record the leave in the HR portal; bereavement and jury duty can be taken at short notice. Managers may also grant up to three extra paid days per year for other important events, or agree to up to four weeks of unpaid leave.",
+            "summary_source": "llm",
+            "text": "The table lists other paid leave. Bereavement and jury duty can be taken at short notice; for the others, ask your manager at least two weeks ahead and record the leave in the HR portal so it does not come out of your annual leave. If something important happens that does not fit any of these, talk to your manager: they can grant up to 3 extra days of paid leave a year. Unpaid leave of up to four weeks for other reasons, such as a long trip, can be agreed with your manager.\n\n| Type | Paid days | Notes |\n| --- | --- | --- |\n| Bereavement | Up to 10 | For a partner, child, parent or sibling; 3 days for other relatives |\n| Volunteering | 2 per year | For registered charities and community projects |\n| Moving home | 1 per year |  |\n| Jury duty | As needed | Full pay; tell your manager when you are summoned |",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Time Off",
+                "Other leave"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "title": "Pay and Benefits",
+        "level": 1,
+        "origin": "original",
+        "summary": "This section brings together information on pay, pensions, health and wellbeing, and employee gear benefits. It can answer questions about paydays, payslips and pay reviews; pension contributions and retirement support; healthcare, counselling and fitness reimbursements; and product discounts and the annual gear allowance.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Pay and Benefits"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "4.1",
+            "title": "Pay",
+            "level": 2,
+            "origin": "original",
+            "summary": "This section covers monthly payday, the effect of public holidays, which hours are included in pay for hourly store and distribution centre employees, and payslip access, contents, retention, and corrections. It also explains April pay reviews, how outcomes are decided and discussed, pay benchmarking and published role ranges, and pay increases linked to promotions.",
+            "summary_source": "llm",
+            "text": "",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Pay and Benefits",
+                "Pay"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": [
+              {
+                "id": "4.1.1",
+                "title": "Pay day and payslips",
+                "level": 3,
+                "origin": "original",
+                "summary": "Explains when monthly pay is deposited, how public holidays affect payday, and which hours are included in pay for hourly store and distribution centre employees. It also covers when payslips appear in the HR portal, what they show, how long past payslips are available, and how to report an error and receive a correction.",
+                "summary_source": "llm",
+                "text": "You are paid monthly, on the last working day of the month, by bank transfer. Store and distribution centre employees paid by the hour are paid for the hours worked up to the 20th of the month, with any later hours paid the following month. Payslips are in the HR portal two days before pay day. If you think your pay is wrong, tell the payroll team through the portal; they will reply within two working days and correct any underpayment within a week. If the last working day falls on a public holiday, you are paid on the working day before. Your payslip shows your pay, tax, pension contributions and any expenses paid, and you can download past payslips for up to seven years.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Pay and Benefits",
+                    "Pay",
+                    "Pay day and payslips"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              },
+              {
+                "id": "4.1.2",
+                "title": "Pay reviews",
+                "level": 3,
+                "origin": "original",
+                "summary": "Explains that pay is reviewed each April based on performance and market rates, with any increase effective from 1 April; managers discuss outcomes in one-to-one meetings in March, including for employees on parental or sick leave. The company benchmarks pay against retailers and outdoor brands, publishes ranges for every role, and allows employees to ask managers about pay at any time. Promotions outside the annual review may include a rise of at least 8 percent.",
+                "summary_source": "llm",
+                "text": "Pay is reviewed every April based on your performance and market rates, and any rise applies from 1 April. We compare our pay with other retailers and outdoor brands every year and publish the pay range for every job inside the company, so you can see where you stand. You can ask your manager about your pay at any time. Promotions outside the April review are possible and come with a rise of at least 8 percent. Your manager will explain the outcome of your review in a one-to-one meeting in March. Employees on parental or sick leave during the review are included in it.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Pay and Benefits",
+                    "Pay",
+                    "Pay reviews"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "4.2",
+            "title": "Pension",
+            "level": 2,
+            "origin": "original",
+            "summary": "The company matches employee pension contributions up to 6% of salary, with automatic enrollment after the first month and the option to adjust contributions or funds through the provider’s app. Employees can opt out during the first month; if they leave, their pension remains theirs, and contributions are taken before tax where local rules allow. The section also notes free retirement-planning sessions with a financial adviser twice a year.",
+            "summary_source": "llm",
+            "text": "We match your pension contributions up to 6 percent of your salary: if you pay in 6 percent, we pay in 6 percent as well. You are enrolled automatically after your first month and can change your contribution, or choose different funds, at any time in the pension provider's app. If you leave, the pension stays yours. Twice a year a financial adviser runs free sessions on saving for retirement, open to every employee. If you do not want to be in the pension, you can opt out in the first month, but you will then not receive our contributions. Your contributions are taken before tax where local rules allow, which lowers the tax you pay.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Pay and Benefits",
+                "Pension"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "4.3",
+            "title": "Health and wellbeing",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains employee health and wellbeing benefits: private health insurance from the first day, including dental and eye care, with reduced-rate cover for partners and children; confidential 24-hour counselling and up to eight therapy sessions per year; and half the cost of gym or climbing wall membership reimbursed up to $40 a month. Part-time store and distribution centre employees working at least 20 hours weekly receive the same cover. Claims go directly to the insurer through its app, and the People team cannot see medical details.",
+            "summary_source": "llm",
+            "text": "Private health insurance covers you from your first day, and you can add your partner and children at a reduced rate. It includes dental and eye care. The employee assistance line offers free, confidential counselling 24 hours a day, for anything from stress to money worries, and up to eight sessions with a therapist a year. We also pay half the cost of a gym or climbing wall membership, up to 40 dollars a month. Store and distribution centre employees on part-time contracts of 20 hours a week or more get the same cover as everyone else. Claims are made directly with the insurer through its app, and the People team never sees your medical details.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Pay and Benefits",
+                "Health and wellbeing"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "4.4",
+            "title": "Gear allowance and discount",
+            "level": 2,
+            "origin": "original",
+            "summary": "Fernhill employees receive 40% off products for themselves and up to two friends or family members, plus a $500 annual gear allowance credited each January; new joiners receive a prorated amount. The allowance does not roll over, and discounted products cannot be resold. The discount is also valid at outlet stores and on the Fernhill Second Life resale site; online, sign in with your work email address.",
+            "summary_source": "llm",
+            "text": "You get 40 percent off Fernhill products, for yourself and up to two friends or family members. Each year you also get a 500 dollar gear allowance to spend on Fernhill products, because we think people who make outdoor gear should use it. The allowance is added to your staff account every January; new joiners get a share in proportion to the months left in the year. Unused allowance does not carry over, and products bought with the discount may not be resold. The discount also applies in our outlet stores and on the Fernhill Second Life resale site. To use the discount online, sign in with your work email address.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Pay and Benefits",
+                "Gear allowance and discount"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "title": "Expenses and Travel",
+        "level": 1,
+        "origin": "original",
+        "summary": "Covers company rules for approving and paying work expenses, booking travel and accommodation, and claiming travel meals and mileage. It answers questions about required approvals, preferred booking and payment methods, daily allowances, receipts, reimbursement limits, claim deadlines, and expenses that are not reimbursed. There are no tables or images mentioned.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Expenses and Travel"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "5.1",
+            "title": "Before you spend",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains spending approval and payment rules: get your manager’s approval before booking travel or spending over $250, and get director approval for any single purchase over $2,000. Use a company card where available, choose the cheaper equally good option, and ask your manager before spending if unsure whether a cost is claimable. Fines, comfort upgrades, and personal shopping are not reimbursed; software subscriptions must be purchased by IT.",
+            "summary_source": "llm",
+            "text": "Get your manager's approval before you book travel or spend more than 250 dollars. Use the company card where you have one; otherwise pay yourself and claim the money back. Spend company money as if it were your own: choose the cheaper option when two are equally good. Some things are never paid for, such as fines, upgrades you choose for comfort, and personal shopping. If you are unsure whether something can be claimed, ask your manager before you spend, not afterwards. Directors approve any single purchase over 2,000 dollars. Software subscriptions are always bought by the IT team, never on a personal card.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Expenses and Travel",
+                "Before you spend"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "5.2",
+            "title": "Travel",
+            "level": 2,
+            "origin": "original",
+            "summary": "This section covers company rules for booking work travel, including trains versus flights, advance booking, air miles, permitted taxis and car hire, and cancelling changed plans to recover costs. It also explains hotel cost limits and approvals, portal booking and direct payment, alternatives such as staying with friends, loyalty points, room arrangements for colleagues, and non-reimbursable extras on trips under five nights.",
+            "summary_source": "llm",
+            "text": "",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Expenses and Travel",
+                "Travel"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": [
+              {
+                "id": "5.2.1",
+                "title": "Trains and flights",
+                "level": 3,
+                "origin": "original",
+                "summary": "Explains how to book work travel through the travel portal, when to take trains or fly, and the rules for advance booking and air miles. Also covers when taxis and car hire are allowed, and how to cancel changed plans to recover costs.",
+                "summary_source": "llm",
+                "text": "Book travel through the travel portal, which shows our negotiated prices and keeps a record of where you are in case of an emergency. Take the train for journeys under four hours. Flights are economy class, or premium economy for flights over eight hours. Book at least two weeks ahead where you can, as late bookings cost more. You may keep air miles, but they must not influence which airline you choose. Taxis are allowed late at night, with heavy luggage or where there is no public transport. If plans change, cancel through the portal as early as you can, so we can get money back. Car hire is allowed only when it is cheaper than the alternatives or there is no other way to reach the place.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Expenses and Travel",
+                    "Travel",
+                    "Trains and flights"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              },
+              {
+                "id": "5.2.2",
+                "title": "Hotels",
+                "level": 3,
+                "origin": "original",
+                "summary": "Explains hotel cost limits, when a manager can approve a higher rate, and the preference for booking through the portal for direct company payment. Covers alternatives such as staying with friends and claiming a $40 host gift, keeping loyalty points, separate rooms for colleagues, and which extras are not reimbursed on trips under five nights.",
+                "summary_source": "llm",
+                "text": "Hotels should cost no more than the city limit shown in the portal, which is set for each city every year. If no suitable hotel is available within the limit, for example during a big trade fair, your manager can approve a higher price. Book through the portal so that the company pays directly where possible. Staying with friends instead of a hotel is welcome; you can then claim a 40 dollar thank-you gift for your host per trip. Hotel loyalty points are yours to keep. If you are travelling with colleagues, each person gets their own room. Extras such as minibar drinks, films and laundry for trips under five nights are not paid.",
+                "location": {
+                  "kind": "docx",
+                  "heading_path": [
+                    "Expenses and Travel",
+                    "Travel",
+                    "Hotels"
+                  ],
+                  "pdf_page_start": null,
+                  "pdf_page_end": null,
+                  "printed_page_start": null,
+                  "printed_page_end": null,
+                  "covers": []
+                },
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "5.3",
+            "title": "Meals and daily allowance",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains meal allowances for work travel: $60 per day for overnight trips within the same country, $85 per day abroad (converted at the travel-day rate), and $25 for day trips over 10 hours without an overnight stay. Receipts are not needed for the allowance, but travelers must record trip dates and places in the expenses app; hotel-included breakfast is excluded. Client dinners require advance manager approval and receipts, and allowances are paid with the next salary.",
+            "summary_source": "llm",
+            "text": "When you travel for work you get a daily allowance for meals instead of claiming each one. You do not need receipts for the allowance itself, but you do need to record the dates and places of your trip in the expenses app. The amounts are in the table below. Client dinners are separate: they need your manager's approval in advance and are claimed with receipts. The allowance is paid with your expenses, so it reaches you with your next salary.\n\n| Trip | Daily meal allowance | Notes |\n| --- | --- | --- |\n| Same country, overnight | 60 dollars | Breakfast included in the hotel is not claimed |\n| Abroad | 85 dollars | Converted at the rate on the day of travel |\n| Day trip over 10 hours | 25 dollars | No overnight stay |",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Expenses and Travel",
+                "Meals and daily allowance"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "5.4",
+            "title": "Claiming expenses",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains how and when to submit expense claims, including the receipt photo requirement and the monthly salary payment cutoff. Covers non-reimbursable alcohol, late claims, missing receipts, manager approval, finance checks, and the consequences of false claims. Mileage for using a personal car is paid at the rate shown in the expenses app.",
+            "summary_source": "llm",
+            "text": "Submit claims in the expenses app within 30 days, with a photo of each receipt. Claims approved by the 20th of the month are paid with that month's salary. Alcohol is not reimbursed, except at events approved in advance by a director. Claims older than 90 days are not paid. Your manager approves your claims, and finance checks a sample of them every month; claiming something you did not spend is treated as gross misconduct. If you lose a receipt, write a short note explaining the cost instead; your manager decides whether it can be paid. Mileage for using your own car on company business is paid at the rate shown in the expenses app.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Expenses and Travel",
+                "Claiming expenses"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "title": "Equipment and Security",
+        "level": 1,
+        "origin": "original",
+        "summary": "Covers company laptops and work phones, including permitted use, security and care rules, repairs, replacement, and return requirements. It explains password and sign-in practices, how to recognize and verify suspicious requests, and what to do if a password may be compromised. It also specifies how and when to report lost devices, suspicious links, or possible customer-data exposure, and why prompt reporting matters.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Equipment and Security"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "6.1",
+            "title": "Laptops and phones",
+            "level": 2,
+            "origin": "original",
+            "summary": "Office employees receive a laptop and, when their role requires one, a work phone; both remain company property and must be returned on the last day. The section explains security and use rules, including approved software, locking screens, storing work files in company cloud storage, and reasonable personal phone use. It also covers IT repairs or replacement, typically within two working days, and the four-year laptop replacement cycle. It can answer questions about issued equipment, permitted use, care, repairs, and returns.",
+            "summary_source": "llm",
+            "text": "Office employees receive a laptop, and a phone if their role needs one. They stay company property: do not install software that is not in the company app store, and do not let anyone else use them. Lock your screen whenever you step away. Keep work files in the company's cloud storage, not on the laptop itself, so nothing is lost if it breaks. Return all equipment on your last day. If something breaks, the IT service desk will repair or replace it, usually within two working days. You may use your work phone for reasonable personal calls and messages. Laptops are replaced every four years, or sooner if they stop working well.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Equipment and Security",
+                "Laptops and phones"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "6.2",
+            "title": "Passwords and sign-in",
+            "level": 2,
+            "origin": "original",
+            "summary": "Use the company password manager, enable two-step sign-in on every work account, and choose a unique password for each account—never reuse or share work passwords, including with IT. Verify suspicious requests to sign in, pay invoices, or change bank details by phone; IT also sends practice phishing emails, which lead to a short training video if clicked. Change a password immediately if you think someone else may know it.",
+            "summary_source": "llm",
+            "text": "Use the company password manager and turn on two-step sign-in for every work account. Use a different password for every account and never reuse your work password anywhere else. Never share your password, even with IT: the IT team will never ask for it. Be careful with emails asking you to sign in, pay an invoice or change bank details, even if they seem to come from a colleague; check by phone first. The IT team sends practice phishing emails a few times a year; if you click one, you will just be shown a short training video. Change a password straight away if you think someone else may know it.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Equipment and Security",
+                "Passwords and sign-in"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "6.3",
+            "title": "Reporting a security incident",
+            "level": 2,
+            "origin": "original",
+            "summary": "Report a lost device, suspicious link, or possible customer-data exposure to the IT service desk within one hour, at any time, by phone or portal; the number is on the back of your staff badge. The section explains that prompt reporting is encouraged and helps IT secure devices or accounts, and may support required authority notifications within 72 hours. Do not investigate or fix the issue yourself, and keep suspicious emails until IT has reviewed them.",
+            "summary_source": "llm",
+            "text": "If you lose a device, click a suspicious link or think customer data may have been exposed, report it to the IT service desk within one hour, at any time of day, by phone or through the portal. You will not be blamed for reporting a mistake quickly. The sooner we know, the sooner we can lock a lost laptop or reset an account, and in some countries we must tell the authorities within 72 hours if personal data was exposed. Do not try to investigate or fix the problem yourself, and do not delete suspicious emails until the IT team has seen them. The IT service desk number is printed on the back of your staff badge.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Equipment and Security",
+                "Reporting a security incident"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "7",
+        "title": "Conduct",
+        "level": 1,
+        "origin": "original",
+        "summary": "This section brings together guidance on respectful workplace behavior, conflicts of interest and gifts, and how to raise concerns. It explains standards for employees, contractors, temporary staff, and suppliers; required disclosures and approvals; and confidential reporting options, investigation, and protection against retaliation. It can answer questions about conduct expectations, declarations, supplier invitations, and reporting suspected misconduct.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Conduct"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "7.1",
+            "title": "Code of conduct",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains expected respectful conduct toward colleagues, customers, and suppliers, including the prohibition on harassment, discrimination, and bullying across work and social settings. Covers restrictions on speaking publicly for Fernhill, possible disciplinary consequences, annual training, where to find the full code, and who to ask for guidance. The standards also apply to contractors and temporary staff, and suppliers are expected to follow the supplier code.",
+            "summary_source": "llm",
+            "text": "Treat colleagues, customers and suppliers with respect. Harassment, discrimination and bullying are not tolerated, whether in person, in messages or on social media, and at work events as much as at work. Do not speak for Fernhill in public or to journalists unless that is part of your job. Breaking the code can lead to disciplinary action, up to dismissal. The full code of conduct is in the HR portal, and everyone completes training on it every year. If you are unsure whether something is acceptable, ask your manager or the People team. The same standards apply to contractors and temporary staff who work with us, and we expect our suppliers to follow our supplier code.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Conduct",
+                "Code of conduct"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "7.2",
+            "title": "Gifts and conflicts of interest",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains when to declare supplier gifts, personal or family connections to suppliers, competitors or customers, and plans for a second job; declarations are recorded in the HR portal. Supplier-paid event invitations require a manager’s advance approval, and cash or gifts intended to influence a decision are prohibited. Employees must never use unpublished work information to trade shares.",
+            "summary_source": "llm",
+            "text": "Gifts from suppliers worth more than 50 dollars must be declared to your manager, and you may never accept cash or anything offered to win a decision. Tell your manager if you, a relative or a close friend has an interest in a supplier, competitor or customer of Fernhill, or if you want to take on a second job. Most of these are fine once declared; the problem is keeping them secret. Declarations are recorded in the HR portal. Invitations to events paid for by a supplier, such as a sports match, also need your manager's approval in advance. You must never use information you learn at work, such as unpublished results, to buy or sell shares.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Conduct",
+                "Gifts and conflicts of interest"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "7.3",
+            "title": "Raising a concern",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains how to report concerns to a manager or the People team, or anonymously through an independent confidential speak-up line available by phone or online in 12 languages. Reports are investigated by someone uninvolved, and follow-up is shared where possible; good-faith reporters are protected from mistreatment, retaliation is a serious code-of-conduct breach, and the board’s audit committee receives quarterly summaries of reports.",
+            "summary_source": "llm",
+            "text": "If you see something wrong, talk to your manager or the People team. You can also use the confidential speak-up line, run by an independent company, anonymously if you prefer, by phone or online in 12 languages. Every report is looked into by someone not involved, and you will hear what happened next where we can share it. Nobody will be treated badly for raising a concern in good faith, even if it turns out to be unfounded. Retaliating against someone who has raised a concern is itself a serious breach of the code of conduct. The audit committee of the board receives a summary of all speak-up reports every quarter.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Conduct",
+                "Raising a concern"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "8",
+        "title": "Leaving Fernhill",
+        "level": 1,
+        "origin": "original",
+        "summary": "This section explains the steps and arrangements involved in leaving Fernhill. It covers notice periods by role and service, written notice and possible shorter notice, plus preparations for the last day, including handover, annual leave, returning company property, final pay and expenses, exit feedback, staff discount, pension options, and references.",
+        "summary_source": "llm",
+        "text": "",
+        "location": {
+          "kind": "docx",
+          "heading_path": [
+            "Leaving Fernhill"
+          ],
+          "pdf_page_start": null,
+          "pdf_page_end": null,
+          "printed_page_start": null,
+          "printed_page_end": null,
+          "covers": []
+        },
+        "children": [
+          {
+            "id": "8.1",
+            "title": "Notice periods",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains that employees must give notice in writing to their manager and confirm it in the HR portal; notice from either side depends on role and length of service, with local law requiring any longer period. A table lists notice periods: store and distribution centre staff give 2 or 4 weeks, office staff 1 or 2 months, and managers and directors 3 months. Managers may agree to shorter notice where handover allows, and the employer will explain termination in writing except during probation.",
+            "summary_source": "llm",
+            "text": "If you decide to leave, tell your manager and confirm it in writing in the HR portal. The notice you give, and the notice we give you, depends on your role and how long you have worked here, as in the table. Local law may require longer notice, in which case the longer period applies. Your manager may agree a shorter notice period if the handover allows it. If we end your employment, we will explain why in writing, except during probation. Notice must be given in writing; a conversation alone does not count.\n\n| Role | Less than 2 years | 2 years or more |\n| --- | --- | --- |\n| Store and distribution centre | 2 weeks | 4 weeks |\n| Office | 1 month | 2 months |\n| Managers and directors | 3 months | 3 months |",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Leaving Fernhill",
+                "Notice periods"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          },
+          {
+            "id": "8.2",
+            "title": "Your last day",
+            "level": 2,
+            "origin": "original",
+            "summary": "Explains what to arrange before leaving, including agreeing a handover and taking remaining annual leave, and what to return on your last day. It covers final pay and expenses, the leaving survey and optional exit conversation, the end of the staff discount, pension options, and employment references.",
+            "summary_source": "llm",
+            "text": "Before your last day, agree a handover plan with your manager and take any annual leave you have left; leave you could not take is paid with your final salary. Return your laptop, phone, keys and badge on your last day. Your final pay, including any expenses still owed, is paid on the next usual pay day. We will ask you to complete a short leaving survey, and you can ask for an exit conversation with the People team. Your staff discount ends on your last day. You can keep your pension and transfer it to a new employer's scheme if you wish. We are happy to give a reference confirming your job title and dates of employment.",
+            "location": {
+              "kind": "docx",
+              "heading_path": [
+                "Leaving Fernhill",
+                "Your last day"
+              ],
+              "pdf_page_start": null,
+              "pdf_page_end": null,
+              "printed_page_start": null,
+              "printed_page_end": null,
+              "covers": []
+            },
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  "images": [],
+  "options": {
+    "split_large": true,
+    "max_leaf_tokens": 2000,
+    "small_sections": "merge",
+    "min_leaf_tokens": 150,
+    "summaries": "llm",
+    "summary_length": "detailed",
+    "preview_sentences": 3,
+    "describe_images": true
+  },
+  "indexed_with": {
+    "provider": "openai",
+    "index_model": "gpt-6-luna",
+    "vision_model": "gpt-6-luna"
+  },
+  "page_labels": null,
+  "structure_source": "headings"
+}
