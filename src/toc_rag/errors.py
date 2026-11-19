@@ -38,6 +38,9 @@ def friendly_error(exc: Exception, provider: str | None = None) -> str:
         return f"Could not reach {name}. Check the connection and try again."
     if _any(exc, lc.ModelInvalidRequestError) or status == 400 or _looks_like_context_overflow(exc):
         return _bad_request(exc, name)
+    if is_temporary(exc):
+        code = f" (status {status})" if status else ""
+        return f"{name} is overloaded or having trouble right now{code}. Try again in a moment."
     if status:
         return f"{name} returned an error (status {status}). Try again in a moment."
     return "Something went wrong. Try again."
@@ -64,6 +67,21 @@ def _bad_request(exc: Exception, name: str) -> str:
     if _looks_like_context_overflow(exc) or any(phrase in reason for phrase in _TOO_LONG):
         return "That was too long for this model. Choose a model with a larger context."
     return f"{name} couldn't process the request with this model (status 400). Choosing another model may help."
+
+
+# A provider's own "busy or broken on our side, try again" signals. An error sent inside a stream (after the
+# response started) carries no HTTP status, only this text, e.g. OpenAI's "Our servers are currently overloaded".
+_TEMPORARY_STATUSES = {500, 502, 503, 504, 529}
+_TEMPORARY_TEXT = ("overloaded", "server_error", "server error", "try again later", "temporarily unavailable", "internal error")
+
+
+def is_temporary(exc: Exception) -> bool:
+    """True if the provider failed on its side and the same request may well work a moment later."""
+    if _any(exc, lc.ModelAuthenticationError, lc.ModelPermissionDeniedError, lc.ModelInvalidRequestError):
+        return False
+    if _status(exc) in _TEMPORARY_STATUSES:
+        return True
+    return any(phrase in _raw_text(exc) for phrase in _TEMPORARY_TEXT)
 
 
 def _raw_text(exc: Exception) -> str:

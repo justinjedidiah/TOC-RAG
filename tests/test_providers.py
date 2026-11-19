@@ -86,7 +86,7 @@ def _http(status: int) -> httpx.Response:
         (openai.APIConnectionError(message=SECRET, request=httpx.Request("POST", "https://x")), "Could not reach OpenAI"),
         (google_errors.ClientError(401, {"error": {"message": SECRET}}), "Google rejected that API key"),
         (google_errors.ClientError(429, {"error": {"message": SECRET}}), "Google says your key hit a rate limit"),
-        (google_errors.ServerError(503, {"error": {"message": SECRET}}), "Google returned an error (status 503)"),
+        (google_errors.ServerError(503, {"error": {"message": SECRET}}), "Google is overloaded or having trouble right now (status 503)"),
         (anthropic.AuthenticationError(SECRET, response=_http(401), body=None), "Anthropic rejected that API key"),
     ],
 )

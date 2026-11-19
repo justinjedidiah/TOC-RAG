@@ -24,7 +24,7 @@ from toc_rag.models import DocumentIndex, ImageRecord
 class ScriptedModel(BaseChatModel):
     """Returns preset replies in order, so the graph can be tested without an API."""
 
-    replies: list[AIMessage]
+    replies: list  # AIMessages, or exceptions to raise as provider failures
     seen: list = Field(default_factory=list)  # the messages passed to each call
 
     @property
@@ -33,7 +33,10 @@ class ScriptedModel(BaseChatModel):
 
     def _generate(self, messages, stop=None, run_manager=None, **kwargs) -> ChatResult:
         self.seen.append(list(messages))
-        return ChatResult(generations=[ChatGeneration(message=self.replies.pop(0))])
+        reply = self.replies.pop(0)
+        if isinstance(reply, Exception):  # a scripted provider failure
+            raise reply
+        return ChatResult(generations=[ChatGeneration(message=reply)])
 
     def bind_tools(self, tools, **kwargs):
         return self
@@ -270,6 +273,44 @@ def test_agent_reports_a_reply_that_stays_empty():
     model = ScriptedModel(replies=[AIMessage(""), AIMessage(""), AIMessage("")])
     result = run_agent(LibraryNavigator([make_ships()]), model, "Who?", max_steps=5)
     assert not result.found and "empty reply" in result.text and result.error
+
+
+class OverloadedError(Exception):
+    """Like OpenAI's error sent inside a stream: no HTTP status, only its text."""
+
+
+def test_agent_tries_again_when_the_provider_is_overloaded(monkeypatch):
+    monkeypatch.setattr("toc_rag.agent.graph.TEMPORARY_ERROR_WAITS", (0, 0))
+    model = ScriptedModel(
+        replies=[
+            OverloadedError("Our servers are currently overloaded. Please try again later."),
+            call("read_node", node_id="1.1"),
+            OverloadedError("Our servers are currently overloaded. Please try again later."),
+            AIMessage("The captain is Ada [ships:1.1]."),
+        ]
+    )
+    result = run_agent(LibraryNavigator([make_ships()]), model, "Who?", max_steps=5)
+    assert result.found and result.text == "The captain is Ada."
+    assert len(model.seen) == 4
+
+
+def test_agent_gives_up_on_an_overload_that_lasts_and_on_other_errors(monkeypatch):
+    import pytest
+
+    from toc_rag.errors import friendly_error
+
+    monkeypatch.setattr("toc_rag.agent.graph.TEMPORARY_ERROR_WAITS", (0, 0))
+    busy = OverloadedError("Our servers are currently overloaded. Please try again later.")
+    model = ScriptedModel(replies=[busy, busy, busy, AIMessage("never reached")])
+    with pytest.raises(OverloadedError) as raised:
+        run_agent(LibraryNavigator([make_ships()]), model, "Who?", max_steps=5)
+    assert len(model.seen) == 3  # the first try and two more
+    assert "overloaded" in friendly_error(raised.value, "OpenAI") and "OpenAI" in friendly_error(raised.value, "OpenAI")
+
+    model = ScriptedModel(replies=[ValueError("a bug of ours"), AIMessage("never reached")])
+    with pytest.raises(ValueError):
+        run_agent(LibraryNavigator([make_ships()]), model, "Who?", max_steps=5)
+    assert len(model.seen) == 1  # not a provider failure: not retried
 
 
 def test_agent_does_not_retry_a_refusal():

@@ -1,6 +1,7 @@
 """LangGraph loop over a library: the model picks a navigation tool, we run it, repeat until it replies in plain text."""
 
 import logging
+import time
 from collections.abc import Iterator
 from typing import Annotated, Literal, TypedDict
 
@@ -13,6 +14,7 @@ from langgraph.graph.message import add_messages
 from pydantic import BaseModel, Field
 
 from ..config import Settings, get_settings
+from ..errors import is_temporary
 from ..models import DocumentIndex
 from ..providers import LLMConfig
 from .citations import extract_markers, visible_prefix
@@ -21,6 +23,9 @@ from .navigator import LibraryNavigator, Step
 log = logging.getLogger(__name__)
 
 EMPTY_REPLY_RETRIES = 2  # extra tries when the model answers with nothing at all
+# Waits before trying a model call again when the provider fails on its side (overloaded, server error). The
+# SDKs retry failed requests themselves, but not an error sent inside a stream after the response started.
+TEMPORARY_ERROR_WAITS = (1.0, 3.0)
 REFUSED_TEXT = "The model declined to answer this request. Try rephrasing your question."
 # How each provider says a reply was blocked: Anthropic's stop_reason, OpenAI's and Gemini's finish_reason.
 _REFUSAL_REASONS = {"refusal", "content_filter", "SAFETY", "PROHIBITED_CONTENT", "BLOCKLIST", "SPII", "RECITATION"}
@@ -156,10 +161,7 @@ def build_graph(navigator: LibraryNavigator, llm: BaseChatModel, max_steps: int,
     def call_model(state: AgentState) -> dict:
         write = get_stream_writer()
         for attempt in range(1 + EMPTY_REPLY_RETRIES):
-            response = None
-            for chunk in model.stream([system, *state["messages"]]):
-                response = chunk if response is None else response + chunk
-                write({"text": _message_text(response)})  # the reply so far; stream_agent turns it into a Draft
+            response = _stream_reply(model, [system, *state["messages"]], write)
             if response is None:
                 response = AIMessage("")
             if _refused(response):
@@ -305,6 +307,25 @@ def ask(
 ) -> AnswerResult:
     *_, result = stream_ask(indexes, question, settings, history, api_key)
     return result
+
+
+def _stream_reply(model, messages: list[AnyMessage], write) -> AIMessage | None:
+    """Stream one model reply, writing the text so far as it comes. If the provider fails on its side (overloaded,
+    server error), wait and ask again, a couple of times, before giving up with that error."""
+    for wait in (*TEMPORARY_ERROR_WAITS, None):
+        response = None
+        try:
+            for chunk in model.stream(messages):
+                response = chunk if response is None else response + chunk
+                write({"text": _message_text(response)})  # the reply so far; stream_agent turns it into a Draft
+            return response
+        except Exception as exc:
+            if wait is None or not is_temporary(exc):
+                raise
+            log.warning("Model call failed on the provider's side (%s); trying again in %.0f s", type(exc).__name__, wait)
+            write({"text": ""})  # drop any half-written text: the new try starts over
+            time.sleep(wait)
+    return None  # not reached
 
 
 def _history_messages(history: list[ChatTurn]) -> list[AnyMessage]:
