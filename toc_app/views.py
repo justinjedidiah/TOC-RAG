@@ -44,6 +44,11 @@ PROSE_STYLE = {
     "& th, & td": {"padding": "4px 12px", "border": "1px solid var(--gray-6)", "text_align": "left", "overflow_wrap": "normal"},
     "& th": {"background": "var(--gray-3)"},
     "& img": {"max_width": "100%", "border_radius": "8px"},
+    # No margin above the first paragraph or below the last: spacing between blocks comes from the layout, so a
+    # one-line step note sits right on its action line.
+    # (:first-of-type, not :first-child, which Emotion warns is unsafe with server rendering.)
+    "& p:first-of-type": {"margin_top": "0"},
+    "& p:last-of-type": {"margin_bottom": "0"},
 }
 
 
@@ -69,14 +74,15 @@ def prose(text: rx.Var[str]) -> rx.Component:
 
 
 def model_select(label: str, value: rx.Var, on_change, hint: str, note: str) -> rx.Component:
-    """A dropdown of the models this key can use. `note` sits at the top of the open list: what the model must support."""
+    """A dropdown of the models this key can use. What the model does (`hint`) and must support (`note`) sit at
+    the top of the open list, where the choice is made, instead of as lines under every picker."""
     return rx.vstack(
         rx.text(label, size="1", weight="medium"),
         rx.select.root(
             rx.select.trigger(placeholder="Choose a model", width="100%", custom_attrs={"aria-label": label}),
             rx.select.content(
                 rx.select.group(
-                    rx.select.label(note),
+                    rx.select.label(f"{hint} {note}", height="auto", padding_y="0.4em", white_space="normal", max_width="300px"),
                     rx.foreach(State.models, lambda model: rx.select.item(model, value=model)),
                 ),
             ),
@@ -84,7 +90,6 @@ def model_select(label: str, value: rx.Var, on_change, hint: str, note: str) -> 
             on_change=on_change,
             size="1",
         ),
-        rx.text(hint, **MUTED),
         spacing="1",
         width="100%",
     )
@@ -104,12 +109,12 @@ def key_card() -> rx.Component:
                     ),
                     model_select(
                         "Model for indexing", State.index_model, State.set_index_model,
-                        "Writes summaries and describes images. A small, cheap model is enough.",
+                        "Writes summaries and describes images; a small, cheap model is enough.",
                         "Pick a model that supports structured output and images.",
                     ),
                     model_select(
                         "Model for chat", State.agent_model, State.set_agent_model,
-                        "Navigates the documents and answers. Must support tool calling.",
+                        "Navigates the documents and answers.",
                         "Pick a model that supports tool calling.",
                     ),
                     spacing="3",
@@ -150,16 +155,16 @@ def key_card() -> rx.Component:
                         is_external=True,
                         size="1",
                     ),
+                    rx.text(
+                        f"Needed to chat and for AI summaries. Kept in memory for this session only, never saved or "
+                        f"logged, and sent only to {State.provider_label}.",
+                        **MUTED,
+                    ),
                     spacing="2",
                     width="100%",
                 ),
             ),
             rx.cond(State.key_error != "", rx.text(State.key_error, size="2", color_scheme="red")),
-            rx.text(
-                f"Needed to chat and for AI summaries. Kept in server memory for this session only, never saved "
-                f"or logged, and sent only to {State.provider_label}.",
-                **MUTED,
-            ),
             spacing="2",
             align="start",
             width="100%",
@@ -188,17 +193,8 @@ def doc_row(doc: DocView) -> rx.Component:
             content=rx.cond(doc.enabled, "Used in answers. Click to turn off.", "Left out of answers. Click to turn on."),
         ),
         rx.vstack(
-            # One line: a long name ends in "..." and shows in full on hover.
-            rx.text(
-                doc.title,
-                size="2",
-                weight="medium",
-                white_space="nowrap",
-                overflow="hidden",
-                text_overflow="ellipsis",
-                max_width="100%",
-                title=doc.title,
-            ),
+            # Up to two lines; a longer name ends in "..." and shows in full on hover.
+            rx.text(doc.title, size="2", weight="medium", class_name="clamp-2", title=doc.title, line_height="1.35"),
             # Plain text, not a badge, so "sample" lines up with the file type.
             rx.hstack(
                 rx.cond(doc.sample, rx.text("sample", size="1", weight="medium", color_scheme="amber", high_contrast=True)),
@@ -255,10 +251,6 @@ def library_card() -> rx.Component:
                 rx.vstack(rx.foreach(State.docs, doc_row), spacing="0", width="100%"),
                 rx.text("No documents yet.", **MUTED),
             ),
-            rx.cond(
-                State.docs.length() > 0,
-                rx.text("Switched off: left out of answers, still browsable.", **MUTED),
-            ),
             spacing="2",
             align="start",
             width="100%",
@@ -280,12 +272,12 @@ def upload_form() -> rx.Component:
                     spacing="2",
                 ),
                 rx.vstack(
-                    rx.icon("upload", size=22),
-                    rx.text("Drop a .docx or .pdf here, or click to choose", size="2", text_align="center"),
+                    rx.hstack(rx.icon("upload", size=16), rx.text("Drop a .docx or .pdf, or click", size="2"), spacing="2", align="center"),
                     rx.text(
-                        f"Up to {settings.max_upload_bytes // (1024 * 1024)} MB, and {settings.max_pdf_pages} pages for a PDF. "
-                        "Scanned PDFs and ZIP files are not accepted.",
+                        f"Up to {settings.max_upload_bytes // (1024 * 1024)} MB and {settings.max_pdf_pages} PDF pages. "
+                        "No scanned PDFs.",
                         **MUTED,
+                        text_align="center",
                     ),
                     align="center",
                     spacing="1",
@@ -298,7 +290,7 @@ def upload_form() -> rx.Component:
             multiple=False,
             on_drop=State.handle_upload,
             disabled=State.building,
-            padding="1em",
+            padding="0.85em",
             border="1px dashed var(--gray-7)",
             border_radius="8px",
             background="var(--gray-2)",
@@ -306,7 +298,7 @@ def upload_form() -> rx.Component:
             cursor=rx.cond(State.building, "progress", "pointer"),
             _hover={"border_color": "var(--gray-9)", "background": "var(--gray-3)"},
         ),
-        rx.text("You choose how to index it (and see the cost) before anything is spent.", **MUTED),
+        rx.text("You see the cost before anything is spent.", **MUTED),
         spacing="2",
         width="100%",
     )
@@ -548,8 +540,7 @@ def agent_settings_card() -> rx.Component:
                         width="100%",
                     ),
                     rx.text(
-                        "How many levels of a document's outline the agent sees each time it looks. "
-                        "More levels means fewer steps to reach a section, but longer listings.",
+                        "More levels: fewer steps, longer listings.",
                         **MUTED,
                     ),
                     rx.hstack(
@@ -565,8 +556,7 @@ def agent_settings_card() -> rx.Component:
                         width="100%",
                     ),
                     rx.text(
-                        "Lets the agent also look for exact words across your documents, then read the sections "
-                        "it finds. Helps with names, numbers and terms the outline does not show. Still no vectors.",
+                        "Also finds exact words, like names and numbers. Still no vectors.",
                         **MUTED,
                     ),
                     spacing="2",
@@ -608,42 +598,48 @@ def answer_image(image: ImageView) -> rx.Component:
 
 
 def step_line(step: StepView) -> rx.Component:
-    """What the model said, then what it did. Smaller than the answer: the path is how it got there, the answer is the point."""
+    """What the model said, then what it did.
+
+    The note is drawn exactly like the text streaming in (same component, size and place): while the model
+    writes, nobody knows yet whether the text is a note before a step or the answer, and when the step arrives
+    the text moves into this line. Drawn differently, it would visibly jump.
+    """
     return rx.vstack(
-        rx.cond(step.note != "", rx.text(step.note, size="2")),
+        rx.cond(step.note != "", prose(text=step.note)),
         rx.hstack(
             rx.icon("corner-down-right", size=12, color="var(--gray-9)"),
             rx.text(step.label, size="1", color_scheme="gray"),
             spacing="1",
             align="center",
+            class_name="fade-in",
         ),
-        spacing="0",
+        spacing="1",
         align="start",
+        width="100%",
     )
 
 
 def step_list(steps) -> rx.Component:
-    """The agent's path, as one block set off by a rule on its left."""
-    return rx.vstack(
-        rx.foreach(steps, step_line),
-        spacing="2",
-        align="start",
-        padding_left="0.85em",
-        border_left="2px solid var(--gray-5)",
-    )
+    return rx.vstack(rx.foreach(steps, step_line), spacing="3", align="start", width="100%")
 
 
 def live_answer() -> rx.Component:
-    """The answer being written: its steps so far, then its text, or "Working..." before any text."""
+    """The answer being written: its steps so far, then its text, or "Working..." (faded in) while there is none."""
     return rx.vstack(
         rx.cond(State.live_steps.length() > 0, step_list(State.live_steps)),
         rx.cond(
-            State.live_text == "",
-            rx.hstack(rx.spinner(size="1"), rx.text("Working...", size="2", color_scheme="gray"), align="center"),
+            State.live_text != "",
             prose(text=State.live_text),
+            rx.hstack(
+                rx.spinner(size="1"),
+                rx.text("Working...", size="2", color_scheme="gray"),
+                align="center",
+                class_name="fade-in",
+            ),
         ),
         spacing="3",
         align="start",
+        width="100%",
         max_width="95%",
     )
 
@@ -1074,7 +1070,7 @@ def index() -> rx.Component:
             left_column(),
             chat_panel(),
             source_panel(),
-            columns=rx.breakpoints(initial="1", lg="300px minmax(0, 1fr) auto"),
+            columns=rx.breakpoints(initial="1", lg="320px minmax(0, 1fr) auto"),
             flex="1",
             min_height="0",
             width="100%",
