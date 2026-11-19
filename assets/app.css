@@ -102,11 +102,24 @@ strong, b, th {
   to { opacity: 1; }
 }
 
+/* A step's note: written in full colour while it streams, it settles to grey once its step lands, so the
+   answer ends up the darkest text in a reply. Same size and place, so only the colour moves. */
+.step-note {
+  color: var(--gray-11);
+  animation: settle 400ms ease-out;
+}
+
+@keyframes settle {
+  from { color: var(--gray-12); }
+  to { color: var(--gray-11); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .example-question {
     transition: none;
   }
-  .fade-in {
+  .fade-in,
+  .step-note {
     animation: none;
   }
 }

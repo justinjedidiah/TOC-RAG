@@ -34,6 +34,31 @@ BORDER = "1px solid var(--gray-5)"
 SURFACE = "var(--color-panel-solid)"
 PRIMARY = {"high_contrast": True}
 LABEL = {"size": "2", "color_scheme": "gray", "weight": "medium"}
+AREA_BAR_TEXT = {
+    "size": "1",
+    "weight": "bold",
+    "color_scheme": "gray",
+    # Small capitals look like an uppercase label but keep the text as written (tests and screen readers read it).
+    "style": {"font_variant_caps": "all-small-caps", "font_size": "15px", "letter_spacing": "0.05em"},
+}
+
+
+def area_bar(title, *right: rx.Component) -> rx.Component:
+    """The title bar on top of an area of the page, in its own tone, so each area reads as a place."""
+    return rx.hstack(
+        rx.text(title, **AREA_BAR_TEXT),
+        rx.spacer(),
+        *right,
+        align="center",
+        width="100%",
+        height="38px",
+        flex_shrink="0",
+        padding_x="1.25em",
+        background="var(--gray-3)",
+        border_bottom=BORDER,
+    )
+
+
 # A sidebar section: no box, just a hairline below it. The sidebar's order already reads as steps.
 SECTION = {"width": "100%", "flex_shrink": "0", "padding": "1em 1.25em 1.1em", "border_bottom": BORDER}
 SECTION_TITLE = {"size": "2", "weight": "bold"}
@@ -605,7 +630,7 @@ def step_line(step: StepView) -> rx.Component:
     the text moves into this line. Drawn differently, it would visibly jump.
     """
     return rx.vstack(
-        rx.cond(step.note != "", prose(text=step.note)),
+        rx.cond(step.note != "", rx.box(prose(text=step.note), class_name="step-note", width="100%")),
         rx.hstack(
             rx.icon("corner-down-right", size=12, color="var(--gray-9)"),
             rx.text(step.label, size="1", color_scheme="gray"),
@@ -833,7 +858,7 @@ def chat_panel() -> rx.Component:
         min_height="420px",
         min_width="0",
         width="100%",
-        background="var(--gray-1)",
+        background=SURFACE,
     )
 
 
@@ -860,22 +885,19 @@ def outline_row(row: OutlineRowView) -> rx.Component:
     )
 
 
+def close_panel_button(on_click) -> rx.Component:
+    return rx.icon_button(
+        rx.icon("x", size=14),
+        variant="ghost",
+        color_scheme="gray",
+        size="1",
+        title="Close panel",
+        on_click=on_click,
+    )
+
+
 def source_view() -> rx.Component:
     return rx.vstack(
-        rx.hstack(
-            rx.text("Source", **LABEL),
-            rx.spacer(),
-            rx.icon_button(
-                rx.icon("x", size=14),
-                variant="ghost",
-                color_scheme="gray",
-                size="1",
-                title="Close panel",
-                on_click=State.set_source_open(False),
-            ),
-            align="center",
-            width="100%",
-        ),
         rx.text(State.source_title, size="4", weight="bold"),
         rx.text(State.source_location, **MUTED),
         rx.cond(
@@ -936,20 +958,6 @@ def source_pages() -> rx.Component:
 
 def browse_view() -> rx.Component:
     return rx.vstack(
-        rx.hstack(
-            rx.text("Outline", **LABEL),
-            rx.spacer(),
-            rx.icon_button(
-                rx.icon("x", size=14),
-                variant="ghost",
-                color_scheme="gray",
-                size="1",
-                title="Close panel",
-                on_click=State.set_browse_open(False),
-            ),
-            align="center",
-            width="100%",
-        ),
         rx.text(State.browse_title, size="4", weight="bold"),
         rx.cond(State.browse_structure != "", rx.text(State.browse_structure, **MUTED, id="browse-structure")),
         rx.text("Click a section to read it.", **MUTED),
@@ -961,22 +969,32 @@ def browse_view() -> rx.Component:
 
 
 def source_panel() -> rx.Component:
-    """The outline or source being read. Hidden until a citation or an outline is opened, so the chat has the
-    width the rest of the time."""
+    """The outline or source being read, under its own title bar. Hidden until a citation or an outline is
+    opened, so the chat has the width the rest of the time."""
     is_open = State.source_open | State.browse_open
     return rx.box(
-        rx.cond(State.source_open, source_view(), rx.cond(State.browse_open, browse_view())),
+        rx.cond(
+            State.source_open,
+            area_bar("Source", close_panel_button(State.set_source_open(False))),
+            rx.cond(State.browse_open, area_bar("Outline", close_panel_button(State.set_browse_open(False)))),
+        ),
+        rx.box(
+            rx.cond(State.source_open, source_view(), rx.cond(State.browse_open, browse_view())),
+            padding="1.25em",
+            flex="1",
+            min_height="0",
+            overflow_y="auto",
+            custom_attrs={"data-zoom-area": ""},  # pictures here enlarge on click (ZOOM_SCRIPT)
+        ),
         id="source-panel",
-        custom_attrs={"data-zoom-area": ""},  # pictures here enlarge on click (ZOOM_SCRIPT)
-        display=rx.cond(is_open, "block", "none"),
+        display=rx.cond(is_open, "flex", "none"),
+        flex_direction="column",
         width=["100%", "100%", "420px"],
-        padding="1.25em",
-        overflow_y="auto",
         min_height="0",
         min_width="0",
         border_left=[BORDER, BORDER, BORDER],
         border_top=[BORDER, BORDER, "none"],
-        background=SURFACE,
+        background="var(--gray-2)",
     )
 
 
@@ -1008,50 +1026,50 @@ def session_timer() -> rx.Component:
     )
 
 
-def header() -> rx.Component:
-    return rx.hstack(
-        rx.link(  # back to the home page
-            rx.hstack(
-                rx.icon("book-open-text", size=20, stroke_width=1.75),
-                rx.vstack(
-                    rx.text("TOC RAG", size="3", weight="bold"),
-                    rx.text("Vectorless RAG: chat by navigating a table of contents", size="1", color_scheme="gray", display=["none", "none", "block"]),
-                    spacing="0",
-                    align="start",
-                ),
-                align="center",
-            ),
-            href="/",
-            underline="none",
-            color="inherit",
-            title="Home",
-        ),
-        rx.spacer(),
+def session_footer() -> rx.Component:
+    """The bottom of Settings: the way home, how long uploads are kept, and ending the session."""
+    return rx.vstack(
         session_timer(),
         rx.button(
             rx.icon("trash-2", size=14),
             "End session and delete my data",
             variant="outline",
             color_scheme="gray",
-            radius="full",
             size="1",
             on_click=State.end_session,
         ),
-        align="center",
+        rx.link(  # back to the home page
+            rx.hstack(
+                rx.icon("book-open-text", size=16, stroke_width=1.75),
+                rx.text("TOC RAG", size="2", weight="bold"),
+                rx.text("· home", size="1", color_scheme="gray"),
+                spacing="2",
+                align="center",
+            ),
+            href="/",
+            underline="none",
+            color="inherit",
+            title="What TOC RAG is and how it works",
+            margin_top="0.5em",
+        ),
+        spacing="2",
+        align="start",
         width="100%",
-        padding="0.75em 1.25em",
-        border_bottom=BORDER,
-        background=SURFACE,
-        wrap="wrap",
+        padding="1em 1.25em 1.25em",
+        margin_top="auto",  # sits at the bottom when the settings are shorter than the window
+        border_top=BORDER,
+        flex_shrink="0",
     )
 
 
 def left_column() -> rx.Component:
     return rx.vstack(
+        area_bar("Settings"),
         key_card(),
         library_card(),
         upload_card(),
         agent_settings_card(),
+        session_footer(),
         spacing="0",
         align="stretch",
         overflow_y="auto",
@@ -1063,20 +1081,12 @@ def left_column() -> rx.Component:
 
 
 def index() -> rx.Component:
-    """The app fills the window: header on top, then sidebar, chat and (when open) the source panel."""
-    return rx.box(
-        header(),
-        rx.grid(
-            left_column(),
-            chat_panel(),
-            source_panel(),
-            columns=rx.breakpoints(initial="1", lg="320px minmax(0, 1fr) auto"),
-            flex="1",
-            min_height="0",
-            width="100%",
-        ),
-        display="flex",
-        flex_direction="column",
+    """Settings on the left, the chat in the middle, the source (when open) on the right. No top bar."""
+    return rx.grid(
+        left_column(),
+        chat_panel(),
+        source_panel(),
+        columns=rx.breakpoints(initial="1", lg="320px minmax(0, 1fr) auto"),
         height=rx.breakpoints(initial="auto", lg="100vh"),
         min_height="100vh",
         width="100%",
