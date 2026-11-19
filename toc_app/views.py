@@ -27,7 +27,7 @@ BORDER = "1px solid var(--gray-5)"
 SURFACE = "var(--color-panel-solid)"
 PRIMARY = {"high_contrast": True}
 LABEL = {"size": "2", "color_scheme": "gray", "weight": "medium"}
-CARD = {"background": SURFACE, "border": BORDER, "border_radius": "14px", "box_shadow": "none", "width": "100%", "flex_shrink": "0"}
+CARD = {"background": SURFACE, "border": BORDER, "border_radius": "8px", "box_shadow": "none", "width": "100%", "flex_shrink": "0"}
 PROSE_STYLE = {
     "& table": {"border_collapse": "collapse", "margin": "0.5em 0"},
     "& th, & td": {"padding": "4px 12px", "border": "1px solid var(--gray-6)", "text_align": "left"},
@@ -269,7 +269,7 @@ def upload_form() -> rx.Component:
             disabled=State.building,
             padding="1em",
             border="1px dashed var(--gray-7)",
-            border_radius="12px",
+            border_radius="8px",
             background="var(--gray-2)",
             width="100%",
             cursor=rx.cond(State.building, "progress", "pointer"),
@@ -296,7 +296,7 @@ def preset_option(choice: PresetView) -> rx.Component:
         cursor="pointer",
         width="100%",
         padding="0.5em 0.7em",
-        border_radius="10px",
+        border_radius="8px",
         # The border width never changes (only its colour); the extra ring is a shadow, which takes no space.
         # A 1px -> 2px border would resize the cards and shift the whole panel on every selection.
         border=rx.cond(chosen, "1px solid var(--accent-9)", BORDER),
@@ -372,7 +372,7 @@ def advanced_options() -> rx.Component:
         width="100%",
         padding="0.6em",
         border=BORDER,
-        border_radius="10px",
+        border_radius="8px",
     )
 
 
@@ -443,7 +443,7 @@ def confirm_indexing_dialog() -> rx.Component:
                 padding="1em",
                 margin_y="1em",
                 border=BORDER,
-                border_radius="10px",
+                border_radius="8px",
                 id="confirm-cost",
             ),
             rx.hstack(
@@ -567,7 +567,7 @@ def citation_chip(citation: CitationView) -> rx.Component:
 
 def answer_image(image: ImageView) -> rx.Component:
     return rx.vstack(
-        rx.image(src=image.url, alt=image.description, max_width="420px", width="100%", border_radius="12px", border=BORDER),
+        rx.image(src=image.url, alt=image.description, max_width="420px", width="100%", border_radius="8px", border=BORDER),
         rx.text(image.description, **MUTED),
         spacing="1",
         align="start",
@@ -628,7 +628,7 @@ def message_view(message: ChatMessage) -> rx.Component:
             align_self="flex-end",
             background="var(--gray-4)",
             padding="0.55em 0.95em",
-            border_radius="16px",
+            border_radius="12px",
             max_width="80%",
         ),
         assistant_message(message),
@@ -655,7 +655,7 @@ def example_card(question: str, first: bool = False) -> rx.Component:
         height="auto",
         width="100%",
         padding="0.9em 1em",
-        border_radius="14px",
+        border_radius="8px",
         background=SURFACE,
         box_shadow="inset 0 0 0 1.5px var(--gray-12)" if first else "inset 0 0 0 1px var(--gray-6)",
         color="var(--gray-12)",
@@ -724,7 +724,7 @@ def composer() -> rx.Component:
             padding="0.4em 0.4em 0.4em 0.9em",
             background=SURFACE,
             border=BORDER,
-            border_radius="22px",
+            border_radius="12px",
         ),
         on_submit=State.ask,
         reset_on_submit=True,
@@ -950,7 +950,7 @@ def header() -> rx.Component:
     return rx.hstack(
         rx.link(  # back to the home page
             rx.hstack(
-                rx.center(rx.icon("book-open-text", size=18), width="36px", height="36px", border=BORDER, border_radius="10px", background=SURFACE),
+                rx.center(rx.icon("book-open-text", size=18), width="36px", height="36px", border=BORDER, border_radius="8px", background=SURFACE),
                 rx.vstack(
                     rx.text("TOC RAG", size="3", weight="bold"),
                     rx.text("Vectorless RAG: chat by navigating a table of contents", size="1", color_scheme="gray", display=["none", "none", "block"]),
@@ -1020,7 +1020,7 @@ def index() -> rx.Component:
             width="100%",
             margin="0 auto",
             border=BORDER,
-            border_radius="18px",
+            border_radius="12px",
             overflow="hidden",
             background=SURFACE,
         ),

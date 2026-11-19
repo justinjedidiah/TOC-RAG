@@ -62,7 +62,7 @@ config = rx.Config(
     app_name="toc_app",
     plugins=[
         rx.plugins.RadixThemesPlugin(
-            theme=rx.theme(appearance="light", accent_color="gray", gray_color="sand", radius="large")
+            theme=rx.theme(appearance="light", accent_color="gray", gray_color="sand", radius="medium")
         )
     ],
     disable_plugins=[rx.plugins.SitemapPlugin],

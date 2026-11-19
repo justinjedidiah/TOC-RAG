@@ -15,9 +15,21 @@
   --cursor-switch: pointer;
 }
 
+/* Type: "bold" is semibold (600), so headings and labels carry weight without shouting; body text is 15px
+   (Radix's size 3), which reads better next to the 12-14px interface text than 16px. */
+.radix-themes.radix-themes {
+  --font-weight-bold: 600;
+  --font-size-3: 15px;
+  --line-height-3: 24px;
+}
+
 html,
 body {
-  background: var(--gray-4);
+  background: var(--gray-1);
+}
+
+h1, h2, h3, .rt-Heading {
+  text-wrap: balance;
 }
 
 /* quieter scrollbars inside the panels */

@@ -18,7 +18,7 @@ MAX_WIDTH = "1100px"
 
 
 def _logo() -> rx.Component:
-    return rx.center(rx.icon("book-open-text", size=18), width="36px", height="36px", border=BORDER, border_radius="10px", background=SURFACE)
+    return rx.center(rx.icon("book-open-text", size=18), width="36px", height="36px", border=BORDER, border_radius="8px", background=SURFACE)
 
 
 def _open_app_button(label: str = "Open the app", size: str = "2") -> rx.Component:
@@ -104,7 +104,7 @@ def demo_answer() -> rx.Component:
                 align_self="flex-end",
                 background="var(--gray-4)",
                 padding="0.55em 0.95em",
-                border_radius="16px",
+                border_radius="12px",
                 max_width="85%",
             ),
             rx.vstack(
@@ -135,7 +135,7 @@ def demo_answer() -> rx.Component:
         ),
         padding="1.25em",
         border=BORDER,
-        border_radius="18px",
+        border_radius="12px",
         background=SURFACE,
         box_shadow="0 12px 40px -18px rgba(0, 0, 0, 0.25)",
         width="100%",
@@ -214,7 +214,7 @@ STEPS = [
 def _step_card(number: int, icon: str, title: str, text: str) -> rx.Component:
     return rx.vstack(
         rx.hstack(
-            rx.center(rx.icon(icon, size=18), width="36px", height="36px", border_radius="10px", background="var(--gray-3)"),
+            rx.center(rx.icon(icon, size=18), width="36px", height="36px", border_radius="8px", background="var(--gray-3)"),
             rx.text(f"{number}", size="1", weight="bold", color_scheme="gray"),
             justify="between",
             align="center",
@@ -226,7 +226,7 @@ def _step_card(number: int, icon: str, title: str, text: str) -> rx.Component:
         align="start",
         padding="1.25em",
         border=BORDER,
-        border_radius="14px",
+        border_radius="8px",
         background=SURFACE,
         height="100%",
     )
@@ -341,7 +341,7 @@ def _tree_card(label: str, rows: list[tuple[int, str, str, str]]) -> rx.Componen
         align="start",
         padding="1em 1.1em",
         border=BORDER,
-        border_radius="14px",
+        border_radius="8px",
         background=SURFACE,
         width="100%",
         min_width="0",
@@ -414,7 +414,7 @@ def inside_the_index() -> rx.Component:
         rx.grid(
             *[
                 rx.hstack(
-                    rx.center(rx.icon(icon, size=18), min_width="36px", height="36px", border_radius="10px", background="var(--gray-3)"),
+                    rx.center(rx.icon(icon, size=18), min_width="36px", height="36px", border_radius="8px", background="var(--gray-3)"),
                     rx.vstack(rx.text(title, size="3", weight="bold"), rx.text(text, size="2", color_scheme="gray"), spacing="1", align="start"),
                     spacing="3",
                     align="start",
@@ -506,7 +506,7 @@ def features() -> rx.Component:
         rx.grid(
             *[
                 rx.hstack(
-                    rx.center(rx.icon(icon, size=18), min_width="36px", height="36px", border_radius="10px", background="var(--gray-3)"),
+                    rx.center(rx.icon(icon, size=18), min_width="36px", height="36px", border_radius="8px", background="var(--gray-3)"),
                     rx.vstack(rx.text(title, size="3", weight="bold"), rx.text(text, size="2", color_scheme="gray"), spacing="1", align="start"),
                     spacing="3",
                     align="start",

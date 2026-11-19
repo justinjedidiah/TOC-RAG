@@ -20,3 +20,6 @@ data/
 # Demo video (login cookies and renders)
 demo/.auth/
 demo/out/
+
+# Design audit screenshots and notes (ui-redesign skill)
+.design/
