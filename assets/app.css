@@ -32,6 +32,60 @@ h1, h2, h3, .rt-Heading {
   text-wrap: balance;
 }
 
+/* A sample question in the empty chat: a line of text that highlights on hover, not a card. */
+.example-question {
+  display: block;
+  width: calc(100% + 1em);
+  margin: 0 -0.5em;
+  padding: 0.3em 0.5em;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--gray-12);
+  font: inherit;
+  font-size: var(--font-size-2);
+  line-height: var(--line-height-2);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.example-question:hover {
+  background: var(--gray-3);
+}
+
+.example-question:focus-visible,
+.text-link:focus-visible {
+  outline: 2px solid var(--gray-8);
+  outline-offset: 1px;
+}
+
+/* A button that reads as a link inside a sentence. */
+.text-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gray-12);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* Outline previews: two lines, so the outline can be scanned. */
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .example-question {
+    transition: none;
+  }
+}
+
 /* quieter scrollbars inside the panels */
 .rt-ScrollAreaScrollbar {
   background: transparent;

@@ -10,14 +10,21 @@ from .runtime import settings
 from .state import MAX_LEAF_CHOICES, MIN_LEAF_CHOICES, UPLOAD_ID, State
 from .viewmodels import ChatMessage, CitationView, DocView, ImageView, OutlineRowView, PageView, PresetView, StepView
 
-# Each sample question, with the sample it is about (its doc id without the content hash). A question is only
-# offered while that sample is turned on.
-EXAMPLES = [
-    ("Which business segment grew fastest in 2026, and by how much?", "fernhill-annual-report-2026"),
-    ("How many weeks of parental leave do employees get?", "fernhill-employee-handbook"),
-    ("Show me the revenue by segment chart from the annual report.", "fernhill-annual-report-2026"),
-    ("Can I work from another country for a few weeks?", "fernhill-employee-handbook"),
+# The sample questions, grouped by the sample they are about (its doc id without the content hash). A group is
+# only offered while that sample is turned on.
+SAMPLE_QUESTIONS = [
+    ("Annual report 2026", "fernhill-annual-report-2026", [
+        "Which business segment grew fastest in 2026, and by how much?",
+        "Show me the revenue by segment chart from the annual report.",
+    ]),
+    ("Employee handbook", "fernhill-employee-handbook", [
+        "How many weeks of parental leave do employees get?",
+        "Can I work from another country for a few weeks?",
+    ]),
 ]
+EXAMPLES = [(question, sample) for _, sample, questions in SAMPLE_QUESTIONS for question in questions]
+KEY_INPUT_ID = "api-key-input"
+CHAT_WIDTH = "760px"  # answers and the input keep a readable line length however wide the pane is
 ACCEPTED = {
     "application/pdf": [".pdf"],
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
@@ -27,12 +34,14 @@ BORDER = "1px solid var(--gray-5)"
 SURFACE = "var(--color-panel-solid)"
 PRIMARY = {"high_contrast": True}
 LABEL = {"size": "2", "color_scheme": "gray", "weight": "medium"}
-CARD = {"background": SURFACE, "border": BORDER, "border_radius": "8px", "box_shadow": "none", "width": "100%", "flex_shrink": "0"}
+# A sidebar section: no box, just a hairline below it. The sidebar's order already reads as steps.
+SECTION = {"width": "100%", "flex_shrink": "0", "padding": "1em 1.25em 1.1em", "border_bottom": BORDER}
+SECTION_TITLE = {"size": "2", "weight": "bold"}
 PROSE_STYLE = {
     # A wide table scrolls sideways inside its own box instead of widening the text around it (which then
     # ran past the edge of the source panel and was cut off).
     "& table": {"border_collapse": "collapse", "margin": "0.5em 0", "display": "block", "max_width": "100%", "overflow_x": "auto"},
-    "& th, & td": {"padding": "4px 12px", "border": "1px solid var(--gray-6)", "text_align": "left"},
+    "& th, & td": {"padding": "4px 12px", "border": "1px solid var(--gray-6)", "text_align": "left", "overflow_wrap": "normal"},
     "& th": {"background": "var(--gray-3)"},
     "& img": {"max_width": "100%", "border_radius": "8px"},
 }
@@ -82,9 +91,9 @@ def model_select(label: str, value: rx.Var, on_change, hint: str, note: str) -> 
 
 
 def key_card() -> rx.Component:
-    return rx.card(
+    return rx.box(
         rx.vstack(
-            rx.text("1. Your API key", size="2", weight="bold"),
+            rx.text("Your API key", **SECTION_TITLE),
             rx.cond(
                 State.key_set,
                 rx.vstack(
@@ -122,6 +131,7 @@ def key_card() -> rx.Component:
                         rx.hstack(
                             rx.input(
                                 name="api_key",
+                                id=KEY_INPUT_ID,
                                 type="password",
                                 placeholder=State.key_placeholder,
                                 auto_complete="off",
@@ -146,15 +156,15 @@ def key_card() -> rx.Component:
             ),
             rx.cond(State.key_error != "", rx.text(State.key_error, size="2", color_scheme="red")),
             rx.text(
-                f"Anthropic, OpenAI or Google Gemini. Needed to chat, and to index with AI summaries. It stays in "
-                f"this session's server memory only: never saved to disk or logged, and sent only to {State.provider_label}.",
+                f"Needed to chat and for AI summaries. Kept in server memory for this session only, never saved "
+                f"or logged, and sent only to {State.provider_label}.",
                 **MUTED,
             ),
             spacing="2",
             align="start",
             width="100%",
         ),
-        **CARD,
+        **SECTION,
     )
 
 
@@ -202,8 +212,21 @@ def doc_row(doc: DocView) -> rx.Component:
             flex="1",
             min_width="0",  # lets the title shrink and truncate instead of pushing the buttons out
             opacity=rx.cond(doc.enabled, "1", "0.5"),  # turned off: dimmed, still browsable
+            on_click=State.open_browse(doc.doc_id),  # the name opens the outline too
+            cursor="pointer",
         ),
-        rx.button("Browse", size="1", variant="soft", color_scheme="gray", on_click=State.open_browse(doc.doc_id)),
+        # An icon, so the name keeps the width. No `title` attribute: the e2e run finds citation chips by it.
+        rx.tooltip(
+            rx.icon_button(
+                rx.icon("list-tree", size=15),
+                size="1",
+                variant="ghost",
+                color_scheme="gray",
+                aria_label="Browse the outline",
+                on_click=State.open_browse(doc.doc_id),
+            ),
+            content="Browse the outline",
+        ),
         rx.cond(
             ~doc.sample,
             rx.icon_button(
@@ -224,9 +247,9 @@ def doc_row(doc: DocView) -> rx.Component:
 
 
 def library_card() -> rx.Component:
-    return rx.card(
+    return rx.box(
         rx.vstack(
-            rx.text("Library", size="2", weight="bold"),
+            rx.text("Library", **SECTION_TITLE),
             rx.cond(
                 State.docs.length() > 0,
                 rx.vstack(rx.foreach(State.docs, doc_row), spacing="0", width="100%"),
@@ -234,13 +257,13 @@ def library_card() -> rx.Component:
             ),
             rx.cond(
                 State.docs.length() > 0,
-                rx.text("Switch a document off to leave it out of answers. You can still browse it.", **MUTED),
+                rx.text("Switched off: left out of answers, still browsable.", **MUTED),
             ),
             spacing="2",
             align="start",
             width="100%",
         ),
-        **CARD,
+        **SECTION,
     )
 
 
@@ -307,9 +330,11 @@ def preset_option(choice: PresetView) -> rx.Component:
         border_radius="8px",
         # The border width never changes (only its colour); the extra ring is a shadow, which takes no space.
         # A 1px -> 2px border would resize the cards and shift the whole panel on every selection.
-        border=rx.cond(chosen, "1px solid var(--accent-9)", BORDER),
-        box_shadow=rx.cond(chosen, "0 0 0 1px var(--accent-9)", "none"),
-        background=rx.cond(chosen, "var(--accent-2)", "transparent"),
+        # Only the chosen preset gets a frame; the others are plain rows that highlight on hover.
+        border=rx.cond(chosen, "1px solid var(--gray-12)", "1px solid transparent"),
+        box_shadow=rx.cond(chosen, "0 0 0 1px var(--gray-12)", "none"),
+        background=rx.cond(chosen, SURFACE, "transparent"),
+        _hover={"background": rx.cond(chosen, SURFACE, "var(--gray-3)")},
         custom_attrs={"role": "radio", "aria-checked": rx.cond(chosen, "true", "false"), "data-preset": choice.name},
     )
 
@@ -479,25 +504,25 @@ def indexing_view() -> rx.Component:
 
 
 def upload_card() -> rx.Component:
-    return rx.card(
+    return rx.box(
         rx.vstack(
-            rx.text("2. Add a document", size="2", weight="bold"),
+            rx.text("Add a document", **SECTION_TITLE),
             rx.cond(State.indexing, indexing_view(), rx.cond(State.has_pending, pending_view(), upload_form())),
             rx.cond(State.upload_error != "", rx.text(State.upload_error, size="2", color_scheme="red")),
             spacing="2",
             align="start",
             width="100%",
         ),
-        **CARD,
+        **SECTION,
     )
 
 
 def agent_settings_card() -> rx.Component:
     """How the chat agent reads the library. Collapsed by default: the defaults are fine for most visitors."""
-    return rx.card(
+    return rx.box(
         rx.vstack(
             rx.hstack(
-                rx.text("Agent settings", size="2", weight="bold"),
+                rx.text("Agent settings", **SECTION_TITLE),
                 rx.spacer(),
                 rx.cond(State.show_agent_settings, rx.icon("chevron-down", size=16), rx.icon("chevron-right", size=16)),
                 on_click=State.toggle_agent_settings,
@@ -552,7 +577,7 @@ def agent_settings_card() -> rx.Component:
             align="start",
             width="100%",
         ),
-        **CARD,
+        **SECTION,
     )
 
 
@@ -583,24 +608,35 @@ def answer_image(image: ImageView) -> rx.Component:
 
 
 def step_line(step: StepView) -> rx.Component:
-    """What the model said, then what it did, so the answer reads as a conversation."""
+    """What the model said, then what it did. Smaller than the answer: the path is how it got there, the answer is the point."""
     return rx.vstack(
-        rx.cond(step.note != "", rx.text(step.note, size="3")),  # same size as the answer: it is the model talking too
+        rx.cond(step.note != "", rx.text(step.note, size="2")),
         rx.hstack(
             rx.icon("corner-down-right", size=12, color="var(--gray-9)"),
             rx.text(step.label, size="1", color_scheme="gray"),
             spacing="1",
             align="center",
         ),
-        spacing="1",
+        spacing="0",
         align="start",
+    )
+
+
+def step_list(steps) -> rx.Component:
+    """The agent's path, as one block set off by a rule on its left."""
+    return rx.vstack(
+        rx.foreach(steps, step_line),
+        spacing="2",
+        align="start",
+        padding_left="0.85em",
+        border_left="2px solid var(--gray-5)",
     )
 
 
 def live_answer() -> rx.Component:
     """The answer being written: its steps so far, then its text, or "Working..." before any text."""
     return rx.vstack(
-        rx.cond(State.live_steps.length() > 0, rx.vstack(rx.foreach(State.live_steps, step_line), spacing="2", align="start")),
+        rx.cond(State.live_steps.length() > 0, step_list(State.live_steps)),
         rx.cond(
             State.live_text == "",
             rx.hstack(rx.spinner(size="1"), rx.text("Working...", size="2", color_scheme="gray"), align="center"),
@@ -614,7 +650,7 @@ def live_answer() -> rx.Component:
 
 def assistant_message(message: ChatMessage) -> rx.Component:
     return rx.vstack(
-        rx.cond(message.steps.length() > 0, rx.vstack(rx.foreach(message.steps, step_line), spacing="2", align="start")),
+        rx.cond(message.steps.length() > 0, step_list(message.steps)),
         # Every reply looks the same, cited or not: "not found" is still an answer.
         rx.cond(message.text != "", prose(text=message.text)),
         rx.foreach(message.images, answer_image),
@@ -643,60 +679,67 @@ def message_view(message: ChatMessage) -> rx.Component:
     )
 
 
-def example_card(question: str, first: bool = False) -> rx.Component:
-    return rx.button(
-        rx.hstack(
-            rx.vstack(
-                rx.text("Sample question", size="1", color_scheme="gray"),
-                rx.text(question, size="3", weight="medium", text_align="left", white_space="normal"),
-                spacing="1",
-                align="start",
-            ),
-            rx.spacer(),
-            rx.icon("arrow-right", size=14, color="var(--gray-10)"),
-            align="center",
+def example_question(question: str) -> rx.Component:
+    """A sample question as a plain line of text: a button, with no box until hovered."""
+    return rx.el.button(
+        question,
+        on_click=State.ask_example(question),
+        type="button",
+        class_name="example-question",
+    )
+
+
+def question_group(title: str, sample: str, questions: list[str]) -> rx.Component:
+    """One sample's questions under its name, offered only while that sample is turned on."""
+    return rx.cond(
+        State.enabled_sample_names.contains(sample),
+        rx.box(
+            rx.text(title, size="1", weight="medium", color_scheme="gray", margin_bottom="0.2em"),
+            *[example_question(question) for question in questions],
             width="100%",
         ),
-        on_click=State.ask_example(question),
-        variant="outline",
-        color_scheme="gray",
-        height="auto",
-        width="100%",
-        padding="0.9em 1em",
-        border_radius="8px",
-        background=SURFACE,
-        box_shadow="inset 0 0 0 1.5px var(--gray-12)" if first else "inset 0 0 0 1px var(--gray-6)",
-        color="var(--gray-12)",
-        cursor="pointer",
+    )
+
+
+def chat_hint_line() -> rx.Component:
+    """What is still needed before chatting, as one quiet line. Without a key it links to the key field."""
+    return rx.cond(
+        ~State.key_set,
+        rx.text(
+            rx.el.button(
+                "Add an API key",
+                type="button",
+                class_name="text-link",
+                on_click=rx.call_script(
+                    f"(e => {{ if (e) {{ e.scrollIntoView({{block: 'center'}}); e.focus(); }} }})"
+                    f"(document.getElementById('{KEY_INPUT_ID}'))"
+                ),
+            ),
+            " to ask. You can browse the library without one.",
+            size="2",
+            color_scheme="gray",
+        ),
+        rx.cond(State.chat_hint != "", rx.text(State.chat_hint, size="2", color_scheme="gray")),
     )
 
 
 def empty_chat() -> rx.Component:
+    """The empty chat, centred in the pane: a heading, the sample questions by document, and what is missing."""
     return rx.vstack(
-        rx.text("Ask about your documents", **LABEL),
-        rx.text(
-            "The agent reads each document's table of contents and opens only the sections it needs. "
-            "You can see the path it takes under every answer.",
-            size="3",
-        ),
+        rx.heading("Ask the documents", size="5", weight="bold", letter_spacing="-0.01em"),
         rx.cond(
             State.samples_enabled,  # with every sample off, these questions have nothing to be answered from
             rx.vstack(
-                rx.text("Try one on the sample documents", **LABEL),
-                *[
-                    rx.cond(State.enabled_sample_names.contains(sample), example_card(question, first=i == 0))
-                    for i, (question, sample) in enumerate(EXAMPLES)
-                ],
-                spacing="2",
-                align="start",
+                *[question_group(title, sample, questions) for title, sample, questions in SAMPLE_QUESTIONS],
+                spacing="4",
                 width="100%",
             ),
         ),
-        rx.cond(State.chat_hint != "", rx.callout(State.chat_hint, icon="info", size="1", color_scheme="gray")),
-        spacing="4",
+        chat_hint_line(),
+        spacing="5",
         align="start",
-        padding="0.5em 0.25em",
         width="100%",
+        max_width="560px",
     )
 
 
@@ -741,21 +784,26 @@ def composer() -> rx.Component:
 
 
 def chat_panel() -> rx.Component:
+    empty = (State.messages.length() == 0) & ~State.thinking
     return rx.vstack(
+        # While the chat is empty, its first screen fills the pane, centred; the (empty) scroll area stays
+        # mounted so the scroll-to-end script always finds it.
+        rx.cond(empty, rx.center(empty_chat(), flex="1", width="100%", padding="2em 1.25em", min_height="0")),
         rx.scroll_area(
             rx.vstack(
-                rx.cond(State.messages.length() > 0, rx.fragment(), empty_chat()),
                 rx.foreach(State.messages, message_view),
                 rx.cond(State.thinking, live_answer()),
                 rx.box(id="chat-end"),
                 spacing="5",
                 width="100%",
-                padding="1.25em 1.25em 0.5em",
+                max_width=CHAT_WIDTH,
+                margin="0 auto",
+                padding="1.5em 1.25em 0.5em",
                 custom_attrs={"data-zoom-area": ""},  # pictures here enlarge on click (ZOOM_SCRIPT)
             ),
             type="auto",
             scrollbars="vertical",
-            flex="1",
+            flex=rx.cond(empty, "0", "1"),
             width="100%",
             min_height="0",
         ),
@@ -781,6 +829,8 @@ def chat_panel() -> rx.Component:
             composer(),
             padding="0.5em 1.25em 1.25em",
             width="100%",
+            max_width=CHAT_WIDTH,
+            margin="0 auto",
         ),
         spacing="0",
         height=["80vh", "80vh", "100%"],
@@ -798,8 +848,8 @@ def outline_row(row: OutlineRowView) -> rx.Component:
     return rx.box(
         rx.button(
             rx.vstack(
-                rx.text(row.title, size="2", weight="medium"),
-                rx.text(row.summary, size="1", color_scheme="gray", white_space="normal", text_align="left"),
+                rx.text(row.title, size="2", weight="medium", color="var(--gray-12)", text_align="left"),
+                rx.text(row.summary, size="1", color_scheme="gray", white_space="normal", text_align="left", class_name="clamp-2"),
                 spacing="0",
                 align="start",
             ),
@@ -832,7 +882,16 @@ def source_view() -> rx.Component:
         ),
         rx.text(State.source_title, size="4", weight="bold"),
         rx.text(State.source_location, **MUTED),
-        rx.cond(State.source_summary != "", rx.callout(State.source_summary, icon="sparkles", size="1", color_scheme="gray")),
+        rx.cond(
+            State.source_summary != "",
+            rx.vstack(
+                rx.text("Summary", size="1", weight="medium", color_scheme="gray"),
+                rx.text(State.source_summary, size="2", color="var(--gray-11)"),
+                spacing="1",
+                padding_left="0.85em",
+                border_left="2px solid var(--gray-5)",
+            ),
+        ),
         rx.cond(
             State.source_pages.length() > 0,
             rx.segmented_control.root(
@@ -906,17 +965,16 @@ def browse_view() -> rx.Component:
 
 
 def source_panel() -> rx.Component:
-    placeholder = rx.center(
-        rx.text("Click a citation, or Browse a document, to read it here.", size="2", color_scheme="gray", text_align="center"),
-        padding="2em",
-        height="100%",
-        display=["none", "none", "flex"],
-    )
+    """The outline or source being read. Hidden until a citation or an outline is opened, so the chat has the
+    width the rest of the time."""
+    is_open = State.source_open | State.browse_open
     return rx.box(
-        rx.cond(State.source_open, source_view(), rx.cond(State.browse_open, browse_view(), placeholder)),
+        rx.cond(State.source_open, source_view(), rx.cond(State.browse_open, browse_view())),
         id="source-panel",
         custom_attrs={"data-zoom-area": ""},  # pictures here enlarge on click (ZOOM_SCRIPT)
-        padding=rx.cond(State.source_open | State.browse_open, "1.25em", "0"),
+        display=rx.cond(is_open, "block", "none"),
+        width=["100%", "100%", "420px"],
+        padding="1.25em",
         overflow_y="auto",
         min_height="0",
         min_width="0",
@@ -958,7 +1016,7 @@ def header() -> rx.Component:
     return rx.hstack(
         rx.link(  # back to the home page
             rx.hstack(
-                rx.center(rx.icon("book-open-text", size=18), width="36px", height="36px", border=BORDER, border_radius="8px", background=SURFACE),
+                rx.icon("book-open-text", size=20, stroke_width=1.75),
                 rx.vstack(
                     rx.text("TOC RAG", size="3", weight="bold"),
                     rx.text("Vectorless RAG: chat by navigating a table of contents", size="1", color_scheme="gray", display=["none", "none", "block"]),
@@ -998,40 +1056,33 @@ def left_column() -> rx.Component:
         library_card(),
         upload_card(),
         agent_settings_card(),
-        spacing="3",
+        spacing="0",
         align="stretch",
-        padding="1em",
         overflow_y="auto",
         min_height="0",
         min_width="0",
         background="var(--gray-2)",
+        border_right=["none", "none", BORDER],
     )
 
 
 def index() -> rx.Component:
+    """The app fills the window: header on top, then sidebar, chat and (when open) the source panel."""
     return rx.box(
-        rx.box(
-            header(),
-            rx.grid(
-                left_column(),
-                chat_panel(),
-                source_panel(),
-                columns=rx.breakpoints(initial="1", lg="300px minmax(0, 1fr) 380px"),
-                flex="1",
-                min_height="0",
-                width="100%",
-            ),
-            display="flex",
-            flex_direction="column",
-            height=rx.breakpoints(initial="auto", lg="calc(100vh - 2rem)"),
-            max_width="1500px",
+        header(),
+        rx.grid(
+            left_column(),
+            chat_panel(),
+            source_panel(),
+            columns=rx.breakpoints(initial="1", lg="300px minmax(0, 1fr) auto"),
+            flex="1",
+            min_height="0",
             width="100%",
-            margin="0 auto",
-            border=BORDER,
-            border_radius="12px",
-            overflow="hidden",
-            background=SURFACE,
         ),
-        padding=rx.breakpoints(initial="0.5em", lg="1rem"),
+        display="flex",
+        flex_direction="column",
+        height=rx.breakpoints(initial="auto", lg="100vh"),
         min_height="100vh",
+        width="100%",
+        background=SURFACE,
     )
