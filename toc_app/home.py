@@ -18,7 +18,7 @@ MAX_WIDTH = "1100px"
 
 
 def _logo() -> rx.Component:
-    return rx.center(rx.icon("book-open-text", size=18), width="36px", height="36px", border=BORDER, border_radius="8px", background=SURFACE)
+    return rx.icon("book-open-text", size=20, stroke_width=1.75)
 
 
 def _open_app_button(label: str = "Open the app", size: str = "2") -> rx.Component:
@@ -114,6 +114,8 @@ def demo_answer() -> rx.Component:
                 _demo_step('Read "Revenue by segment"'),
                 spacing="1",
                 align="start",
+                padding_left="0.85em",
+                border_left="2px solid var(--gray-5)",
             ),
             rx.text(
                 "Equipment grew fastest: revenue rose 15.0 percent, from 98.3 to 113.0 million dollars, "
@@ -146,7 +148,7 @@ def hero() -> rx.Component:
     return _section(
         rx.grid(
             rx.vstack(
-                rx.badge("Vectorless RAG", variant="surface", color_scheme="gray", radius="full", size="2"),
+                rx.text("Vectorless RAG", size="2", weight="medium", color_scheme="gray"),
                 rx.heading("Retrieval without vectors", size=rx.breakpoints(initial="8", md="9"), weight="bold", line_height="1.05"),
                 rx.text(
                     "An AI agent answers questions about your documents by navigating their table of contents, "
@@ -211,23 +213,16 @@ STEPS = [
 ]
 
 
-def _step_card(number: int, icon: str, title: str, text: str) -> rx.Component:
+def _step_card(number: int, title: str, text: str) -> rx.Component:
+    """One step: its number, title and text under a rule. No box and no icon: the number already orders them."""
     return rx.vstack(
-        rx.hstack(
-            rx.center(rx.icon(icon, size=18), width="36px", height="36px", border_radius="8px", background="var(--gray-3)"),
-            rx.text(f"{number}", size="1", weight="bold", color_scheme="gray"),
-            justify="between",
-            align="center",
-            width="100%",
-        ),
+        rx.text(f"{number:02d}", size="2", weight="medium", color_scheme="gray", style={"font_variant_numeric": "tabular-nums"}),
         rx.text(title, size="4", weight="bold"),
         rx.text(text, size="2", color_scheme="gray"),
-        spacing="3",
+        spacing="2",
         align="start",
-        padding="1.25em",
-        border=BORDER,
-        border_radius="8px",
-        background=SURFACE,
+        padding_top="1em",
+        border_top="1px solid var(--gray-7)",
         height="100%",
     )
 
@@ -236,9 +231,9 @@ def how_it_works() -> rx.Component:
     return _section(
         _heading("How it works", "Read documents like a person does", "Four steps, from upload to a cited answer."),
         rx.grid(
-            *[_step_card(i + 1, icon, title, text) for i, (icon, title, text) in enumerate(STEPS)],
+            *[_step_card(i + 1, title, text) for i, (_icon, title, text) in enumerate(STEPS)],
             columns=rx.breakpoints(initial="1", sm="2", lg="4"),
-            spacing="4",
+            spacing="6",
             width="100%",
         ),
         rx.el.a(
@@ -505,25 +500,22 @@ def features() -> rx.Component:
         _heading("Features", "What you get"),
         rx.grid(
             *[
-                rx.hstack(
-                    rx.center(rx.icon(icon, size=18), min_width="36px", height="36px", border_radius="8px", background="var(--gray-3)"),
-                    rx.vstack(rx.text(title, size="3", weight="bold"), rx.text(text, size="2", color_scheme="gray"), spacing="1", align="start"),
-                    spacing="3",
-                    align="start",
-                )
-                for icon, title, text in items
+                rx.vstack(rx.text(title, size="3", weight="bold"), rx.text(text, size="2", color_scheme="gray"), spacing="1", align="start")
+                for _icon, title, text in items
             ],
             columns=rx.breakpoints(initial="1", sm="2", md="3"),
             spacing="6",
             width="100%",
         ),
-        rx.callout(
+        rx.text(
             f"Your key stays in server memory for your session only: never written to disk or logs. "
             f"Everything you upload is deleted when you end the session, or after {lifetime}.",
-            icon="shield-check",
-            color_scheme="gray",
             size="2",
+            color_scheme="gray",
             margin_top="2.5em",
+            padding_top="1em",
+            border_top=BORDER,
+            max_width="680px",
         ),
     )
 
