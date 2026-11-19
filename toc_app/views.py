@@ -29,7 +29,9 @@ PRIMARY = {"high_contrast": True}
 LABEL = {"size": "2", "color_scheme": "gray", "weight": "medium"}
 CARD = {"background": SURFACE, "border": BORDER, "border_radius": "8px", "box_shadow": "none", "width": "100%", "flex_shrink": "0"}
 PROSE_STYLE = {
-    "& table": {"border_collapse": "collapse", "margin": "0.5em 0"},
+    # A wide table scrolls sideways inside its own box instead of widening the text around it (which then
+    # ran past the edge of the source panel and was cut off).
+    "& table": {"border_collapse": "collapse", "margin": "0.5em 0", "display": "block", "max_width": "100%", "overflow_x": "auto"},
     "& th, & td": {"padding": "4px 12px", "border": "1px solid var(--gray-6)", "text_align": "left"},
     "& th": {"background": "var(--gray-3)"},
     "& img": {"max_width": "100%", "border_radius": "8px"},
@@ -45,7 +47,13 @@ def prose(text: rx.Var[str]) -> rx.Component:
     """
     # No maths: "$34 billion ... $10 billion" is money, not a formula. No raw HTML: document text and model
     # answers are untrusted, so HTML in them shows as text instead of becoming part of the page.
-    return rx.box(rx.markdown(text, use_math=False, use_katex=False, use_raw=False), style=PROSE_STYLE)
+    return rx.box(
+        rx.markdown(text, use_math=False, use_katex=False, use_raw=False),
+        style=PROSE_STYLE,
+        width="100%",
+        min_width="0",
+        overflow_wrap="anywhere",
+    )
 
 
 # ---- sidebar ----
