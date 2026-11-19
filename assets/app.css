@@ -21,6 +21,13 @@
   --font-weight-bold: 600;
   --font-size-3: 15px;
   --line-height-3: 24px;
+  /* Three corner radii across Radix's controls too: 6px controls, 8px panels, 12px floating layers. */
+  --radius-1: 6px;
+  --radius-2: 6px;
+  --radius-3: 6px;
+  --radius-4: 8px;
+  --radius-5: 12px;
+  --radius-6: 12px;
 }
 
 html,
@@ -30,6 +37,11 @@ body {
 
 h1, h2, h3, .rt-Heading {
   text-wrap: balance;
+}
+
+/* Browser-default bold (markdown **strong**, table headers) matches the 600 used everywhere else. */
+strong, b, th {
+  font-weight: 600;
 }
 
 /* A sample question in the empty chat: a line of text that highlights on hover, not a card. */

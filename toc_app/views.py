@@ -201,7 +201,7 @@ def doc_row(doc: DocView) -> rx.Component:
             ),
             # Plain text, not a badge, so "sample" lines up with the file type.
             rx.hstack(
-                rx.cond(doc.sample, rx.text("sample", size="1", weight="medium", color_scheme="amber")),
+                rx.cond(doc.sample, rx.text("sample", size="1", weight="medium", color_scheme="amber", high_contrast=True)),
                 rx.cond(doc.sample, rx.text("·", **MUTED)),
                 rx.text(doc.kind, **MUTED),
                 spacing="1",
