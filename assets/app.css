@@ -110,10 +110,18 @@ strong, b, th {
 /* The answer being written: one status line (a pulsing dot and up to 3 lines of small grey text) that becomes
    full-size text once it runs past 3 lines (data-mode="answer", set by LIVE_SCRIPT in state.py). */
 .live-block {
+  color: var(--gray-11);
+}
+
+.live-row {
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  color: var(--gray-11);
+}
+
+/* "N steps" shows above the text only once the text is the answer, as in the finished answer. */
+.live-block:not([data-mode="answer"]) .live-fold {
+  display: none;
 }
 
 .live-dot {
@@ -136,11 +144,15 @@ strong, b, th {
   color: var(--gray-11);
 }
 
+/* The status line shows the newest 3 lines of a long note: the text sits at the bottom of a 3-line window. */
 .live-text {
   flex: 1;
   min-width: 0;
   max-height: 60px; /* 3 lines of 20px */
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .live-block:not([data-mode="answer"]) .live-text * {
@@ -158,6 +170,7 @@ strong, b, th {
 }
 
 .live-block[data-mode="answer"] .live-text {
+  display: block;
   max-height: none;
   overflow: visible;
   animation: fade-in 200ms ease-out;
