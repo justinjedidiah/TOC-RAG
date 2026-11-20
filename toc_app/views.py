@@ -608,14 +608,21 @@ def agent_settings_card() -> rx.Component:
 
 
 def citation_chip(citation: CitationView) -> rx.Component:
+    """A cited section. Never wider than the chat: a long location ends in "..." (the source panel shows it whole)."""
     return rx.button(
-        rx.icon("file-text", size=14),
-        rx.text(citation.title, size="1", weight="medium"),
-        rx.cond(citation.location != "", rx.text(citation.location, size="1", color_scheme="gray")),
+        rx.icon("file-text", size=14, flex_shrink="0"),
+        rx.text(citation.title, size="1", weight="medium", white_space="nowrap", flex_shrink="0", max_width="100%",
+                overflow="hidden", text_overflow="ellipsis"),
+        rx.cond(
+            citation.location != "",
+            rx.text(citation.location, size="1", color_scheme="gray", white_space="nowrap", overflow="hidden",
+                    text_overflow="ellipsis", min_width="0"),
+        ),
         variant="outline",
         color_scheme="gray",
         size="1",
         radius="full",
+        max_width="100%",
         on_click=State.open_source(citation.ref),
         title=citation.doc_title,
     )
@@ -685,10 +692,11 @@ def assistant_message(message: ChatMessage) -> rx.Component:
         rx.foreach(message.images, answer_image),
         rx.cond(
             message.citations.length() > 0,
-            rx.hstack(rx.foreach(message.citations, citation_chip), wrap="wrap", spacing="2"),
+            rx.hstack(rx.foreach(message.citations, citation_chip), wrap="wrap", spacing="2", width="100%"),
         ),
         spacing="3",
         align="start",
+        width="100%",  # without it the block grows to its widest child, so a long citation ran off the screen
         max_width="95%",
     )
 
@@ -829,6 +837,7 @@ def chat_panel() -> rx.Component:
             ),
             type="auto",
             scrollbars="vertical",
+            class_name="chat-scroll",
             flex=rx.cond(empty, "0", "1"),
             width="100%",
             min_height="0",
@@ -1071,10 +1080,10 @@ def phone_bar() -> rx.Component:
     """The top bar on a phone only: the settings drawer button, the name, and whether a key is set."""
     return rx.hstack(
         rx.icon_button(
-            rx.icon("menu", size=20),
+            rx.icon("menu", size=18, stroke_width=1.75),
             variant="ghost",
             color_scheme="gray",
-            size="3",
+            size="2",
             aria_label="Open settings",
             on_click=rx.call_script(OPEN_SETTINGS),
         ),
@@ -1090,7 +1099,7 @@ def phone_bar() -> rx.Component:
         class_name="phone-only",
         align="center",
         spacing="2",
-        height="52px",
+        height="46px",
         padding_left="0.5em",
         padding_right="1em",
         background="var(--gray-2)",

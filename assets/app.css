@@ -129,6 +129,14 @@ strong, b, th {
   background: transparent;
 }
 
+/* Radix's scroll area wraps its content in a display: table box that grows to fit the widest line, so one long
+   unbreakable line (a citation, a URL) made the whole chat wider than the screen. A block keeps it to the width. */
+.chat-scroll .rt-ScrollAreaViewport > div {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
 /* Click-to-enlarge pictures (ZOOM_SCRIPT in state.py). */
 [data-zoom-area] img {
   cursor: zoom-in;
