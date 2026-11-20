@@ -102,16 +102,105 @@ strong, b, th {
   to { opacity: 1; }
 }
 
-/* A step's note: written in full colour while it streams, it settles to grey once its step lands, so the
-   answer ends up the darkest text in a reply. Same size and place, so only the colour moves. */
+/* A step's note, in the folded path under an answer: grey, so the answer is the darkest text in a reply. */
 .step-note {
   color: var(--gray-11);
-  animation: settle 400ms ease-out;
 }
 
-@keyframes settle {
-  from { color: var(--gray-12); }
-  to { color: var(--gray-11); }
+/* The answer being written: one status line (a pulsing dot and up to 3 lines of small grey text) that becomes
+   full-size text once it runs past 3 lines (data-mode="answer", set by LIVE_SCRIPT in state.py). */
+.live-block {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--gray-11);
+}
+
+.live-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 7px;
+  border-radius: 50%;
+  background: var(--gray-9);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.3; }
+}
+
+.live-label {
+  font-size: var(--font-size-2);
+  line-height: 20px;
+  color: var(--gray-11);
+}
+
+.live-text {
+  flex: 1;
+  min-width: 0;
+  max-height: 60px; /* 3 lines of 20px */
+  overflow: hidden;
+}
+
+.live-block:not([data-mode="answer"]) .live-text * {
+  font-size: var(--font-size-2) !important;
+  line-height: 20px !important;
+  color: var(--gray-11) !important;
+}
+
+.live-block[data-mode="answer"] {
+  color: var(--gray-12);
+}
+
+.live-block[data-mode="answer"] .live-dot {
+  display: none;
+}
+
+.live-block[data-mode="answer"] .live-text {
+  max-height: none;
+  overflow: visible;
+  animation: fade-in 200ms ease-out;
+}
+
+/* The folded path under a finished answer: "3 steps", open to see each note and step. */
+.path-summary {
+  cursor: pointer;
+  width: fit-content;
+  font-size: var(--font-size-2);
+  color: var(--gray-11);
+  list-style: none;
+}
+
+.path-summary::-webkit-details-marker {
+  display: none;
+}
+
+.path-summary::after {
+  content: "\203A"; /* › (escaped, so the file's encoding cannot garble it) */
+  display: inline-block;
+  margin-left: 5px;
+  transition: transform 150ms ease-out;
+}
+
+.path-fold[open] > .path-summary::after {
+  transform: rotate(90deg);
+}
+
+.path-summary:hover {
+  color: var(--gray-12);
+}
+
+.path-summary:focus-visible {
+  outline: 2px solid var(--gray-8);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.path-body {
+  margin-top: 10px;
+  padding-left: 12px;
+  border-left: 2px solid var(--gray-5);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -119,7 +208,8 @@ strong, b, th {
     transition: none;
   }
   .fade-in,
-  .step-note {
+  .live-dot,
+  .live-block[data-mode="answer"] .live-text {
     animation: none;
   }
 }
@@ -204,7 +294,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ---- Phone and narrow tablet (below Reflex's lg breakpoint, where the three-column layout starts) ----
+/* ---- Phone and narrow tablet (below 1024px, where the three-column grid starts: Radix's md breakpoint) ----
    The chat fills the screen under a slim top bar. The settings column becomes a drawer from the left,
    opened by the bar's menu button (body[data-drawer="open"], set in the browser only). The source panel
    covers the screen while it is open. !important: these override layout props Reflex sets on the same nodes. */
@@ -227,7 +317,7 @@ html {
   cursor: pointer;
 }
 
-@media (max-width: 61.99em) {
+@media (max-width: 1023.98px) {
   .phone-only {
     display: flex !important;
   }
@@ -269,7 +359,7 @@ html {
   }
 }
 
-@media (max-width: 61.99em) and (prefers-reduced-motion: reduce) {
+@media (max-width: 1023.98px) and (prefers-reduced-motion: reduce) {
   .settings-pane,
   body[data-drawer="open"] .settings-pane {
     transition: none;

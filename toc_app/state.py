@@ -4,12 +4,12 @@ Helper methods start with an underscore so Reflex does not turn them into events
 """
 
 import asyncio
+import collections
 import dataclasses
 import itertools
 import logging
 import shutil
 import threading
-import time
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +38,7 @@ from toc_rag.outline import node_markdown, outline_rows
 from toc_rag.sessions import session_id_for
 from toc_rag.uploads import UploadError, safe_filename, validate_upload
 
+from .pacing import TICK_SECONDS, TextPacer
 from .runtime import sessions, settings
 from .viewmodels import ChatMessage, CitationView, DocView, ImageView, OutlineRowView, PageView, PresetView, StepView
 
@@ -46,7 +47,6 @@ log = logging.getLogger(__name__)
 UPLOAD_ID = "doc_upload"
 MAX_HISTORY_TURNS = 6  # earlier question/answer pairs the agent gets as context
 MAX_SOURCE_PAGES = 30  # pages a PDF section shows in the source panel (a whole chapter can be dozens)
-DRAFT_INTERVAL = 0.08  # seconds between streamed-text updates sent to the browser
 TREE_OPTIONS = ("split_large", "max_leaf_tokens", "small_sections", "min_leaf_tokens")  # changing these rebuilds the tree
 MAX_LEAF_CHOICES = sorted({"500", "1000", "2000", "4000", str(settings.max_leaf_tokens)}, key=int)
 MIN_LEAF_CHOICES = sorted({"0", "50", "100", "150", "300", str(settings.min_leaf_tokens)}, key=int)
@@ -195,6 +195,59 @@ ZOOM_SCRIPT = """
 """
 
 
+class _Failed:
+    """The agent raised: the error, handed from the worker thread to the chat loop."""
+
+    def __init__(self, error: BaseException):
+        self.error = error
+
+
+_FINISHED = object()  # the agent has no more events
+
+
+def _feed(events, inbox: asyncio.Queue, loop: asyncio.AbstractEventLoop, stop: threading.Event) -> None:
+    """Run the agent (blocking calls to the model) in a worker thread and pass each event to the chat loop.
+
+    Stops early, without asking the model for more, once `stop` is set (the chat was cleared, or the loop failed).
+    """
+    try:
+        for event in events:
+            if stop.is_set():
+                break
+            loop.call_soon_threadsafe(inbox.put_nowait, event)
+    except Exception as exc:
+        loop.call_soon_threadsafe(inbox.put_nowait, _Failed(exc))
+    finally:
+        close = getattr(events, "close", None)
+        if close is not None and stop.is_set():
+            close()
+        loop.call_soon_threadsafe(inbox.put_nowait, _FINISHED)
+
+
+# While an answer is being written, its text starts in a small status line of up to 3 lines: it might be a note
+# before the agent's next step. Text that runs past 3 lines is the answer, so this moves it (data-mode="answer")
+# to full size. The server cannot tell: it does not know line lengths, and the model only shows which it was by
+# taking a step or stopping. When a step lands the text empties, and the next text starts in the status line again.
+LIVE_SCRIPT = """
+(function () {
+  if (window.__liveStatus) { return; }
+  window.__liveStatus = true;
+  var queued = false;
+  function check() {
+    queued = false;
+    document.querySelectorAll('[data-live]').forEach(function (block) {
+      var text = block.querySelector('.live-text');
+      if (!text) { delete block.dataset.mode; return; }
+      if (block.dataset.mode !== 'answer' && text.scrollHeight > text.clientHeight + 2) { block.dataset.mode = 'answer'; }
+    });
+  }
+  new MutationObserver(function () {
+    if (!queued) { queued = true; requestAnimationFrame(check); }
+  }).observe(document.body, {subtree: true, childList: true, characterData: true});
+})();
+"""
+
+
 def scroll_chat(force: bool = False) -> rx.event.EventSpec:
     """Keep the newest text in view, but only if the visitor is already near the bottom.
 
@@ -299,6 +352,11 @@ class State(rx.State):
     agent_search: bool = settings.agent_search  # the agent's keyword search tool
 
     # ---- derived ----
+
+    @rx.var
+    def live_status(self) -> str:
+        """The status line while no text is coming in: the step just taken, or "Working..." before the first."""
+        return f"{self.live_steps[-1].label}..." if self.live_steps else "Working..."
 
     @rx.var
     def can_chat(self) -> bool:
@@ -560,8 +618,8 @@ class State(rx.State):
     def on_load(self):
         self._restore_pending()
         self._refresh()
-        # The session timer, and click-to-enlarge for pictures, both run in the browser (set up once per page).
-        events = [rx.call_script(COUNTDOWN_SCRIPT), rx.call_script(ZOOM_SCRIPT)]
+        # The session timer, click-to-enlarge for pictures and the live status line run in the browser (set up once).
+        events = [rx.call_script(COUNTDOWN_SCRIPT), rx.call_script(ZOOM_SCRIPT), rx.call_script(LIVE_SCRIPT)]
         if not self.key_set and dev_key_prefill() is not None:  # local dev only: never on the public server
             events.append(State.prefill_dev_key)
         return events
@@ -1064,29 +1122,52 @@ class State(rx.State):
             if not indexes:
                 raise EmptyLibrary
             events = stream_ask(indexes, question, chat_settings, history, llm_config=llm)
-            last_draft = 0.0
-            while (event := await asyncio.to_thread(next, events, None)) is not None:
-                if isinstance(event, Step):
-                    steps.append(StepView(event.label, event.note))
-                    async with self:
-                        if self._chat_generation != generation:
-                            return
-                        # Any draft text so far was the model's note before this step; the step carries it now.
-                        self.live_steps = list(steps)
-                        self.live_text = ""
-                elif isinstance(event, Draft):
-                    if time.monotonic() - last_draft < DRAFT_INTERVAL:
-                        continue  # the final answer replaces the text anyway; skip updates that come too fast
-                    last_draft = time.monotonic()
-                    async with self:
-                        if self._chat_generation != generation:
-                            return
-                        self.live_text = event.text
-                else:
-                    message = ChatMessage(role="assistant", steps=list(steps), **_answer_fields(event, library, token))
-                    async with self:
-                        self._finish_answer(generation, message)
-                yield scroll_chat()
+            # The agent runs in a worker thread and drops its events into `inbox`. This loop shows them at a
+            # steady pace (`TextPacer`): the model sends text in bursts, which made the chat jump. A step, or the
+            # answer, is applied only once the text before it has been shown in full, so the order never changes.
+            inbox: asyncio.Queue = asyncio.Queue()
+            stop = threading.Event()
+            threading.Thread(target=_feed, args=(events, inbox, asyncio.get_running_loop(), stop), daemon=True).start()
+            pacer, waiting = TextPacer(), collections.deque()
+            try:
+                while True:
+                    while not inbox.empty():
+                        waiting.append(inbox.get_nowait())
+                    while waiting and isinstance(waiting[0], Draft):
+                        pacer.set_target(waiting.popleft().text)
+                    if (text := pacer.tick()) is not None:
+                        async with self:
+                            if self._chat_generation != generation:
+                                return
+                            self.live_text = text
+                        yield scroll_chat()
+                        await asyncio.sleep(TICK_SECONDS)
+                        continue
+                    if not waiting:
+                        waiting.append(await inbox.get())  # all shown: wait for the agent
+                        continue
+                    event = waiting.popleft()
+                    if isinstance(event, _Failed):
+                        raise event.error
+                    if event is _FINISHED:
+                        break
+                    if isinstance(event, Step):
+                        steps.append(StepView(event.label, event.note))
+                        pacer.reset()
+                        async with self:
+                            if self._chat_generation != generation:
+                                return
+                            # The text shown so far was the model's note before this step; the step carries it now.
+                            self.live_steps = list(steps)
+                            self.live_text = ""
+                        yield scroll_chat()
+                    elif isinstance(event, AnswerResult):
+                        message = ChatMessage(role="assistant", steps=list(steps), **_answer_fields(event, library, token))
+                        async with self:
+                            self._finish_answer(generation, message)
+                        yield scroll_chat()
+            finally:
+                stop.set()  # stops the agent at its next event if the chat was cleared or this failed
         except EmptyLibrary:
             async with self:
                 self._finish_answer(

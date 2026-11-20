@@ -408,17 +408,25 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
 
         def ask_text() -> None:
             page.get_by_role("button", name="Which business segment").click()
-            expect(page.get_by_text("Next: open document.")).to_be_visible(timeout=60000)  # the model's note before its first step
+            expect(page.locator("[data-live]")).to_be_visible(timeout=15000)  # the status line while it works
             expect(page.get_by_text("Answered by the offline test model")).to_be_visible(timeout=60000)
+            expect(page.locator("[data-live]")).to_have_count(0)
 
         step("a question streams its path and answers", ask_text, "04-answer.png")
 
         def path_and_citation() -> None:
+            # The path is folded under the answer ("3 steps"); opening it shows each note and step.
+            summary = page.locator(".path-summary").last
+            expect(summary).to_have_text(re.compile(r"^\d+ steps?$"))
+            body = page.inner_text("body")
+            assert "Opened" not in body, "the path is not folded"
+            summary.click()
             body = page.inner_text("body")
             assert "Opened" in body, "no 'Opened' step shown"
             assert "Read " in body, "no 'Read' step shown"
             assert "Next: " in body, "the model's note before a step is not shown beside it"
-        step("navigation steps are shown", path_and_citation)
+            summary.click()  # folded again
+        step("navigation steps are shown, folded under the answer", path_and_citation)
 
         def open_citation() -> None:
             # Citation chips carry the document title (the trash buttons of uploads also have a title).
@@ -470,7 +478,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             box = page.get_by_placeholder("Ask a question about the documents")
             box.fill("What is the outlook for 2027?")
             box.press("Enter")
-            expect(page.get_by_text("Working...")).to_be_visible(timeout=15000)
+            expect(page.locator("[data-live]")).to_be_visible(timeout=15000)
             page.evaluate(f"{viewport}.scrollTop = 0")  # the visitor scrolls up to re-read while it streams
             expect(page.locator("text=Answered by the offline test model")).to_have_count(answers_before + 1, timeout=60000)
             page.wait_for_timeout(800)
@@ -597,6 +605,8 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
                 box.fill("How much fish does a pelican eat every day?")
                 box.press("Enter")
                 expect(answers).to_have_count(before + 1, timeout=60000)
+                expect(page.locator("[data-live]")).to_have_count(0, timeout=30000)  # finished, not still streaming
+                page.locator(".path-summary").last.click()  # the path is folded under the answer
                 expect(page.get_by_text(re.compile(r'Searched for "much fish pelican eat every day" \(\d+ sections? found\)'))).to_be_visible()
             finally:
                 switch.click()  # off again, so the later questions browse the outline

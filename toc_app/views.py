@@ -28,7 +28,7 @@ OPEN_SETTINGS = "document.body.dataset.drawer = 'open'"
 CLOSE_SETTINGS = "delete document.body.dataset.drawer"
 # On a phone the settings are a drawer: open it first, then put the cursor in the key field.
 FOCUS_KEY = (
-    f"(() => {{ if (window.matchMedia('(max-width: 61.99em)').matches) {{ {OPEN_SETTINGS}; }}"
+    f"(() => {{ if (window.matchMedia('(max-width: 1023.98px)').matches) {{ {OPEN_SETTINGS}; }}"
     f" const e = document.getElementById('{KEY_INPUT_ID}');"
     f" if (e) {{ setTimeout(() => {{ e.scrollIntoView({{block: 'center'}}); e.focus(); }}, 220); }} }})()"
 )
@@ -664,29 +664,39 @@ def step_list(steps) -> rx.Component:
 
 
 def live_answer() -> rx.Component:
-    """The answer being written: its steps so far, then its text, or "Working..." (faded in) while there is none."""
-    return rx.vstack(
-        rx.cond(State.live_steps.length() > 0, step_list(State.live_steps)),
+    """The answer being written, as one status line: a pulsing dot, then the text coming in (up to 3 lines; it may
+    be a note before the next step) or, between texts, the step just taken. Text that runs past 3 lines is the
+    answer: LIVE_SCRIPT (state.py) then shows it at full size. The steps themselves fold into the finished answer."""
+    return rx.box(
+        rx.box(class_name="live-dot"),
         rx.cond(
             State.live_text != "",
-            prose(text=State.live_text),
-            rx.hstack(
-                rx.spinner(size="1"),
-                rx.text("Working...", size="2", color_scheme="gray"),
-                align="center",
-                class_name="fade-in",
-            ),
+            rx.box(prose(text=State.live_text), class_name="live-text"),
+            rx.text(State.live_status, class_name="live-label fade-in"),
         ),
-        spacing="3",
-        align="start",
+        class_name="live-block",
+        custom_attrs={"data-live": ""},
         width="100%",
         max_width="95%",
     )
 
 
+def path_fold(steps) -> rx.Component:
+    """The agent's path under a finished answer, folded to one line ("3 steps"): the browser's own details element
+    opens it, so it needs no state."""
+    return rx.el.details(
+        rx.el.summary(
+            rx.cond(steps.length() == 1, "1 step", steps.length().to_string() + " steps"),
+            class_name="path-summary",
+        ),
+        rx.box(step_list(steps), class_name="path-body"),
+        class_name="path-fold",
+    )
+
+
 def assistant_message(message: ChatMessage) -> rx.Component:
     return rx.vstack(
-        rx.cond(message.steps.length() > 0, step_list(message.steps)),
+        rx.cond(message.steps.length() > 0, path_fold(message.steps)),
         # Every reply looks the same, cited or not: "not found" is still an answer.
         rx.cond(message.text != "", prose(text=message.text)),
         rx.foreach(message.images, answer_image),
@@ -1151,8 +1161,8 @@ def index() -> rx.Component:
         rx.box(class_name="drawer-scrim", on_click=rx.call_script(CLOSE_SETTINGS)),
         chat_panel(),
         source_panel(),
-        columns=rx.breakpoints(initial="minmax(0, 1fr)", lg="320px minmax(0, 1fr) auto"),
-        rows=rx.breakpoints(initial="auto minmax(0, 1fr)", lg="minmax(0, 1fr)"),
+        columns=rx.breakpoints(initial="minmax(0, 1fr)", md="320px minmax(0, 1fr) auto"),
+        rows=rx.breakpoints(initial="auto minmax(0, 1fr)", md="minmax(0, 1fr)"),
         height="100dvh",
         width="100%",
         overflow="hidden",
