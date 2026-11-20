@@ -198,7 +198,7 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
         step("the home page opens the app at /app", home_to_app)
 
         def loads() -> None:
-            expect(page.get_by_text("TOC RAG").first).to_be_visible(timeout=30000)
+            expect(page.locator("text=TOC RAG >> visible=true").first).to_be_visible(timeout=30000)  # the phone bar has it too, hidden here
             expect(page.get_by_text("sample", exact=True)).to_have_count(2, timeout=15000)
             expect(page.get_by_placeholder("Add your API key to chat")).to_be_disabled()
             expect(page.get_by_text("Uploads are kept for 2 hours")).to_be_visible()  # no session yet
@@ -737,6 +737,30 @@ def run_browser(out: Path, data: Path, work: Path) -> None:
             assert overflow <= 1, f"page is {overflow}px wider than the screen"
 
         step("the phone layout does not scroll sideways", mobile, "11-mobile.png")
+
+        def phone_layout() -> None:
+            # The chat is the first screen; the settings are a drawer behind the menu button.
+            composer = page.locator("input[name=question]")
+            box = composer.bounding_box()
+            assert box and box["y"] + box["height"] <= 800, f"the chat input is off the first screen ({box})"
+            key_field = page.locator("input[name=api_key]")
+            expect(key_field).not_to_be_visible()
+            page.get_by_role("button", name="Open settings").click()
+            expect(key_field).to_be_visible(timeout=5000)
+            page.get_by_role("button", name="Close settings").click()
+            expect(key_field).not_to_be_visible(timeout=5000)
+            # An outline opened from the drawer covers the screen, and closes back to it.
+            page.get_by_role("button", name="Open settings").click()
+            page.get_by_role("button", name="Browse").first.click()
+            panel = page.locator("#source-panel")
+            expect(panel.get_by_text("Outline", exact=True)).to_be_visible(timeout=10000)
+            width = panel.evaluate("p => p.getBoundingClientRect().width")
+            assert width >= 370, f"the outline is {width}px wide, not full screen"
+            panel.locator("button[title='Close panel']").click()
+            expect(panel).not_to_be_visible(timeout=5000)
+            page.get_by_role("button", name="Close settings").click()
+
+        step("on a phone the chat comes first, settings open as a drawer, the outline covers the screen", phone_layout, "11b-phone.png")
 
         real_problems = [p for p in problems if "favicon" not in p and "Failed to load resource" not in p]
         (out / "browser-errors.txt").write_text("\n\n".join(problems), encoding="utf-8")

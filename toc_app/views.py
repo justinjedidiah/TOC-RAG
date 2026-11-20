@@ -24,6 +24,14 @@ SAMPLE_QUESTIONS = [
 ]
 EXAMPLES = [(question, sample) for _, sample, questions in SAMPLE_QUESTIONS for question in questions]
 KEY_INPUT_ID = "api-key-input"
+OPEN_SETTINGS = "document.body.dataset.drawer = 'open'"
+CLOSE_SETTINGS = "delete document.body.dataset.drawer"
+# On a phone the settings are a drawer: open it first, then put the cursor in the key field.
+FOCUS_KEY = (
+    f"(() => {{ if (window.matchMedia('(max-width: 61.99em)').matches) {{ {OPEN_SETTINGS}; }}"
+    f" const e = document.getElementById('{KEY_INPUT_ID}');"
+    f" if (e) {{ setTimeout(() => {{ e.scrollIntoView({{block: 'center'}}); e.focus(); }}, 220); }} }})()"
+)
 CHAT_WIDTH = "760px"  # answers and the input keep a readable line length however wide the pane is
 ACCEPTED = {
     "application/pdf": [".pdf"],
@@ -731,10 +739,7 @@ def chat_hint_line() -> rx.Component:
                 "Add an API key",
                 type="button",
                 class_name="text-link",
-                on_click=rx.call_script(
-                    f"(e => {{ if (e) {{ e.scrollIntoView({{block: 'center'}}); e.focus(); }} }})"
-                    f"(document.getElementById('{KEY_INPUT_ID}'))"
-                ),
+                on_click=rx.call_script(FOCUS_KEY),
             ),
             " to ask. You can browse the library without one.",
             size="2",
@@ -854,8 +859,8 @@ def chat_panel() -> rx.Component:
             margin="0 auto",
         ),
         spacing="0",
-        height=["80vh", "80vh", "100%"],
-        min_height="420px",
+        height="100%",
+        min_height="0",
         min_width="0",
         width="100%",
         background=SURFACE,
@@ -987,13 +992,13 @@ def source_panel() -> rx.Component:
             custom_attrs={"data-zoom-area": ""},  # pictures here enlarge on click (ZOOM_SCRIPT)
         ),
         id="source-panel",
+        class_name="source-pane",
         display=rx.cond(is_open, "flex", "none"),
         flex_direction="column",
-        width=["100%", "100%", "420px"],
+        width="420px",
         min_height="0",
         min_width="0",
-        border_left=[BORDER, BORDER, BORDER],
-        border_top=[BORDER, BORDER, "none"],
+        border_left=BORDER,
         background="var(--gray-2)",
     )
 
@@ -1062,9 +1067,56 @@ def session_footer() -> rx.Component:
     )
 
 
+def phone_bar() -> rx.Component:
+    """The top bar on a phone only: the settings drawer button, the name, and whether a key is set."""
+    return rx.hstack(
+        rx.icon_button(
+            rx.icon("menu", size=20),
+            variant="ghost",
+            color_scheme="gray",
+            size="3",
+            aria_label="Open settings",
+            on_click=rx.call_script(OPEN_SETTINGS),
+        ),
+        rx.text("TOC RAG", size="3", weight="bold"),
+        rx.spacer(),
+        rx.el.button(
+            rx.box(width="8px", height="8px", border_radius="50%", background=rx.cond(State.key_set, "var(--grass-9)", "var(--amber-9)")),
+            rx.cond(State.key_set, "Key set", "No key"),
+            type="button",
+            class_name="key-status",
+            on_click=rx.call_script(OPEN_SETTINGS),
+        ),
+        class_name="phone-only",
+        align="center",
+        spacing="2",
+        height="52px",
+        padding_left="0.5em",
+        padding_right="1em",
+        background="var(--gray-2)",
+        border_bottom=BORDER,
+        flex_shrink="0",
+    )
+
+
 def left_column() -> rx.Component:
+    """The settings: the left column on a desktop, a drawer from the left on a phone (app.css)."""
     return rx.vstack(
-        area_bar("Settings"),
+        area_bar(
+            "Settings",
+            rx.box(
+                # An accessible name, not a `title`: the e2e run finds citation chips as titled buttons.
+                rx.icon_button(
+                    rx.icon("x", size=14),
+                    variant="ghost",
+                    color_scheme="gray",
+                    size="1",
+                    aria_label="Close settings",
+                    on_click=rx.call_script(CLOSE_SETTINGS),
+                ),
+                class_name="phone-only",
+            ),
+        ),
         key_card(),
         library_card(),
         upload_card(),
@@ -1076,19 +1128,24 @@ def left_column() -> rx.Component:
         min_height="0",
         min_width="0",
         background="var(--gray-2)",
-        border_right=["none", "none", BORDER],
+        border_right=BORDER,
+        class_name="settings-pane",
     )
 
 
 def index() -> rx.Component:
-    """Settings on the left, the chat in the middle, the source (when open) on the right. No top bar."""
+    """Desktop: settings on the left, the chat in the middle, the source (when open) on the right.
+    Phone: a top bar over the chat; settings slide in from the left and the source covers the screen (app.css)."""
     return rx.grid(
+        phone_bar(),
         left_column(),
+        rx.box(class_name="drawer-scrim", on_click=rx.call_script(CLOSE_SETTINGS)),
         chat_panel(),
         source_panel(),
-        columns=rx.breakpoints(initial="1", lg="320px minmax(0, 1fr) auto"),
-        height=rx.breakpoints(initial="auto", lg="100vh"),
-        min_height="100vh",
+        columns=rx.breakpoints(initial="minmax(0, 1fr)", lg="320px minmax(0, 1fr) auto"),
+        rows=rx.breakpoints(initial="auto minmax(0, 1fr)", lg="minmax(0, 1fr)"),
+        height="100dvh",
         width="100%",
+        overflow="hidden",
         background=SURFACE,
     )

@@ -195,3 +195,75 @@ strong, b, th {
 html {
   scroll-behavior: smooth;
 }
+
+/* ---- Phone and narrow tablet (below Reflex's lg breakpoint, where the three-column layout starts) ----
+   The chat fills the screen under a slim top bar. The settings column becomes a drawer from the left,
+   opened by the bar's menu button (body[data-drawer="open"], set in the browser only). The source panel
+   covers the screen while it is open. !important: these override layout props Reflex sets on the same nodes. */
+.phone-only,
+.drawer-scrim {
+  display: none !important;
+}
+
+.key-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--gray-11);
+  font: inherit;
+  font-size: var(--font-size-1);
+  cursor: pointer;
+}
+
+@media (max-width: 61.99em) {
+  .phone-only {
+    display: flex !important;
+  }
+
+  .settings-pane {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    width: min(88vw, 360px) !important;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 200ms ease-out, visibility 0s linear 200ms;
+    box-shadow: 0 0 0 1px var(--gray-5), 0 12px 40px rgba(0, 0, 0, 0.18);
+  }
+
+  body[data-drawer="open"] .settings-pane {
+    transform: none;
+    visibility: visible;
+    transition: transform 200ms ease-out;
+  }
+
+  body[data-drawer="open"] .drawer-scrim {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(0, 0, 0, 0.35);
+    animation: fade-in 200ms ease-out;
+  }
+
+  .source-pane {
+    position: fixed !important;
+    inset: 0;
+    z-index: 60;
+    width: 100% !important;
+    border-left: 0 !important;
+  }
+}
+
+@media (max-width: 61.99em) and (prefers-reduced-motion: reduce) {
+  .settings-pane,
+  body[data-drawer="open"] .settings-pane {
+    transition: none;
+  }
+}
