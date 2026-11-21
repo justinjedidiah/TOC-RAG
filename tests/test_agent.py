@@ -371,6 +371,40 @@ def test_extract_markers():
     assert clean == "Fact, more at [10:30] and a [link](x)."
 
 
+def test_a_markdown_picture_of_a_library_image_becomes_its_marker():
+    # Bug: the model wrote ![caption](img-1), and the answer showed a broken picture instead of the chart.
+    for written, expected in [
+        ("![Revenue by segment](img-1)", "img-1"),
+        ("![Revenue by segment](a:img-1)", "a:img-1"),
+        ("![Revenue by segment](img:a:img-2)", "a:img-2"),
+        ("![chart](images/img-3.png)", "img-3"),
+        ("[image:img-1]", "img-1"),  # the way section text marks a picture's place
+    ]:
+        clean, _, images = extract_markers(f"Here is the chart. {written}")
+        assert images == [expected], written
+        assert clean == "Here is the chart.", written
+
+
+def test_an_answer_with_a_markdown_picture_shows_the_image():
+    model = ScriptedModel(replies=[call("read_node", node_id="1.1"), AIMessage("The crew [ships:1.1]. ![Crew photo](img-1)")])
+    result = run_agent(LibraryNavigator([make_ships()]), model, "Show me the crew photo", max_steps=5)
+    assert result.text == "The crew."
+    assert [(i.doc_id, i.image_id) for i in result.images] == [("ships", "img-1")]
+
+
+def test_a_markdown_picture_from_elsewhere_keeps_only_its_caption():
+    clean, _, images = extract_markers("See ![a logo](https://example.com/logo.png) here.")
+    assert images == [] and clean == "See a logo here."
+
+
+def test_a_half_written_markdown_picture_is_not_shown_while_streaming():
+    from toc_rag.agent.citations import visible_prefix
+
+    assert visible_prefix("The chart: ![Revenue by seg") == "The chart:"
+    assert visible_prefix("The chart: ![Revenue by segment](img-") == "The chart:"
+    assert visible_prefix("The chart: ![Revenue by segment](img-1) and more") == "The chart: and more"
+
+
 def test_times_and_ratios_in_brackets_stay_in_the_answer():
     text = "Shift A starts [06:00], the mix is [3:1], see [2:30pm] [ships:1.1]."
     clean, sections, _ = extract_markers(text, {"ships"})

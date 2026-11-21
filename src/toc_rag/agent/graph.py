@@ -48,7 +48,8 @@ only): you can read_node or list_children any id you have seen, without stepping
 or open another document. Avoid sections marked visited unless you have a reason to return.
 - When you can answer, reply in plain text without calling a tool. After each claim, put its source in square \
 brackets in the qualified form shown at the top of each section you read, like [doc_id:1.2]. Cite only sections you \
-read with read_node. If the user asked for a picture, add the matching image id as [img:doc_id:img-1].
+read with read_node. If the user asked for a picture, add the matching image id as [img:doc_id:img-1]: the app \
+shows the picture from it. Never write a picture as a Markdown image.
 - If the library does not contain the answer, say so in plain text and put no bracketed ids in the reply.
 - Earlier messages are conversation context. For a new factual question, navigate and read; do not answer from \
 memory of earlier turns.
