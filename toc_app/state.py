@@ -234,6 +234,11 @@ def _feed(events, inbox: asyncio.Queue, loop: asyncio.AbstractEventLoop, stop: t
         loop.call_soon_threadsafe(inbox.put_nowait, _FINISHED)
 
 
+# Opening a section or an outline starts at its top. The panel keeps one scroll box, so without this a new section
+# opened at wherever the last one had been scrolled to (its title out of view). After the page has drawn the new text.
+SCROLL_PANEL_TOP = "requestAnimationFrame(() => document.getElementById('source-scroll')?.scrollTo(0, 0))"
+
+
 def scroll_chat(force: bool = False) -> rx.event.EventSpec:
     """Keep the newest text in view, but only if the visitor is already near the bottom.
 
@@ -1027,6 +1032,7 @@ class State(rx.State):
         self.source_pages, self.source_pages_note = self._section_pages(index, node, scope)
         self.source_tab = "text"
         self.source_open = True
+        return rx.call_script(SCROLL_PANEL_TOP)
 
     def _section_pages(self, index: DocumentIndex, node, scope: str) -> tuple[list[PageView], str]:
         """The pages of an uploaded PDF's section, for the "Pages" view; none for other documents."""
@@ -1061,6 +1067,7 @@ class State(rx.State):
             OutlineRowView(row.ref, row.title, row.summary, f"{row.depth * 1.2}em") for row in outline_rows(index)
         ]
         self.browse_open = True
+        return rx.call_script(SCROLL_PANEL_TOP)
 
     @rx.event
     def set_browse_open(self, value: bool):

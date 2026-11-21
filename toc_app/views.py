@@ -1031,6 +1031,7 @@ def source_panel() -> rx.Component:
         ),
         rx.box(
             rx.cond(State.source_open, source_view(), rx.cond(State.browse_open, browse_view())),
+            id="source-scroll",  # scrolled back to the top when a section or outline opens (SCROLL_PANEL_TOP)
             padding="1.25em",
             flex="1",
             min_height="0",
