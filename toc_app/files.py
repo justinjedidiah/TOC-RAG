@@ -1,7 +1,9 @@
 """Serves document images to the page: GET /api/files/{scope}/{doc_id}/images/{name}, and pictures of
 an uploaded PDF's pages: GET /api/files/{scope}/{doc_id}/pages/{n}.png (rendered on first request).
 
-`scope` is "sample" for the shared sample library, or the visitor's session token.
+`scope` is "sample" for the shared sample library, or the visitor's session id (`session_id_for`: a one-way
+hash of their client token, which itself never appears in a URL). Whoever has a link can open it while the
+session lives: the id cannot be guessed, but no other check is made.
 Only plain image files inside a document's own folder are ever served.
 """
 
