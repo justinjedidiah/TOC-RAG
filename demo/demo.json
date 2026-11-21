@@ -1,0 +1,206 @@
+{
+  "url": "http://localhost:3000/app",
+  "waitFor": "text=OpenAI key set",
+  "title": "TOC RAG",
+  "subtitle": "Chat with documents by navigating their table of contents. No vectors.",
+  "accent": "#16a34a",
+  "viewport": [
+    1280,
+    720
+  ],
+  "theme": "paper",
+  "music": "sunset",
+  "startHold": 800,
+  "endHold": 2000,
+  "steps": [
+    {
+      "caption": "Chat with a *library* of documents",
+      "action": "wait",
+      "value": 3200,
+      "frame": "wide",
+      "hold": 0
+    },
+    {
+      "section": "browse-outline",
+      "caption": "Each document gets an *outline*",
+      "action": "click",
+      "selector": "button[aria-label=\"Browse the outline\"] >> nth=1",
+      "waitFor": "#source-panel >> text=Time Off",
+      "hold": 3800
+    },
+    {
+      "caption": "Open any section to *read* it",
+      "action": "click",
+      "selector": "#source-panel button:has-text(\"Parental leave\")",
+      "waitFor": "#source-panel >> text=16 weeks",
+      "hold": 3800
+    },
+    {
+      "section": "ask",
+      "caption": "",
+      "action": "click",
+      "selector": "#source-panel button[title=\"Close panel\"] >> nth=0",
+      "hold": 400
+    },
+    {
+      "action": "click",
+      "selector": "#source-panel button[title=\"Close panel\"] >> nth=0",
+      "hold": 1000
+    },
+    {
+      "caption": "Ask a *question*",
+      "action": "click",
+      "selector": "button:has-text(\"Which business segment\")",
+      "waitFor": "[data-live] .live-label",
+      "timeout": 120000,
+      "speed": 2,
+      "frame": {
+        "x": 330,
+        "y": 0,
+        "width": 950,
+        "height": 534
+      },
+      "hold": 1200
+    },
+    {
+      "caption": "The agent *navigates* the outline",
+      "action": "wait",
+      "value": 200,
+      "waitFor": "[data-zoom-area] button[title*=\"Annual Report\"]",
+      "timeout": 120000,
+      "speed": 2,
+      "hold": 4000,
+      "highlight": true
+    },
+    {
+      "caption": "Every step says *why*",
+      "action": "click",
+      "selector": ".path-summary >> nth=0",
+      "waitFor": ".path-fold[open] .path-body",
+      "hold": 4500
+    },
+    {
+      "action": "click",
+      "selector": ".path-summary >> nth=0",
+      "hold": 800
+    },
+    {
+      "section": "citations",
+      "caption": "Every answer cites its *source*",
+      "action": "wait",
+      "value": 1300,
+      "frame": "wide"
+    },
+    {
+      "action": "click",
+      "selector": "[data-zoom-area] button[title*=\"Annual Report\"] >> nth=0",
+      "waitFor": "#source-panel button[title=\"Close panel\"]",
+      "hold": 4000
+    },
+    {
+      "section": "images",
+      "caption": "",
+      "action": "click",
+      "selector": "#source-panel button[title=\"Close panel\"] >> nth=0",
+      "hold": 900
+    },
+    {
+      "caption": "Charts come back *inline*",
+      "action": "type",
+      "selector": "input[name=question]",
+      "value": "Show me the revenue by segment chart",
+      "delay": 60
+    },
+    {
+      "action": "press",
+      "selector": "input[name=question]",
+      "key": "Enter",
+      "waitFor": "[data-zoom-area] img",
+      "timeout": 120000,
+      "speed": 4,
+      "hold": 800
+    },
+    {
+      "action": "scroll",
+      "selector": "[data-zoom-area] button[title*=\"Annual Report\"] >> nth=-1",
+      "hold": 1800
+    },
+    {
+      "caption": "Click to see it *full size*",
+      "action": "click",
+      "selector": "[data-zoom-area] img",
+      "waitFor": "#image-zoom img",
+      "hold": 4500
+    },
+    {
+      "action": "press",
+      "key": "Escape",
+      "hold": 1000
+    },
+    {
+      "section": "upload-your-own",
+      "caption": "Add your *own* document",
+      "action": "setInputFiles",
+      "selector": "input[type=file]",
+      "value": "Harbor Bikes Rider Handbook.docx",
+      "waitFor": "[data-preset=full]",
+      "timeout": 60000,
+      "speed": 4,
+      "hold": 3500
+    },
+    {
+      "caption": "See the *cost* before you index",
+      "action": "click",
+      "selector": "button:has-text(\"Index it\")",
+      "waitFor": "#confirm-cost",
+      "hold": 3800
+    },
+    {
+      "caption": "It builds the *outline* for you",
+      "action": "click",
+      "selector": "button:has-text(\"Start indexing\")",
+      "waitFor": "text=Indexed Harbor Bikes",
+      "timeout": 180000,
+      "speed": 8,
+      "hold": 3000
+    },
+    {
+      "section": "ask-your-own",
+      "caption": "Then ask it *anything*",
+      "action": "type",
+      "selector": "input[name=question]",
+      "value": "What do members pay for rides over an hour?",
+      "delay": 60
+    },
+    {
+      "action": "press",
+      "selector": "input[name=question]",
+      "key": "Enter",
+      "waitFor": "[data-live] .live-label",
+      "timeout": 120000,
+      "speed": 2,
+      "frame": {
+        "x": 330,
+        "y": 186,
+        "width": 950,
+        "height": 534
+      },
+      "hold": 300
+    },
+    {
+      "action": "wait",
+      "value": 200,
+      "waitFor": "[data-zoom-area] button[title*=\"Harbor\"]",
+      "timeout": 120000,
+      "speed": 2,
+      "hold": 5000
+    },
+    {
+      "section": "",
+      "caption": "Try it on your *own* docs",
+      "action": "wait",
+      "value": 3500,
+      "frame": "wide"
+    }
+  ]
+}
