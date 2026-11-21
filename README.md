@@ -4,13 +4,15 @@
 
 **[Try it live →](https://toc-rag.up.railway.app)** Bring an Anthropic, OpenAI or Google Gemini key, or browse the sample library without one.
 
-![The app: a library of documents, sample questions, and a section of the station handbook open beside them with its summary and chart](docs/images/app.png)
+![Demo: browsing a sample report's outline, asking a question while the agent's steps stream in, opening a cited section, a chart shown in the answer, then uploading a new handbook and asking about it](docs/images/demo.gif)
+
+The sample library holds a fictional company's annual report (with charts) and its employee handbook, so you can try it without uploading anything.
 
 ## How it works
 
 1. **Index once.** Each document becomes a tree of sections built from its own structure: Word headings, PDF bookmarks, a printed contents page, or lines formatted like headings. Sections too big to read in one go are split, runs of tiny ones are merged, and the original outline is kept wherever it is already good.
 2. **Summarise.** A small model writes a summary of every section, saying what questions it can answer, and describes the charts and pictures. (Or skip this: the free preset shows each section's first sentences instead, with no model calls at all.)
-3. **Navigate.** For each question the agent gets a few tools (open a document, list a section's subsections, read a section, go back up) and walks the tree, choosing branches by their summaries.
+3. **Navigate.** For each question the agent gets a few tools (open a document, list a section's subsections, read a section, go back up) and walks the tree, choosing branches by their summaries. Each step comes with a one-line reason, so you can follow why it went where it did. An optional keyword search (exact words, still no vectors) can jump straight to a likely section, but a hit still has to be read before it can be cited.
 4. **Cite.** Each claim in the answer names the section it came from. A citation is only kept if the agent actually read that section, so the app never shows a source the model only guessed at.
 
 ### Why not vector RAG?
@@ -29,8 +31,11 @@ The trade-off: navigation takes a few model calls per question, and it works bes
 - **Bring your own key** for Anthropic, OpenAI or Google Gemini. The app lists the models your key can use; you pick one for indexing and one for chat.
 - **Word and PDF**, with or without a table of contents. PDF answers cite printed page numbers and can show the pages themselves; charts and pictures become images the answer can show; ruled tables and two-column layouts are read properly.
 - **See the cost first.** Three presets, Free, Budget and Full, each with an estimate of model calls and tokens before anything is spent, plus advanced options for how the tree is shaped.
-- **Watch it think.** The agent's path streams live as it works, then the answer, with citations that open the source section and pictures shown inline.
+- **Watch it think.** The reply streams in the order things happen: what the agent says, a live status line for each run of steps (folded into "N steps" when done), then the answer. Citations open the source section (or the PDF pages) at its top, and charts and pictures show inline and enlarge on click.
 - **Choose what it reads.** Switch any document, sample or yours, out of answers without deleting it. Your first upload switches the samples off so answers come from your document.
+- **Agent settings.** How many outline levels the agent sees at once, and an optional keyword search tool. **Clear chat** starts a fresh conversation without touching your library.
+- **Works on a phone.** The chat comes first, settings slide in from a drawer, and the source view takes the full screen.
+- **Survives a busy provider.** A model call the provider fails on its side is retried, and if it keeps failing you're told the provider is overloaded rather than shown a raw error.
 
 ## Privacy and security
 
@@ -52,6 +57,8 @@ reflex run
 ```
 
 Open <http://localhost:3000>, then **Open the app** and paste an API key. No `.env` is needed: the web app only uses the key you enter.
+
+For local development you can skip pasting it each time: copy `.env.example` to `.env` and set `TOC_RAG_PROVIDER`, that provider's key, `TOC_RAG_INDEX_MODEL` and `TOC_RAG_AGENT_MODEL`, and the app fills them in on load. Never do this on a public server; leave `TOC_RAG_PROVIDER` unset there.
 
 Or with Docker: `docker compose up --build`, then open <http://localhost:8000>. To host it yourself, see [docs/deploying.md](docs/deploying.md).
 
@@ -84,7 +91,7 @@ samples/        the sample documents and their indexes
 
 ## Roadmap
 
-- An evaluation against a vector-RAG baseline: accuracy, tokens and speed.
+- An evaluation against a vector-RAG baseline: accuracy, tokens and speed (and measuring what the keyword search adds).
 - Generated structure for documents with no usable outline.
 - Letting the agent look at pictures, not only their descriptions.
 
