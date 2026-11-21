@@ -1,6 +1,7 @@
 """LangGraph loop over a library: the model picks a navigation tool, we run it, repeat until it replies in plain text."""
 
 import logging
+import re
 import time
 from collections.abc import Iterator
 from typing import Annotated, Literal, TypedDict
@@ -37,7 +38,8 @@ Documents in the library:
 
 How to work:
 - {start}
-- Before each tool call, say in one short sentence what you are about to do and why.
+- Give every tool call a reason: one short sentence on what you are doing and why. Write no text outside tool \
+calls until you answer: any text you write is shown to the user as your answer.
 - Use list_children to look inside a section, going into the subsection whose summary best matches the question. \
 Tools take the ids shown in square brackets in listings. Indented lines in a listing are deeper subsections (titles \
 only): you can read_node or list_children any id you have seen, without stepping through each level.
@@ -105,36 +107,41 @@ class AgentState(TypedDict):
     result: AnswerResult | None
 
 
+# Every tool takes the model's reason for the step. It is shown with the step, so the steps explain themselves and
+# any plain text the model writes is its answer (the app no longer has to guess which text is which).
+Reason = Annotated[str, "One short sentence: what you are doing and why."]
+
+
 def make_tools(navigator: LibraryNavigator, search: bool = False) -> list[BaseTool]:
     """The navigation tools the model can call. Each one runs on the navigator. `search` adds the keyword search."""
 
     @tool
-    def list_documents() -> str:
+    def list_documents(reason: Reason = "") -> str:
         """List the documents in the library with their summaries."""
         return navigator.list_documents()
 
     @tool
-    def open_document(doc_id: str) -> str:
+    def open_document(doc_id: str, reason: Reason = "") -> str:
         """Open a document and list its top-level sections."""
         return navigator.open_document(doc_id)
 
     @tool
-    def list_children(node_id: str) -> str:
+    def list_children(node_id: str, reason: Reason = "") -> str:
         """List the subsections of a node in the open document, with summaries. Use "root" for the top level."""
         return navigator.list_children(node_id)
 
     @tool
-    def read_node(node_id: str) -> str:
+    def read_node(node_id: str, reason: Reason = "") -> str:
         """Read the text of a node in the open document, plus descriptions of any images in it."""
         return navigator.read_node(node_id)
 
     @tool
-    def go_up(node_id: str) -> str:
+    def go_up(node_id: str, reason: Reason = "") -> str:
         """List the siblings of a node (the subsections of its parent), to try another branch."""
         return navigator.go_up(node_id)
 
     @tool("search")
-    def search_tool(query: str) -> str:
+    def search_tool(query: str, reason: Reason = "") -> str:
         """Find sections in any document that contain these exact words (any case), best matches first.
 
         Use a few distinctive words, like "parental leave" or "ASEAN". Returns ids with excerpts.
@@ -234,9 +241,12 @@ def stream_agent(
     history: list[ChatTurn] | None = None,
     search: bool = False,
 ) -> Iterator[Step | Draft | AnswerResult]:
-    """Yield each navigation Step as it happens, Drafts of the reply as it is written, then the final AnswerResult.
+    """Yield each navigation Step as it happens, Drafts of the answer as it is written, then the final AnswerResult.
 
-    A Draft that is followed by a Step was only the model thinking aloud before a tool call; callers should discard it.
+    The model gives its reason for each step inside the tool call, and that reason travels with the Step. Plain text
+    is the answer. Models sometimes still write a sentence before a tool call, so the first sentence of plain text is
+    held back: if a tool call follows, it was a note and goes with the step; once the text goes on past it (or the
+    reply ends without a tool call), it is the answer. So a Draft is always answer text.
     """
     graph = build_graph(navigator, llm, max_steps, search)
     messages = [*_history_messages(history or []), HumanMessage(question)]
@@ -245,22 +255,38 @@ def stream_agent(
         {"recursion_limit": max_steps * 2 + 10},
         stream_mode=["updates", "custom"],
     )
-    emitted, result, last_draft, note = 0, None, "", ""
+    emitted, result, last_draft, held = 0, None, "", ""
+    notes: list[str] = []
     library = set(navigator.indexes)  # only brackets naming these documents are source markers
     for mode, update in updates:
         if mode == "custom":
-            if (draft := visible_prefix(update["text"], library)) and draft != last_draft:
-                last_draft = draft
-                yield Draft(text=draft)
+            text = visible_prefix(update["text"], library)
+            if update.get("tool") or update.get("retry") or not text:
+                held = ""  # a tool call has begun (so the text is a note), or a new try starts over
+                continue
+            if not last_draft and not _past_first_sentence(text):
+                held = text  # might still be a note before a tool call
+                continue
+            held = ""
+            if text != last_draft:
+                last_draft = text
+                yield Draft(text=text)
             continue
-        last_draft = ""
         for node_name, changes in update.items():
             if node_name == "agent":
                 reply = changes["messages"][-1]
-                note = extract_markers(_message_text(reply), library)[0] if reply.tool_calls else ""
+                if reply.tool_calls:
+                    text_note = extract_markers(_message_text(reply), library)[0].strip()
+                    reasons = [str((call.get("args") or {}).get("reason") or "").strip() for call in reply.tool_calls]
+                    # Each step gets its call's reason; text written before the calls goes with the first one.
+                    notes = [r or (text_note if i == 0 else "") for i, r in enumerate(reasons)]
+                elif held and not last_draft:
+                    yield Draft(text=held)  # a one-sentence answer: no tool call followed, so it was the answer
+                held, last_draft = "", ""
             if node_name == "tools":
                 for i, step in enumerate(navigator.trace[emitted:]):
-                    yield step.model_copy(update={"note": note}) if i == 0 else step  # the note goes with the first
+                    note = notes[i] if i < len(notes) else ""
+                    yield step.model_copy(update={"note": note}) if note else step
                 emitted = len(navigator.trace)
             if isinstance(changes, dict) and changes.get("result") is not None:
                 result = changes["result"]
@@ -317,15 +343,21 @@ def _stream_reply(model, messages: list[AnyMessage], write) -> AIMessage | None:
         try:
             for chunk in model.stream(messages):
                 response = chunk if response is None else response + chunk
-                write({"text": _message_text(response)})  # the reply so far; stream_agent turns it into a Draft
+                # The reply so far, and whether it has started a tool call; stream_agent turns it into a Draft.
+                write({"text": _message_text(response), "tool": bool(getattr(response, "tool_call_chunks", None) or response.tool_calls)})
             return response
         except Exception as exc:
             if wait is None or not is_temporary(exc):
                 raise
             log.warning("Model call failed on the provider's side (%s); trying again in %.0f s", type(exc).__name__, wait)
-            write({"text": ""})  # drop any half-written text: the new try starts over
+            write({"text": "", "tool": False, "retry": True})  # drop any half-written text: the new try starts over
             time.sleep(wait)
     return None  # not reached
+
+
+def _past_first_sentence(text: str) -> bool:
+    """True once text goes on past its first sentence (or line): too much for a note before a tool call."""
+    return bool(re.search(r"[.!?:](?:\s|$).*\S", text.strip(), re.DOTALL)) or "\n" in text.strip() or len(text) > 240
 
 
 def _history_messages(history: list[ChatTurn]) -> list[AnyMessage]:

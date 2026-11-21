@@ -107,21 +107,12 @@ strong, b, th {
   color: var(--gray-11);
 }
 
-/* The answer being written: one status line (a pulsing dot and up to 3 lines of small grey text) that becomes
-   full-size text once it runs past 3 lines (data-mode="answer", set by LIVE_SCRIPT in state.py). */
-.live-block {
-  color: var(--gray-11);
-}
-
+/* While the agent works: one status line, a pulsing dot beside the reason for its latest step (up to 3 lines)
+   and, under it, what that step did. */
 .live-row {
   display: flex;
   gap: 10px;
   align-items: flex-start;
-}
-
-/* "N steps" shows above the text only once the text is the answer, as in the finished answer. */
-.live-block:not([data-mode="answer"]) .live-fold {
-  display: none;
 }
 
 .live-dot {
@@ -138,42 +129,28 @@ strong, b, th {
   50% { opacity: 0.3; }
 }
 
+.live-status {
+  min-width: 0;
+}
+
 .live-label {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   font-size: var(--font-size-2);
   line-height: 20px;
   color: var(--gray-11);
 }
 
-/* The status line shows the newest 3 lines of a long note: the text sits at the bottom of a 3-line window. */
-.live-text {
-  flex: 1;
-  min-width: 0;
-  max-height: 60px; /* 3 lines of 20px */
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+.live-action {
+  font-size: var(--font-size-1);
+  line-height: 18px;
+  color: var(--gray-10);
 }
 
-.live-block:not([data-mode="answer"]) .live-text * {
-  font-size: var(--font-size-2) !important;
-  line-height: 20px !important;
-  color: var(--gray-11) !important;
-}
-
-.live-block[data-mode="answer"] {
-  color: var(--gray-12);
-}
-
-.live-block[data-mode="answer"] .live-dot {
-  display: none;
-}
-
-.live-block[data-mode="answer"] .live-text {
-  display: block;
-  max-height: none;
-  overflow: visible;
-  animation: fade-in 200ms ease-out;
+.live-action::before {
+  content: "\21B3  "; /* ↳ */
 }
 
 /* The folded path under a finished answer: "3 steps", open to see each note and step. */
@@ -221,8 +198,7 @@ strong, b, th {
     transition: none;
   }
   .fade-in,
-  .live-dot,
-  .live-block[data-mode="answer"] .live-text {
+  .live-dot {
     animation: none;
   }
 }

@@ -47,8 +47,9 @@ def best(question: str, candidates: list[tuple[str, str]]) -> str:
 
 
 def tool_call(name: str, **args) -> AIMessage:
-    note = f"Next: {name.replace('_', ' ')}."  # like a real model, say a sentence before the call
-    return AIMessage(note, tool_calls=[{"name": name, "args": args, "id": f"call-{uuid.uuid4().hex[:12]}"}])
+    reason = f"Next: {name.replace('_', ' ')}."  # like a real model, give the step's reason in the call
+    args = {**args, "reason": reason}
+    return AIMessage("", tool_calls=[{"name": name, "args": args, "id": f"call-{uuid.uuid4().hex[:12]}"}])
 
 
 def structured(schema, prompt):

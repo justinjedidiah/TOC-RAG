@@ -663,26 +663,36 @@ def step_list(steps) -> rx.Component:
     return rx.vstack(rx.foreach(steps, step_line), spacing="3", align="start", width="100%")
 
 
-def live_answer() -> rx.Component:
-    """The answer being written, as one status line: a pulsing dot, then the text coming in (its newest 3 lines; it
-    may be a note before the next step) or, between texts, the step just taken. Once LIVE_SCRIPT (state.py) decides
-    the text is the answer, it shows at full size under "N steps", laid out like the finished answer, so when the
-    answer is done only its citations are new."""
-    return rx.vstack(
-        rx.cond(State.live_steps.length() > 0, rx.box(path_fold(State.live_steps), class_name="live-fold")),
+def live_status_line() -> rx.Component:
+    """While the agent works: a pulsing dot, the reason for its latest step (up to 3 lines) and what that step did."""
+    return rx.box(
+        rx.box(class_name="live-dot"),
         rx.box(
-            rx.box(class_name="live-dot"),
-            rx.cond(
-                State.live_text != "",
-                rx.box(rx.box(prose(text=State.live_text), class_name="live-md"), class_name="live-text"),
-                rx.text(State.live_status, class_name="live-label fade-in"),
+            rx.text(State.live_status, class_name="live-label"),
+            rx.cond(State.live_action != "", rx.text(State.live_action, class_name="live-action")),
+            class_name="live-status fade-in",
+            key=State.live_status,  # a new step's line fades in
+        ),
+        class_name="live-row",
+        width="100%",
+    )
+
+
+def live_answer() -> rx.Component:
+    """The answer being written. While the agent navigates, one status line shows its latest step and reason. The
+    model gives each reason inside its tool call, so any text it writes is the answer: that shows at full size under
+    "N steps", laid out like the finished answer, so when it is done only its citations are new."""
+    return rx.vstack(
+        rx.cond(
+            State.live_text != "",
+            rx.fragment(
+                rx.cond(State.live_steps.length() > 0, path_fold(State.live_steps)),
+                prose(text=State.live_text),
             ),
-            class_name="live-row",
-            width="100%",
+            live_status_line(),
         ),
         spacing="3",  # the same gap as between the path and the text of a finished answer
         align="start",
-        class_name="live-block",
         custom_attrs={"data-live": ""},
         width="100%",
         max_width="95%",

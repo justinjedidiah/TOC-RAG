@@ -224,34 +224,6 @@ def _feed(events, inbox: asyncio.Queue, loop: asyncio.AbstractEventLoop, stop: t
         loop.call_soon_threadsafe(inbox.put_nowait, _FINISHED)
 
 
-# While an answer is being written, its text starts in a small status line (its newest 3 lines): it might be a
-# note before the agent's next step. The model only shows which it was by taking a step or stopping, so this guesses:
-# text that grows long, or has a second paragraph, a list or a table, is the answer, and moves (data-mode="answer")
-# to full size. Not by line count: on a phone a one-sentence note already runs past 3 lines, and it popped up to
-# full size and back down when its step landed. When a step lands the text empties, and the next starts small again.
-LIVE_SCRIPT = """
-(function () {
-  if (window.__liveStatus) { return; }
-  window.__liveStatus = true;
-  var queued = false;
-  function check() {
-    queued = false;
-    document.querySelectorAll('[data-live]').forEach(function (block) {
-      var text = block.querySelector('.live-text');
-      if (!text) { delete block.dataset.mode; return; }
-      if (block.dataset.mode === 'answer') { return; }
-      var md = text.querySelector('.live-md') || text;
-      var blocks = md.querySelectorAll('ul, ol, table, pre, blockquote, h1, h2, h3, h4').length + Math.max(0, md.querySelectorAll('p').length - 1);
-      if (text.textContent.length > 280 || blocks > 0) { block.dataset.mode = 'answer'; }
-    });
-  }
-  new MutationObserver(function () {
-    if (!queued) { queued = true; requestAnimationFrame(check); }
-  }).observe(document.body, {subtree: true, childList: true, characterData: true});
-})();
-"""
-
-
 def scroll_chat(force: bool = False) -> rx.event.EventSpec:
     """Keep the newest text in view, but only if the visitor is already near the bottom.
 
@@ -359,8 +331,16 @@ class State(rx.State):
 
     @rx.var
     def live_status(self) -> str:
-        """The status line while no text is coming in: the step just taken, or "Working..." before the first."""
-        return f"{self.live_steps[-1].label}..." if self.live_steps else "Working..."
+        """The status line while the agent works: the reason for the step just taken, or "Working..." before the first."""
+        if not self.live_steps:
+            return "Working..."
+        step = self.live_steps[-1]
+        return step.note or f"{step.label}..."
+
+    @rx.var
+    def live_action(self) -> str:
+        """What the step just taken did, under its reason ("" when the reason line already says it)."""
+        return self.live_steps[-1].label if self.live_steps and self.live_steps[-1].note else ""
 
     @rx.var
     def can_chat(self) -> bool:
@@ -622,8 +602,8 @@ class State(rx.State):
     def on_load(self):
         self._restore_pending()
         self._refresh()
-        # The session timer, click-to-enlarge for pictures and the live status line run in the browser (set up once).
-        events = [rx.call_script(COUNTDOWN_SCRIPT), rx.call_script(ZOOM_SCRIPT), rx.call_script(LIVE_SCRIPT)]
+        # The session timer, and click-to-enlarge for pictures, both run in the browser (set up once per page).
+        events = [rx.call_script(COUNTDOWN_SCRIPT), rx.call_script(ZOOM_SCRIPT)]
         if not self.key_set and dev_key_prefill() is not None:  # local dev only: never on the public server
             events.append(State.prefill_dev_key)
         return events

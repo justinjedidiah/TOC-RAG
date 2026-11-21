@@ -48,14 +48,14 @@ class StreamingModel(ScriptedModel):
     def _stream(self, messages, stop=None, run_manager=None, **kwargs):
         self.seen.append(list(messages))
         reply = self.replies.pop(0)
+        # Text first, 4 characters at a time, then any tool calls: the order a real model sends them in.
+        chunks = [AIMessageChunk(reply.content[i : i + 4]) for i in range(0, len(reply.content), 4)]
         if reply.tool_calls:
             calls = [
                 {"name": c["name"], "args": json.dumps(c["args"]), "id": c["id"], "index": i}
                 for i, c in enumerate(reply.tool_calls)
             ]
-            chunks = [AIMessageChunk(reply.content, tool_call_chunks=calls)]
-        else:
-            chunks = [AIMessageChunk(reply.content[i : i + 4]) for i in range(0, len(reply.content), 4)]
+            chunks.append(AIMessageChunk("", tool_call_chunks=calls))
         for chunk in chunks:
             yield ChatGenerationChunk(message=chunk)
 
@@ -230,30 +230,61 @@ def test_agent_unknown_tool_and_bad_arguments_go_back_to_the_model():
     assert not result.error  # a real reply without citations is not an error: it stays in the history
 
 
-def test_answer_streams_as_growing_drafts_without_markers():
+def read_call(reason: str = "", text: str = "") -> AIMessage:
+    args = {"node_id": "1.1", **({"reason": reason} if reason else {})}
+    return AIMessage(text, tool_calls=[{"name": "read_node", "args": args, "id": "c1"}])
+
+
+def test_the_step_carries_its_reason_and_drafts_are_only_the_answer():
     model = StreamingModel(
         replies=[
-            AIMessage("Checking.", tool_calls=[{"name": "read_node", "args": {"node_id": "1.1"}, "id": "c1"}]),
-            AIMessage("The captain is Ada [ships:1.1]."),
+            read_call(reason="The crew section names the captain."),
+            AIMessage("The captain is Ada [ships:1.1]. She has sailed for years [ships:1.1]."),
         ]
     )
 
     events = list(stream_agent(LibraryNavigator([make_ships()]), model, "Who is the captain?", 5))
 
     *middle, result = events
-    drafts = [e.text for e in middle if isinstance(e, Draft)]
-    assert drafts[0] == "Checking."  # thinking aloud before the tool call
-    answer_drafts = drafts[1:]
-    assert len(answer_drafts) > 3  # arrived in pieces
-    assert all(later.startswith(earlier) for earlier, later in zip(answer_drafts, answer_drafts[1:]))
-    assert not any("[" in d for d in drafts)  # no marker, not even half of one
-    assert answer_drafts[-1] == "The captain is Ada." == result.text
     step = next(e for e in middle if isinstance(e, Step))
-    assert step.note == "Checking."  # the sentence before the tool call travels with its step
-    # The tool call that was streamed in chunks still ran: the Step comes before the answer's drafts.
+    assert step.note == "The crew section names the captain."  # the reason from the tool call travels with its step
+    drafts = [e.text for e in middle if isinstance(e, Draft)]
+    assert len(drafts) > 3  # the answer arrived in pieces
+    assert all(later.startswith(earlier) for earlier, later in zip(drafts, drafts[1:]))
+    assert not any("[" in d for d in drafts)  # no marker, not even half of one
+    assert drafts[-1] == "The captain is Ada. She has sailed for years." == result.text
+    # The Step comes before any draft: every draft is answer text.
     kinds = [type(e).__name__ for e in middle]
-    assert kinds.index("Step") < len(kinds) - 1 and isinstance(middle[-1], Draft)
+    assert kinds.index("Step") < kinds.index("Draft")
     assert [c.node_id for c in result.citations] == ["1.1"]
+
+
+def test_a_sentence_written_before_a_tool_call_is_a_note_never_a_draft():
+    # Some models still say a sentence before calling a tool. It is held back, then goes with the step.
+    model = StreamingModel(replies=[read_call(text="Let me check the crew section."), AIMessage("Ada [ships:1.1].")])
+
+    events = list(stream_agent(LibraryNavigator([make_ships()]), model, "Who is the captain?", 5))
+
+    *middle, result = events
+    step = next(e for e in middle if isinstance(e, Step))
+    assert step.note == "Let me check the crew section."
+    drafts = [e.text for e in middle if isinstance(e, Draft)]
+    assert drafts == ["Ada."]  # a one-sentence answer is held to the end of the reply, then sent once
+    assert result.text == "Ada." and result.found
+
+
+def test_a_reason_wins_over_text_before_the_call():
+    model = StreamingModel(replies=[read_call(reason="Crew names.", text="Checking."), AIMessage("Ada [ships:1.1].")])
+    step = next(e for e in stream_agent(LibraryNavigator([make_ships()]), model, "Who?", 5) if isinstance(e, Step))
+    assert step.note == "Crew names."
+
+
+def test_tools_accept_a_reason():
+    from toc_rag.agent.graph import make_tools
+
+    tools = {t.name: t for t in make_tools(LibraryNavigator([make_ships()]), search=True)}
+    assert all("reason" in t.args for t in tools.values())
+    assert "The captain is Ada." in tools["read_node"].invoke({"node_id": "ships:1.1", "reason": "To find the captain."})
 
 
 def test_agent_asks_again_after_an_empty_reply():
