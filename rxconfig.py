@@ -13,21 +13,25 @@ def _keep_data_out_of_hot_reload() -> None:
     are saved under the data folder, so without this every upload restarts the backend. The new
     worker then compiles the app on its first request, which rewrites the page's stylesheets: the
     visitor's first click freezes for seconds and the page flashes as the CSS is swapped.
+    The same goes for `demo/`: the demo recorder saves screenshots and video there, and each restart
+    wiped the chat (state lives in memory) in the middle of a recording.
     Reflex splits this setting on ":", so the folder is given relative to the project (a Windows
     absolute path contains a ":").
     """
     root = Path(__file__).resolve().parent
+    folders = ["demo"]
     try:
         relative = get_settings().data_dir.resolve().relative_to(root)
     except ValueError:
-        return  # the data folder is outside the project, so it is not watched
-    if not relative.parts:
-        return
-    top = relative.parts[0]
-    (root / top).mkdir(parents=True, exist_ok=True)  # Reflex compares paths with samefile, which needs it to exist
+        relative = None  # the data folder is outside the project, so it is not watched
+    if relative is not None and relative.parts:
+        folders.append(relative.parts[0])
     existing = [p for p in os.environ.get("REFLEX_HOT_RELOAD_EXCLUDE_PATHS", "").split(":") if p]
-    if top not in existing:
-        os.environ["REFLEX_HOT_RELOAD_EXCLUDE_PATHS"] = ":".join([*existing, top])
+    for top in folders:
+        (root / top).mkdir(parents=True, exist_ok=True)  # Reflex compares paths with samefile, which needs it to exist
+        if top not in existing:
+            existing.append(top)
+    os.environ["REFLEX_HOT_RELOAD_EXCLUDE_PATHS"] = ":".join(existing)
 
 
 _keep_data_out_of_hot_reload()
