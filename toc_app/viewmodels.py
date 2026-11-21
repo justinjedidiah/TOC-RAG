@@ -36,14 +36,22 @@ class PageView:
 @dataclasses.dataclass
 class StepView:
     label: str
-    note: str = ""  # what the model said before taking this step
+    note: str = ""  # the model's reason for this step, from its tool call
+
+
+@dataclasses.dataclass
+class ReplyBlock:
+    """One piece of a reply before its answer, in the order it happened: text the model wrote, or a run of steps."""
+
+    text: str = ""
+    steps: list[StepView] = dataclasses.field(default_factory=list)  # a run of steps when not empty
 
 
 @dataclasses.dataclass
 class ChatMessage:
     role: str  # "user" or "assistant"
-    text: str = ""
-    steps: list[StepView] = dataclasses.field(default_factory=list)
+    text: str = ""  # the answer: the model's last text (this alone goes into the history sent with later questions)
+    blocks: list[ReplyBlock] = dataclasses.field(default_factory=list)  # text and steps before the answer
     citations: list[CitationView] = dataclasses.field(default_factory=list)
     images: list[ImageView] = dataclasses.field(default_factory=list)
     found: bool = True  # has citations; uncited replies are shown in grey

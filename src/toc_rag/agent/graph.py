@@ -1,7 +1,6 @@
 """LangGraph loop over a library: the model picks a navigation tool, we run it, repeat until it replies in plain text."""
 
 import logging
-import re
 import time
 from collections.abc import Iterator
 from typing import Annotated, Literal, TypedDict
@@ -38,8 +37,8 @@ Documents in the library:
 
 How to work:
 - {start}
-- Give every tool call a reason: one short sentence on what you are doing and why. Write no text outside tool \
-calls until you answer: any text you write is shown to the user as your answer.
+- Give every tool call a reason: one short sentence on what you are doing and why. It is shown with the step, so do \
+not repeat it in your text.
 - Use list_children to look inside a section, going into the subsection whose summary best matches the question. \
 Tools take the ids shown in square brackets in listings. Indented lines in a listing are deeper subsections (titles \
 only): you can read_node or list_children any id you have seen, without stepping through each level.
@@ -107,8 +106,8 @@ class AgentState(TypedDict):
     result: AnswerResult | None
 
 
-# Every tool takes the model's reason for the step. It is shown with the step, so the steps explain themselves and
-# any plain text the model writes is its answer (the app no longer has to guess which text is which).
+# Every tool takes the model's reason for the step. It is shown with the step, so the steps explain themselves. Any
+# text the model writes is shown too, where it wrote it: the reply is text and steps in the order they happened.
 Reason = Annotated[str, "One short sentence: what you are doing and why."]
 
 
@@ -241,12 +240,11 @@ def stream_agent(
     history: list[ChatTurn] | None = None,
     search: bool = False,
 ) -> Iterator[Step | Draft | AnswerResult]:
-    """Yield each navigation Step as it happens, Drafts of the answer as it is written, then the final AnswerResult.
+    """Yield the model's text as Drafts while it writes, each navigation Step as it happens, then the AnswerResult.
 
-    The model gives its reason for each step inside the tool call, and that reason travels with the Step. Plain text
-    is the answer. Models sometimes still write a sentence before a tool call, so the first sentence of plain text is
-    held back: if a tool call follows, it was a note and goes with the step; once the text goes on past it (or the
-    reply ends without a tool call), it is the answer. So a Draft is always answer text.
+    In order: a model call's Drafts (each one the text so far, replacing the last; an empty one means a retry started
+    over), then the Steps of its tool calls, then the next call's Drafts. Text before a Step stays part of the reply,
+    where it was written; the last text is the answer. Each Step's note is the reason given in its tool call.
     """
     graph = build_graph(navigator, llm, max_steps, search)
     messages = [*_history_messages(history or []), HumanMessage(question)]
@@ -255,19 +253,12 @@ def stream_agent(
         {"recursion_limit": max_steps * 2 + 10},
         stream_mode=["updates", "custom"],
     )
-    emitted, result, last_draft, held = 0, None, "", ""
+    emitted, result, last_draft = 0, None, ""
     notes: list[str] = []
     library = set(navigator.indexes)  # only brackets naming these documents are source markers
     for mode, update in updates:
         if mode == "custom":
             text = visible_prefix(update["text"], library)
-            if update.get("tool") or update.get("retry") or not text:
-                held = ""  # a tool call has begun (so the text is a note), or a new try starts over
-                continue
-            if not last_draft and not _past_first_sentence(text):
-                held = text  # might still be a note before a tool call
-                continue
-            held = ""
             if text != last_draft:
                 last_draft = text
                 yield Draft(text=text)
@@ -275,14 +266,8 @@ def stream_agent(
         for node_name, changes in update.items():
             if node_name == "agent":
                 reply = changes["messages"][-1]
-                if reply.tool_calls:
-                    text_note = extract_markers(_message_text(reply), library)[0].strip()
-                    reasons = [str((call.get("args") or {}).get("reason") or "").strip() for call in reply.tool_calls]
-                    # Each step gets its call's reason; text written before the calls goes with the first one.
-                    notes = [r or (text_note if i == 0 else "") for i, r in enumerate(reasons)]
-                elif held and not last_draft:
-                    yield Draft(text=held)  # a one-sentence answer: no tool call followed, so it was the answer
-                held, last_draft = "", ""
+                notes = [str((call.get("args") or {}).get("reason") or "").strip() for call in reply.tool_calls]
+                last_draft = ""
             if node_name == "tools":
                 for i, step in enumerate(navigator.trace[emitted:]):
                     note = notes[i] if i < len(notes) else ""
@@ -343,21 +328,15 @@ def _stream_reply(model, messages: list[AnyMessage], write) -> AIMessage | None:
         try:
             for chunk in model.stream(messages):
                 response = chunk if response is None else response + chunk
-                # The reply so far, and whether it has started a tool call; stream_agent turns it into a Draft.
-                write({"text": _message_text(response), "tool": bool(getattr(response, "tool_call_chunks", None) or response.tool_calls)})
+                write({"text": _message_text(response)})  # the reply so far; stream_agent turns it into a Draft
             return response
         except Exception as exc:
             if wait is None or not is_temporary(exc):
                 raise
             log.warning("Model call failed on the provider's side (%s); trying again in %.0f s", type(exc).__name__, wait)
-            write({"text": "", "tool": False, "retry": True})  # drop any half-written text: the new try starts over
+            write({"text": ""})  # drop any half-written text: the new try starts over
             time.sleep(wait)
     return None  # not reached
-
-
-def _past_first_sentence(text: str) -> bool:
-    """True once text goes on past its first sentence (or line): too much for a note before a tool call."""
-    return bool(re.search(r"[.!?:](?:\s|$).*\S", text.strip(), re.DOTALL)) or "\n" in text.strip() or len(text) > 240
 
 
 def _history_messages(history: list[ChatTurn]) -> list[AnyMessage]:

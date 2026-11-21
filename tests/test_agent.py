@@ -259,24 +259,32 @@ def test_the_step_carries_its_reason_and_drafts_are_only_the_answer():
     assert [c.node_id for c in result.citations] == ["1.1"]
 
 
-def test_a_sentence_written_before_a_tool_call_is_a_note_never_a_draft():
-    # Some models still say a sentence before calling a tool. It is held back, then goes with the step.
-    model = StreamingModel(replies=[read_call(text="Let me check the crew section."), AIMessage("Ada [ships:1.1].")])
+def test_text_and_steps_come_in_the_order_the_model_wrote_them():
+    # Text written before a tool call is part of the reply, where it was written: it is not moved into the step.
+    model = StreamingModel(
+        replies=[
+            read_call(reason="Crew names.", text="Let me check the crew section."),
+            AIMessage("Ada [ships:1.1]."),
+        ]
+    )
 
     events = list(stream_agent(LibraryNavigator([make_ships()]), model, "Who is the captain?", 5))
 
     *middle, result = events
-    step = next(e for e in middle if isinstance(e, Step))
-    assert step.note == "Let me check the crew section."
-    drafts = [e.text for e in middle if isinstance(e, Draft)]
-    assert drafts == ["Ada."]  # a one-sentence answer is held to the end of the reply, then sent once
-    assert result.text == "Ada." and result.found
+    kinds = [type(e).__name__ for e in middle]
+    step_at = kinds.index("Step")
+    before = [e.text for e in middle[:step_at] if isinstance(e, Draft)]
+    after = [e.text for e in middle[step_at:] if isinstance(e, Draft)]
+    assert before[-1] == "Let me check the crew section."  # streamed as text before the step
+    assert middle[step_at].note == "Crew names."  # the step carries only its reason
+    assert after[-1] == "Ada." == result.text  # the next text, the answer, starts fresh
+    assert result.found
 
 
-def test_a_reason_wins_over_text_before_the_call():
-    model = StreamingModel(replies=[read_call(reason="Crew names.", text="Checking."), AIMessage("Ada [ships:1.1].")])
+def test_a_step_without_a_reason_has_no_note():
+    model = StreamingModel(replies=[read_call(text="Checking."), AIMessage("Ada [ships:1.1].")])
     step = next(e for e in stream_agent(LibraryNavigator([make_ships()]), model, "Who?", 5) if isinstance(e, Step))
-    assert step.note == "Crew names."
+    assert step.note == ""  # the text is already shown where it was written; it is not repeated in the step
 
 
 def test_tools_accept_a_reason():

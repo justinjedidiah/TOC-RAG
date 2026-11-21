@@ -8,7 +8,17 @@ from toc_rag.sessions import describe_duration
 
 from .runtime import settings
 from .state import MAX_LEAF_CHOICES, MIN_LEAF_CHOICES, UPLOAD_ID, State
-from .viewmodels import ChatMessage, CitationView, DocView, ImageView, OutlineRowView, PageView, PresetView, StepView
+from .viewmodels import (
+    ChatMessage,
+    CitationView,
+    DocView,
+    ImageView,
+    OutlineRowView,
+    PageView,
+    PresetView,
+    ReplyBlock,
+    StepView,
+)
 
 # The sample questions, grouped by the sample they are about (its doc id without the content hash). A group is
 # only offered while that sample is turned on.
@@ -678,19 +688,18 @@ def live_status_line() -> rx.Component:
     )
 
 
+def reply_block(block: ReplyBlock) -> rx.Component:
+    """A piece of a reply before its answer: a run of steps, folded ("2 steps"), or text the model wrote."""
+    return rx.cond(block.steps.length() > 0, path_fold(block.steps), prose(text=block.text))
+
+
 def live_answer() -> rx.Component:
-    """The answer being written. While the agent navigates, one status line shows its latest step and reason. The
-    model gives each reason inside its tool call, so any text it writes is the answer: that shows at full size under
-    "N steps", laid out like the finished answer, so when it is done only its citations are new."""
+    """The reply being written, in the order it happens: finished pieces (text, folded runs of steps), then the text
+    being written or, while the agent works, one status line with its latest step and reason. It is laid out like the
+    finished reply, so when it is done only the citations are new."""
     return rx.vstack(
-        rx.cond(
-            State.live_text != "",
-            rx.fragment(
-                rx.cond(State.live_steps.length() > 0, path_fold(State.live_steps)),
-                prose(text=State.live_text),
-            ),
-            live_status_line(),
-        ),
+        rx.foreach(State.live_blocks, reply_block),
+        rx.cond(State.live_text != "", prose(text=State.live_text), live_status_line()),
         spacing="3",  # the same gap as between the path and the text of a finished answer
         align="start",
         custom_attrs={"data-live": ""},
@@ -714,7 +723,7 @@ def path_fold(steps) -> rx.Component:
 
 def assistant_message(message: ChatMessage) -> rx.Component:
     return rx.vstack(
-        rx.cond(message.steps.length() > 0, path_fold(message.steps)),
+        rx.foreach(message.blocks, reply_block),
         # Every reply looks the same, cited or not: "not found" is still an answer.
         rx.cond(message.text != "", prose(text=message.text)),
         rx.foreach(message.images, answer_image),

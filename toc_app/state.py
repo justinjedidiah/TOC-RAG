@@ -40,7 +40,17 @@ from toc_rag.uploads import UploadError, safe_filename, validate_upload
 
 from .pacing import TICK_SECONDS, TextPacer
 from .runtime import sessions, settings
-from .viewmodels import ChatMessage, CitationView, DocView, ImageView, OutlineRowView, PageView, PresetView, StepView
+from .viewmodels import (
+    ChatMessage,
+    CitationView,
+    DocView,
+    ImageView,
+    OutlineRowView,
+    PageView,
+    PresetView,
+    ReplyBlock,
+    StepView,
+)
 
 log = logging.getLogger(__name__)
 
@@ -268,7 +278,8 @@ class State(rx.State):
     thinking: bool = False
     # The answer being written. Kept apart from `messages` so each streamed update sends only this, not
     # the whole conversation again (Reflex sends a changed list in full). Added to `messages` when done.
-    live_steps: list[StepView] = []
+    live_blocks: list[ReplyBlock] = []  # the reply being written: text and runs of steps so far, in order
+    live_steps: list[StepView] = []  # the run of steps going on now (shown as the status line)
     live_text: str = ""
     _chat_generation: int = 0  # bumped when the chat is cleared, so an answer still streaming is dropped
 
@@ -1094,12 +1105,22 @@ class State(rx.State):
             ][-MAX_HISTORY_TURNS * 2 :]
             generation = self._chat_generation
             self.thinking = True
+            self.live_blocks = []
             self.live_steps = []
             self.live_text = ""
             self.messages = [*self.messages, ChatMessage(role="user", text=question)]
         yield scroll_chat(force=True)
 
-        steps: list[StepView] = []  # this answer's steps, kept here too so the final message can carry them
+        # The reply so far, in order: finished pieces (`blocks`), the run of steps going on (`run`) and the text
+        # being written (in `pacer`). Kept here too, so the finished message can carry them.
+        blocks: list[ReplyBlock] = []
+        run: list[StepView] = []
+        pacer = TextPacer()
+
+        def so_far() -> list[ReplyBlock]:
+            current = [ReplyBlock(text=pacer.text())] if pacer.text() else []
+            return [*blocks, *current, *([ReplyBlock(steps=list(run))] if run else [])]
+
         try:
             library = Library.for_session(settings, sessions, token)
             indexes = [index for index in library.indexes() if index.doc_id not in turned_off]
@@ -1109,16 +1130,38 @@ class State(rx.State):
             # The agent runs in a worker thread and drops its events into `inbox`. This loop shows them at a
             # steady pace (`TextPacer`): the model sends text in bursts, which made the chat jump. A step, or the
             # answer, is applied only once the text before it has been shown in full, so the order never changes.
+            # Text and steps stay where they happened: text before a step is part of the reply, not moved away.
             inbox: asyncio.Queue = asyncio.Queue()
             stop = threading.Event()
             threading.Thread(target=_feed, args=(events, inbox, asyncio.get_running_loop(), stop), daemon=True).start()
-            pacer, waiting = TextPacer(), collections.deque()
+            waiting = collections.deque()
             try:
                 while True:
                     while not inbox.empty():
                         waiting.append(inbox.get_nowait())
                     while waiting and isinstance(waiting[0], Draft):
-                        pacer.set_target(waiting.popleft().text)
+                        draft = waiting.popleft().text
+                        if not draft:  # a retry started over: drop the half-written text
+                            pacer.reset()
+                            async with self:
+                                if self._chat_generation != generation:
+                                    return
+                                self.live_text = ""
+                            continue
+                        pacer.set_target(draft)
+                        if run:
+                            # Text after a run of steps: the run folds away above it, in the same update as the
+                            # first words, so nothing flashes in between.
+                            blocks.append(ReplyBlock(steps=run))
+                            run = []
+                            first = pacer.tick() or ""
+                            async with self:
+                                if self._chat_generation != generation:
+                                    return
+                                self.live_blocks = list(blocks)
+                                self.live_steps = []
+                                self.live_text = first
+                            yield scroll_chat()
                     if (text := pacer.tick()) is not None:
                         async with self:
                             if self._chat_generation != generation:
@@ -1136,17 +1179,23 @@ class State(rx.State):
                     if event is _FINISHED:
                         break
                     if isinstance(event, Step):
-                        steps.append(StepView(event.label, event.note))
-                        pacer.reset()
+                        if pacer.text():  # the text written before this step stays in the reply, above it
+                            blocks.append(ReplyBlock(text=pacer.text()))
+                            pacer.reset()
+                        run.append(StepView(event.label, event.note))
                         async with self:
                             if self._chat_generation != generation:
                                 return
-                            # The text shown so far was the model's note before this step; the step carries it now.
-                            self.live_steps = list(steps)
+                            self.live_blocks = list(blocks)
+                            self.live_steps = list(run)
                             self.live_text = ""
                         yield scroll_chat()
                     elif isinstance(event, AnswerResult):
-                        message = ChatMessage(role="assistant", steps=list(steps), **_answer_fields(event, library, token))
+                        if run:
+                            blocks.append(ReplyBlock(steps=run))
+                            run = []
+                        pacer.reset()  # the answer's text is the message's own text
+                        message = ChatMessage(role="assistant", blocks=list(blocks), **_answer_fields(event, library, token))
                         async with self:
                             self._finish_answer(generation, message)
                         yield scroll_chat()
@@ -1168,7 +1217,7 @@ class State(rx.State):
             async with self:
                 self._finish_answer(
                     generation,
-                    ChatMessage(role="assistant", steps=list(steps), text=friendly_error(exc, llm.info.label), found=False, error=True),
+                    ChatMessage(role="assistant", blocks=so_far(), text=friendly_error(exc, llm.info.label), found=False, error=True),
                 )
         finally:
             async with self:
@@ -1185,6 +1234,7 @@ class State(rx.State):
         """Empty the chat. An answer still being written is dropped when it next reports (`_chat_generation`)."""
         self.messages = []
         self.thinking = False
+        self.live_blocks = []
         self.live_steps = []
         self.live_text = ""
         self._chat_generation += 1
@@ -1198,6 +1248,7 @@ class State(rx.State):
             return
         if message is not None:
             self.messages = [*self.messages, message]
+        self.live_blocks = []
         self.live_steps = []
         self.live_text = ""
         self.thinking = False
